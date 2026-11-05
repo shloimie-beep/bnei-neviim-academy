@@ -40613,3 +40613,7 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
 - RAW-20261103-001 / REQ-20261103-001: existing source/start/Ramble and three BNA skill instructions now distinguish documentation preparation from later visual QA, demonstrations and website implementation. Evidence-based lessons use the existing records.
 - Checks confined to edited instructions, source pointers, skill metadata and Git diff. No code/assets/dependencies/tests, browser, demo, server, build or agent work. Source access was not revalidated; prior receipts retained as dated evidence.
 - Existing setup branch, Buffer work, Fishing and four untracked watchdog files preserved. One local documentation commit only, no push/merge/deploy. Stop; await separate explicit instruction before BNA website coding.
+
+## 2026-11-05 — BNA interest launch local implementation
+
+REQ-20261105-001 through REQ-20261105-008: implemented exact-source bilingual public pages, shared native durable capture/recovery and receipt draft, existing-owner filters/history, and fixed-inventory reversible BNA business archive. Exact email scope approved in RAW-20261105-002. Focused SQL/HTTP/source/scope checks, 85 related regressions, canonical Operations generation, 28 scoped execution-run checks, action watchdog and protocol-drift checks pass. Actual private desktop/mobile/RTL/browser artifacts are linked from tasks-pending/2026-11-05-bna-interest-launch.md. Controlled BNA release and live persistence/recipient/archive proof remain open; no live completion claim.

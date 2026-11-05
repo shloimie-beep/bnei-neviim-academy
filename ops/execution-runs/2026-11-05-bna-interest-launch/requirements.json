@@ -1,0 +1,435 @@
+{
+  "run_id": "2026-11-05-bna-interest-launch",
+  "title": "BNA November 5 interest launch",
+  "updated_at": "2026-11-05T10:37:10.471Z",
+  "sources": [
+    {
+      "source_id": "RAW-20261105-001",
+      "source_path": "raw-input/RAW-20261105-001-bna-interest-launch.md",
+      "captured_at": "2026-11-05T10:37:10.471Z",
+      "content_fingerprint": "sha256:94ff433a432ea8c1e5fb08fe75df78555f153667ade8936f3ae45d918db5fba9",
+      "privacy_classification": "internal_redacted",
+      "workspace": "bna",
+      "project": "bnei_neviim_academy",
+      "source_type": "codex_chat_goal_mode_packet"
+    }
+  ],
+  "source_statements": [
+    {
+      "statement_id": "SRC-20261105-001",
+      "source_id": "RAW-20261105-001",
+      "source_statement": "Consume refreshed same-ID packet and current Website/Brand/Product/Architecture/decisions; register source-to-section map, actual surface audit and validated PQC/Definition of Ready before product edits.",
+      "requirement_id": "REQ-20261105-001"
+    },
+    {
+      "statement_id": "SRC-20261105-002",
+      "source_id": "RAW-20261105-001",
+      "source_statement": "Landing EN/HE uses exact selected copy/assets and current structure with specified logistics omissions only; pod/school CTA uses same changeable form; no donation checkout.",
+      "requirement_id": "REQ-20261105-002"
+    },
+    {
+      "statement_id": "SRC-20261105-003",
+      "source_id": "RAW-20261105-001",
+      "source_statement": "/join and /he/join save one durable inquiry with Learning pod / Academy 2027–28 / Both, required email, conditional phone, family area and optional preferred area; out-of-area retained; purpose consent separate from optional unchecked marketing. Stable reference, validation, retry/conflict and unknown-save recovery.",
+      "requirement_id": "REQ-20261105-003"
+    },
+    {
+      "statement_id": "SRC-20261105-004",
+      "source_id": "RAW-20261105-001",
+      "source_statement": "Persist exact EN/HE transactional draft and preview; queue only after save using verified sender, safe name fallback, explicit per-message state, durable dedupe and failure-safe inquiry retention.",
+      "requirement_id": "REQ-20261105-004"
+    },
+    {
+      "statement_id": "SRC-20261105-005",
+      "source_id": "RAW-20261105-001",
+      "source_statement": "Existing ordinary BNA owner view filters program, area and follow-up; detail/notes and email state survive refresh/reopen; wrong-scope and anonymous denial.",
+      "requirement_id": "REQ-20261105-005"
+    },
+    {
+      "statement_id": "SRC-20261105-006",
+      "source_id": "RAW-20261105-001",
+      "source_statement": "Fixed-cutoff BNA-only reversible legacy archive with preflight inventory, backup/restore and repeat-safe migration; preserve history, admin access and new arrivals including inquiries from old contacts; exclude archive from active counts and send selection.",
+      "requirement_id": "REQ-20261105-006"
+    },
+    {
+      "statement_id": "SRC-20261105-007",
+      "source_id": "RAW-20261105-001",
+      "source_statement": "Inspect/fix/recheck desktop 1440×900, mobile 390×844 and relevant Hebrew/RTL; exercise all scoped actions, errors/retry, keyboard/accessibility and owner save/readback. Registries and focused tests pass.",
+      "requirement_id": "REQ-20261105-007"
+    },
+    {
+      "statement_id": "SRC-20261105-008",
+      "source_id": "RAW-20261105-001",
+      "source_statement": "Scoped commit/push/PR and approved deployment path; independently record local, reviewed, deployed, live durable save, ordinary-owner readback and actual email provider evidence.",
+      "requirement_id": "REQ-20261105-008"
+    }
+  ],
+  "requirements": [
+    {
+      "id": "REQ-20261105-001",
+      "title": "Source and current-state acceptance",
+      "expected_result": "Consume refreshed same-ID packet and current Website/Brand/Product/Architecture/decisions; register source-to-section map, actual surface audit and validated PQC/Definition of Ready before product edits.",
+      "source_id": "RAW-20261105-001",
+      "source_statement_ids": [
+        "SRC-20261105-001"
+      ],
+      "source_path": "raw-input/RAW-20261105-001-bna-interest-launch.md",
+      "workspace_key": "bna",
+      "project_key": "bnei_neviim_academy",
+      "owner": "existing Codex BNA interest integrator",
+      "category": "run_control",
+      "priority": "P0",
+      "batch_id": "0",
+      "depends_on": [],
+      "status": "needs_verification",
+      "implementation_status": "Implemented locally; tests and browser evidence in register. Controlled release and live proof pending.",
+      "can_continue_without_operator": true,
+      "next_action": "Complete source/navigation/owner verification and controlled BNA release; preserve unrelated work.",
+      "acceptance_criteria": [
+        "Consume refreshed same-ID packet and current Website/Brand/Product/Architecture/decisions; register source-to-section map, actual surface audit and validated PQC/Definition of Ready before product edits."
+      ],
+      "evidence": [
+        "tasks-pending/2026-11-05-bna-interest-launch.md"
+      ],
+      "verification": [
+        "node --test tests/bna-interest-*.test.js tests/bna-coop-form.test.js",
+        "isolated Chrome local HTTP and SQL checks"
+      ],
+      "implementation_files": [
+        "BNA-START-HERE.md"
+      ],
+      "deployment_required": false,
+      "implementation_commit": "",
+      "pushed_commit": "",
+      "pull_request": "",
+      "deployment_id": "",
+      "deployed_commit": "",
+      "live_smoke": "",
+      "blocker": "",
+      "superseded_by": "",
+      "updated_at": "2026-11-05T10:37:10.471Z"
+    },
+    {
+      "id": "REQ-20261105-002",
+      "title": "Exact bilingual public launch",
+      "expected_result": "Landing EN/HE uses exact selected copy/assets and current structure with specified logistics omissions only; pod/school CTA uses same changeable form; no donation checkout.",
+      "source_id": "RAW-20261105-001",
+      "source_statement_ids": [
+        "SRC-20261105-002"
+      ],
+      "source_path": "raw-input/RAW-20261105-001-bna-interest-launch.md",
+      "workspace_key": "bna",
+      "project_key": "bnei_neviim_academy",
+      "owner": "existing Codex BNA interest integrator",
+      "category": "implementation",
+      "priority": "P0",
+      "batch_id": "1",
+      "depends_on": [],
+      "status": "needs_verification",
+      "implementation_status": "Implemented locally; tests and browser evidence in register. Controlled release and live proof pending.",
+      "can_continue_without_operator": true,
+      "next_action": "Complete source/navigation/owner verification and controlled BNA release; preserve unrelated work.",
+      "acceptance_criteria": [
+        "Landing EN/HE uses exact selected copy/assets and current structure with specified logistics omissions only; pod/school CTA uses same changeable form; no donation checkout."
+      ],
+      "evidence": [
+        "tasks-pending/2026-11-05-bna-interest-launch.md"
+      ],
+      "verification": [
+        "node --test tests/bna-interest-*.test.js tests/bna-coop-form.test.js",
+        "isolated Chrome local HTTP and SQL checks"
+      ],
+      "implementation_files": [
+        "server.js",
+        "src/lib/bna/interest-store.js",
+        "src/lib/bna/interest-pages.js"
+      ],
+      "deployment_required": true,
+      "implementation_commit": "",
+      "pushed_commit": "",
+      "pull_request": "",
+      "deployment_id": "",
+      "deployed_commit": "",
+      "live_smoke": "",
+      "blocker": "",
+      "superseded_by": "",
+      "updated_at": "2026-11-05T10:37:10.471Z"
+    },
+    {
+      "id": "REQ-20261105-003",
+      "title": "Durable shared BNA interest capture",
+      "expected_result": "/join and /he/join save one durable inquiry with Learning pod / Academy 2027–28 / Both, required email, conditional phone, family area and optional preferred area; out-of-area retained; purpose consent separate from optional unchecked marketing. Stable reference, validation, retry/conflict and unknown-save recovery.",
+      "source_id": "RAW-20261105-001",
+      "source_statement_ids": [
+        "SRC-20261105-003"
+      ],
+      "source_path": "raw-input/RAW-20261105-001-bna-interest-launch.md",
+      "workspace_key": "bna",
+      "project_key": "bnei_neviim_academy",
+      "owner": "existing Codex BNA interest integrator",
+      "category": "implementation",
+      "priority": "P0",
+      "batch_id": "1",
+      "depends_on": [],
+      "status": "needs_verification",
+      "implementation_status": "Implemented locally; tests and browser evidence in register. Controlled release and live proof pending.",
+      "can_continue_without_operator": true,
+      "next_action": "Complete source/navigation/owner verification and controlled BNA release; preserve unrelated work.",
+      "acceptance_criteria": [
+        "/join and /he/join save one durable inquiry with Learning pod / Academy 2027–28 / Both, required email, conditional phone, family area and optional preferred area; out-of-area retained; purpose consent separate from optional unchecked marketing. Stable reference, validation, retry/conflict and unknown-save recovery."
+      ],
+      "evidence": [
+        "tasks-pending/2026-11-05-bna-interest-launch.md"
+      ],
+      "verification": [
+        "node --test tests/bna-interest-*.test.js tests/bna-coop-form.test.js",
+        "isolated Chrome local HTTP and SQL checks"
+      ],
+      "implementation_files": [
+        "server.js",
+        "src/lib/bna/interest-store.js",
+        "src/lib/bna/interest-pages.js"
+      ],
+      "deployment_required": true,
+      "implementation_commit": "",
+      "pushed_commit": "",
+      "pull_request": "",
+      "deployment_id": "",
+      "deployed_commit": "",
+      "live_smoke": "",
+      "blocker": "",
+      "superseded_by": "",
+      "updated_at": "2026-11-05T10:37:10.471Z"
+    },
+    {
+      "id": "REQ-20261105-004",
+      "title": "Approved transactional acknowledgement",
+      "expected_result": "Persist exact EN/HE transactional draft and preview; queue only after save using verified sender, safe name fallback, explicit per-message state, durable dedupe and failure-safe inquiry retention.",
+      "source_id": "RAW-20261105-001",
+      "source_statement_ids": [
+        "SRC-20261105-004"
+      ],
+      "source_path": "raw-input/RAW-20261105-001-bna-interest-launch.md",
+      "workspace_key": "bna",
+      "project_key": "bnei_neviim_academy",
+      "owner": "existing Codex BNA interest integrator",
+      "category": "implementation",
+      "priority": "P0",
+      "batch_id": "2",
+      "depends_on": [],
+      "status": "needs_verification",
+      "implementation_status": "Implemented locally; tests and browser evidence in register. Controlled release and live proof pending.",
+      "can_continue_without_operator": true,
+      "next_action": "Complete source/navigation/owner verification and controlled BNA release; preserve unrelated work.",
+      "acceptance_criteria": [
+        "Persist exact EN/HE transactional draft and preview; queue only after save using verified sender, safe name fallback, explicit per-message state, durable dedupe and failure-safe inquiry retention."
+      ],
+      "evidence": [
+        "tasks-pending/2026-11-05-bna-interest-launch.md"
+      ],
+      "verification": [
+        "node --test tests/bna-interest-*.test.js tests/bna-coop-form.test.js",
+        "isolated Chrome local HTTP and SQL checks"
+      ],
+      "implementation_files": [
+        "server.js",
+        "src/lib/bna/interest-store.js",
+        "src/lib/bna/interest-pages.js"
+      ],
+      "deployment_required": true,
+      "implementation_commit": "",
+      "pushed_commit": "",
+      "pull_request": "",
+      "deployment_id": "",
+      "deployed_commit": "",
+      "live_smoke": "",
+      "blocker": "",
+      "superseded_by": "",
+      "updated_at": "2026-11-05T10:37:10.471Z"
+    },
+    {
+      "id": "REQ-20261105-005",
+      "title": "Existing owner inquiry workflow",
+      "expected_result": "Existing ordinary BNA owner view filters program, area and follow-up; detail/notes and email state survive refresh/reopen; wrong-scope and anonymous denial.",
+      "source_id": "RAW-20261105-001",
+      "source_statement_ids": [
+        "SRC-20261105-005"
+      ],
+      "source_path": "raw-input/RAW-20261105-001-bna-interest-launch.md",
+      "workspace_key": "bna",
+      "project_key": "bnei_neviim_academy",
+      "owner": "existing Codex BNA interest integrator",
+      "category": "implementation",
+      "priority": "P0",
+      "batch_id": "3",
+      "depends_on": [],
+      "status": "needs_verification",
+      "implementation_status": "Implemented locally; tests and browser evidence in register. Controlled release and live proof pending.",
+      "can_continue_without_operator": true,
+      "next_action": "Complete source/navigation/owner verification and controlled BNA release; preserve unrelated work.",
+      "acceptance_criteria": [
+        "Existing ordinary BNA owner view filters program, area and follow-up; detail/notes and email state survive refresh/reopen; wrong-scope and anonymous denial."
+      ],
+      "evidence": [
+        "tasks-pending/2026-11-05-bna-interest-launch.md"
+      ],
+      "verification": [
+        "node --test tests/bna-interest-*.test.js tests/bna-coop-form.test.js",
+        "isolated Chrome local HTTP and SQL checks"
+      ],
+      "implementation_files": [
+        "server.js",
+        "src/lib/bna/interest-store.js",
+        "src/lib/bna/interest-pages.js"
+      ],
+      "deployment_required": true,
+      "implementation_commit": "",
+      "pushed_commit": "",
+      "pull_request": "",
+      "deployment_id": "",
+      "deployed_commit": "",
+      "live_smoke": "",
+      "blocker": "",
+      "superseded_by": "",
+      "updated_at": "2026-11-05T10:37:10.471Z"
+    },
+    {
+      "id": "REQ-20261105-006",
+      "title": "Reversible legacy business archive",
+      "expected_result": "Fixed-cutoff BNA-only reversible legacy archive with preflight inventory, backup/restore and repeat-safe migration; preserve history, admin access and new arrivals including inquiries from old contacts; exclude archive from active counts and send selection.",
+      "source_id": "RAW-20261105-001",
+      "source_statement_ids": [
+        "SRC-20261105-006"
+      ],
+      "source_path": "raw-input/RAW-20261105-001-bna-interest-launch.md",
+      "workspace_key": "bna",
+      "project_key": "bnei_neviim_academy",
+      "owner": "existing Codex BNA interest integrator",
+      "category": "implementation",
+      "priority": "P0",
+      "batch_id": "3",
+      "depends_on": [],
+      "status": "needs_verification",
+      "implementation_status": "Implemented locally; tests and browser evidence in register. Controlled release and live proof pending.",
+      "can_continue_without_operator": true,
+      "next_action": "Complete source/navigation/owner verification and controlled BNA release; preserve unrelated work.",
+      "acceptance_criteria": [
+        "Fixed-cutoff BNA-only reversible legacy archive with preflight inventory, backup/restore and repeat-safe migration; preserve history, admin access and new arrivals including inquiries from old contacts; exclude archive from active counts and send selection."
+      ],
+      "evidence": [
+        "tasks-pending/2026-11-05-bna-interest-launch.md"
+      ],
+      "verification": [
+        "node --test tests/bna-interest-*.test.js tests/bna-coop-form.test.js",
+        "isolated Chrome local HTTP and SQL checks"
+      ],
+      "implementation_files": [
+        "server.js",
+        "src/lib/bna/interest-store.js",
+        "src/lib/bna/interest-pages.js"
+      ],
+      "deployment_required": true,
+      "implementation_commit": "",
+      "pushed_commit": "",
+      "pull_request": "",
+      "deployment_id": "",
+      "deployed_commit": "",
+      "live_smoke": "",
+      "blocker": "",
+      "superseded_by": "",
+      "updated_at": "2026-11-05T10:37:10.471Z"
+    },
+    {
+      "id": "REQ-20261105-007",
+      "title": "Responsive action and accessibility proof",
+      "expected_result": "Inspect/fix/recheck desktop 1440×900, mobile 390×844 and relevant Hebrew/RTL; exercise all scoped actions, errors/retry, keyboard/accessibility and owner save/readback. Registries and focused tests pass.",
+      "source_id": "RAW-20261105-001",
+      "source_statement_ids": [
+        "SRC-20261105-007"
+      ],
+      "source_path": "raw-input/RAW-20261105-001-bna-interest-launch.md",
+      "workspace_key": "bna",
+      "project_key": "bnei_neviim_academy",
+      "owner": "existing Codex BNA interest integrator",
+      "category": "implementation",
+      "priority": "P0",
+      "batch_id": "4",
+      "depends_on": [],
+      "status": "needs_verification",
+      "implementation_status": "Implemented locally; tests and browser evidence in register. Controlled release and live proof pending.",
+      "can_continue_without_operator": true,
+      "next_action": "Complete source/navigation/owner verification and controlled BNA release; preserve unrelated work.",
+      "acceptance_criteria": [
+        "Inspect/fix/recheck desktop 1440×900, mobile 390×844 and relevant Hebrew/RTL; exercise all scoped actions, errors/retry, keyboard/accessibility and owner save/readback. Registries and focused tests pass."
+      ],
+      "evidence": [
+        "tasks-pending/2026-11-05-bna-interest-launch.md"
+      ],
+      "verification": [
+        "node --test tests/bna-interest-*.test.js tests/bna-coop-form.test.js",
+        "isolated Chrome local HTTP and SQL checks"
+      ],
+      "implementation_files": [
+        "server.js",
+        "src/lib/bna/interest-store.js",
+        "src/lib/bna/interest-pages.js"
+      ],
+      "deployment_required": true,
+      "implementation_commit": "",
+      "pushed_commit": "",
+      "pull_request": "",
+      "deployment_id": "",
+      "deployed_commit": "",
+      "live_smoke": "",
+      "blocker": "",
+      "superseded_by": "",
+      "updated_at": "2026-11-05T10:37:10.471Z"
+    },
+    {
+      "id": "REQ-20261105-008",
+      "title": "Scoped deployment and live acceptance",
+      "expected_result": "Scoped commit/push/PR and approved deployment path; independently record local, reviewed, deployed, live durable save, ordinary-owner readback and actual email provider evidence.",
+      "source_id": "RAW-20261105-001",
+      "source_statement_ids": [
+        "SRC-20261105-008"
+      ],
+      "source_path": "raw-input/RAW-20261105-001-bna-interest-launch.md",
+      "workspace_key": "bna",
+      "project_key": "bnei_neviim_academy",
+      "owner": "existing Codex BNA interest integrator",
+      "category": "implementation",
+      "priority": "P0",
+      "batch_id": "4",
+      "depends_on": [],
+      "status": "needs_verification",
+      "implementation_status": "Implemented locally; tests and browser evidence in register. Controlled release and live proof pending.",
+      "can_continue_without_operator": true,
+      "next_action": "Complete source/navigation/owner verification and controlled BNA release; preserve unrelated work.",
+      "acceptance_criteria": [
+        "Scoped commit/push/PR and approved deployment path; independently record local, reviewed, deployed, live durable save, ordinary-owner readback and actual email provider evidence."
+      ],
+      "evidence": [
+        "tasks-pending/2026-11-05-bna-interest-launch.md"
+      ],
+      "verification": [
+        "node --test tests/bna-interest-*.test.js tests/bna-coop-form.test.js",
+        "isolated Chrome local HTTP and SQL checks"
+      ],
+      "implementation_files": [
+        "server.js",
+        "src/lib/bna/interest-store.js",
+        "src/lib/bna/interest-pages.js"
+      ],
+      "deployment_required": true,
+      "implementation_commit": "",
+      "pushed_commit": "",
+      "pull_request": "",
+      "deployment_id": "",
+      "deployed_commit": "",
+      "live_smoke": "",
+      "blocker": "",
+      "superseded_by": "",
+      "updated_at": "2026-11-05T10:37:10.471Z"
+    }
+  ]
+}

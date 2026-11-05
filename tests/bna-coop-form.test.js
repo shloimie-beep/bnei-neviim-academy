@@ -1,40 +1,33 @@
 'use strict';
-const {test}=require('node:test');
-const assert=require('node:assert/strict');
-const vm=require('node:vm');
-const fs=require('node:fs');
-const source=fs.readFileSync('public/js/bna-coop-join.js','utf8');
-function harness({stored=false,noticeChanged=false,changeOnRetry=false}={}){
- const controls=Object.fromEntries(['name','contactChannel','contact','secondaryContact','language','townOrZip','childAge','otherChildAge','availability','question','emailUpdates','purposeConsent'].map(name=>[name,{value:'',checked:false,disabled:false,addEventListener(type,fn){this[type]=fn;}}]));
- Object.assign(controls.name,{value:'Synthetic parent'});Object.assign(controls.contactChannel,{value:'email'});Object.assign(controls.contact,{value:'parent@example.invalid'});Object.assign(controls.townOrZip,{value:'Florida'});Object.assign(controls.childAge,{value:'10'});controls.purposeConsent.checked=true;
- const button={disabled:false},status={textContent:'',dataset:{}},events={},sent=[],storage=new Map(stored?[['bna-coop-unconfirmed-operation-v1','synthetic-previous-operation']]:[]);
- class Form{constructor(){this.elements={namedItem:name=>controls[name]};} querySelector(){return button;} querySelectorAll(){return Object.values(controls);} addEventListener(type,fn){events[type]=fn;} reportValidity(){return true;} reset(){}}
- const form=new Form(),html={lang:'en',dir:'ltr',dataset:{locale:'en'}},link={dataset:{enHref:'/join',heHref:'/he/join'},addEventListener(type,fn){this[type]=fn;}},history=[];
- let fail=true,offers=0;
- const sandbox={HTMLFormElement:Form,document:{documentElement:html,referrer:'',querySelector:s=>s==='#coop-interest-form'?form:status,querySelectorAll:()=>[link]},
-  location:{search:'?utm_source=facebook'},history:{replaceState:(_a,_b,url)=>history.push(url)},URL,URLSearchParams,crypto:{randomUUID:()=>'00000000-0000-4000-8000-000000000123'},
-  sessionStorage:{getItem:k=>storage.get(k)||null,setItem:(k,v)=>storage.set(k,v),removeItem:k=>storage.delete(k)},setTimeout:fn=>fn(),
-  fetch:async(url,options={})=>{if(!options.method){offers++;return {ok:true,json:async()=>({data:{challenge:'synthetic',notice:{version:noticeChanged||changeOnRetry&&offers>1?'changed':'BNA-COOP-INTEREST-20261029-v2',en:'Please contact me about the BNA learning co-op using the details I provided. I have read the Privacy Policy.',he:'אבקש ליצור איתי קשר בעניין קואופרטיב הלמידה של בני נביאים באמצעות הפרטים שמסרתי. קראתי את מדיניות הפרטיות.'}}})};}sent.push(JSON.parse(options.body));if(fail){fail=false;throw Error('response lost');}return {ok:true,status:200,json:async()=>({data:{saved:true,reference:'synthetic-reference'}})};}};
- vm.runInNewContext(source,sandbox);return {controls,button,status,events,sent,storage,link,html,history};
-}
-test('unknown response retries the same operation and retains exact fields',async()=>{
- const h=harness();await h.events.submit({preventDefault(){}});assert.equal(h.status.dataset.state,'unknown');assert.equal(h.sent.length,1);assert.equal(h.storage.size,1);
- await h.events.submit({preventDefault(){}});assert.equal(h.sent.length,2);assert.deepEqual(h.sent[0],h.sent[1]);assert.equal(h.sent[0].fields.permission.confirmed,true);assert.equal(h.status.dataset.state,'saved');assert.equal(h.storage.size,0);
+const {test,before,after}=require('node:test'),assert=require('node:assert/strict'),express=require('express'),{randomUUID}=require('node:crypto');
+const {createTestDatabase}=require('./helpers/bna-interest-db.cjs');
+const {createInterestRouter}=require('../src/lib/bna/interest-http');
+const {NOTICE}=require('../src/lib/bna/interest-launch');
+let fixture,server,origin;
+before(async()=>{fixture=await createTestDatabase();const app=express();server=app.listen(0,'127.0.0.1');await new Promise(resolve=>server.on('listening',resolve));origin='http://127.0.0.1:'+server.address().port;app.use(createInterestRouter({store:fixture.store,enabled:()=>true,origin}));});
+after(async()=>{await new Promise(resolve=>server.close(resolve));await fixture.close();});
+const fields=()=>({program:'both',name:'Synthetic parent',email:randomUUID()+'@example.invalid',phone:'',contactChannel:'email',language:'en',siteLanguage:'en',area:'Other region',preferredArea:'Another region',childAges:[10],learningArrangement:'',torahExperience:'',question:'',articleUpdates:false,podUpdates:false,academyUpdates:false,permission:{confirmed:true,version:NOTICE.version,language:'en'}});
+const post=body=>fetch(origin+'/api/bna/coop-interest',{method:'POST',headers:{Origin:origin,'Sec-Fetch-Site':'same-origin','Content-Type':'application/json'},body:JSON.stringify(body)});
+test('HTTP binds the displayed consent, saves a durable reference and recovers after a lost response without a duplicate',async()=>{
+const offer=await(await fetch(origin+'/api/bna/coop-interest')).json();assert.equal(offer.data.notice.en,NOTICE.en);
+const body={operationId:randomUUID(),recoveryToken:randomUUID(),fields:fields(),challenge:offer.data.challenge};
+const response=await post(body);assert.equal(response.status,201);const saved=(await response.json()).data;assert.equal(saved.saved,true);assert.equal(saved.email.state,'draft');
+const replay=await post(body);assert.equal(replay.status,200);assert.equal((await replay.json()).data.reference,saved.reference);
+const recovery=await post({action:'recover',operationId:body.operationId,recoveryToken:body.recoveryToken});assert.equal(recovery.status,200);assert.equal((await recovery.json()).data.reference,saved.reference);
+const conflict=await post({...body,fields:{...body.fields,program:'academy'}});assert.equal(conflict.status,409);
+assert.equal((await fixture.pool.query('SELECT COUNT(*)::int AS count FROM bna_interest_inquiries')).rows[0].count,1);
 });
-test('changing page language preserves message language and requires renewed purpose acknowledgment',()=>{
- const h=harness();h.controls.language.value='en';h.link.click({preventDefault(){}});assert.equal(h.html.lang,'he');assert.equal(h.controls.language.value,'en');assert.equal(h.controls.purposeConsent.checked,false);assert.equal(h.history[0],'/he/join?utm_source=facebook');
+test('cross-origin, query variation, missing email and missing purpose permission cannot save',async()=>{
+const offer=(await(await fetch(origin+'/api/bna/coop-interest')).json()).data;
+const body={operationId:randomUUID(),recoveryToken:randomUUID(),fields:fields(),challenge:offer.challenge};
+assert.equal((await fetch(origin+'/api/bna/coop-interest',{method:'POST',headers:{Origin:'https://other.example.invalid','Content-Type':'application/json'},body:JSON.stringify(body)})).status,403);
+assert.equal((await fetch(origin+'/api/bna/coop-interest?token=untrusted')).status,404);
+assert.equal((await post({...body,fields:{...body.fields,email:''}})).status,400);
+assert.equal((await post({...body,fields:{...body.fields,permission:{...body.fields.permission,confirmed:false}}})).status,400);
+assert.equal((await fixture.pool.query('SELECT COUNT(*)::int AS count FROM bna_interest_inquiries')).rows[0].count,1);
 });
-test('reopened unknown operation cannot silently start another inquiry',()=>{
- const h=harness({stored:true});assert.equal(h.button.disabled,true);assert.equal(h.events.submit,undefined);assert.equal(h.status.dataset.state,'unknown');assert.equal(h.sent.length,0);
-});
-test('changed server notice blocks a new submission without discarding its answers',async()=>{
- const h=harness({noticeChanged:true});await h.events.submit({preventDefault(){}});assert.equal(h.sent.length,0);assert.equal(h.controls.name.value,'Synthetic parent');assert.equal(h.controls.name.disabled,false);assert.match(h.status.textContent,/notice has changed/);
-});
-test('a prior uncertain operation can still be retried if the notice has changed',async()=>{
- const h=harness({changeOnRetry:true});await h.events.submit({preventDefault(){}});await h.events.submit({preventDefault(){}});assert.equal(h.sent.length,2);assert.deepEqual(h.sent[0],h.sent[1]);assert.equal(h.status.dataset.state,'saved');
-});
-test('the displayed acknowledgment is the version verified with the server',()=>{
- const page=fs.readFileSync('public/bna-coop-join.html','utf8');
- for(const text of ['Please contact me about the BNA learning co-op using the details I provided. I have read the Privacy Policy.','אבקש ליצור איתי קשר בעניין קואופרטיב הלמידה של בני נביאים באמצעות הפרטים שמסרתי. קראתי את מדיניות הפרטיות.']){assert.ok(page.includes(text));assert.ok(source.includes(text));}
- assert.match(page,/<input type="checkbox" name="purposeConsent" required>/);assert.match(source,/BNA-COOP-INTEREST-20261029-v2/);
+test('malformed JSON and oversized bodies fail closed before persistence',async()=>{
+const headers={Origin:origin,'Sec-Fetch-Site':'same-origin','Content-Type':'application/json'};
+assert.equal((await fetch(origin+'/api/bna/coop-interest',{method:'POST',headers,body:'{broken'})).status,400);
+assert.equal((await fetch(origin+'/api/bna/coop-interest',{method:'POST',headers,body:JSON.stringify({value:'x'.repeat(17000)})})).status,413);
 });

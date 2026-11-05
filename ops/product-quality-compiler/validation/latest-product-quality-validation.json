@@ -1,15 +1,134 @@
 {
-  "generated_at": "2026-07-13T12:52:27.310Z",
+  "generated_at": "2026-11-05T10:42:43.791Z",
   "mode": "default",
   "files_scanned": [
-    "ops/prompt-packets/2026-07-13-onetime-drive-classroom-video-automation/07-rabbi-content-processing-ui.product-quality.json"
+    "ops/prompt-packets/2026-11-05-bna-interest-launch/02-landing-durable-interest.product-quality.json",
+    "ops/prompt-packets/2026-11-05-bna-interest-launch/03-transactional-draft.product-quality.json",
+    "ops/prompt-packets/2026-11-05-bna-interest-launch/04-owner-archive.product-quality.json",
+    "ops/prompt-packets/2026-11-05-bna-interest-launch/05-shared-durable-interest.product-quality.json",
+    "ops/prompt-packets/2026-11-05-bna-interest-launch/archive-assistant-projections.product-quality.json",
+    "ops/prompt-packets/2026-11-05-bna-interest-launch/archive-content-projections.product-quality.json",
+    "ops/prompt-packets/2026-11-05-bna-interest-launch/archive-crm-projections.product-quality.json",
+    "ops/prompt-packets/2026-11-05-bna-interest-launch/archive-financial-projections.product-quality.json",
+    "ops/prompt-packets/2026-11-05-bna-interest-launch/archive-mail-projections.product-quality.json",
+    "ops/prompt-packets/2026-11-05-bna-interest-launch/archive-support-projections.product-quality.json",
+    "ops/prompt-packets/2026-11-05-bna-interest-launch/archive-work-projections.product-quality.json",
+    "ops/prompt-packets/2026-11-05-bna-interest-launch/owner-private-readback.product-quality.json",
+    "ops/prompt-packets/2026-11-05-bna-interest-launch/public-academy-philosophy.product-quality.json",
+    "ops/prompt-packets/2026-11-05-bna-interest-launch/public-article-support.product-quality.json",
+    "ops/prompt-packets/2026-11-05-bna-interest-launch/public-faq-articles.product-quality.json",
+    "ops/prompt-packets/2026-11-05-bna-interest-launch/public-he-support.product-quality.json",
+    "ops/prompt-packets/2026-11-05-bna-interest-launch/public-pod-academy.product-quality.json",
+    "ops/prompt-packets/2026-11-05-bna-interest-launch/public-vision-faq.product-quality.json"
   ],
-  "total": 1,
-  "passed": 1,
+  "total": 18,
+  "passed": 18,
   "failed": 0,
   "results": [
     {
-      "file": "ops/prompt-packets/2026-07-13-onetime-drive-classroom-video-automation/07-rabbi-content-processing-ui.product-quality.json",
+      "file": "ops/prompt-packets/2026-11-05-bna-interest-launch/02-landing-durable-interest.product-quality.json",
+      "passed": true,
+      "error_codes": [],
+      "errors": []
+    },
+    {
+      "file": "ops/prompt-packets/2026-11-05-bna-interest-launch/03-transactional-draft.product-quality.json",
+      "passed": true,
+      "error_codes": [],
+      "errors": []
+    },
+    {
+      "file": "ops/prompt-packets/2026-11-05-bna-interest-launch/04-owner-archive.product-quality.json",
+      "passed": true,
+      "error_codes": [],
+      "errors": []
+    },
+    {
+      "file": "ops/prompt-packets/2026-11-05-bna-interest-launch/05-shared-durable-interest.product-quality.json",
+      "passed": true,
+      "error_codes": [],
+      "errors": []
+    },
+    {
+      "file": "ops/prompt-packets/2026-11-05-bna-interest-launch/archive-assistant-projections.product-quality.json",
+      "passed": true,
+      "error_codes": [],
+      "errors": []
+    },
+    {
+      "file": "ops/prompt-packets/2026-11-05-bna-interest-launch/archive-content-projections.product-quality.json",
+      "passed": true,
+      "error_codes": [],
+      "errors": []
+    },
+    {
+      "file": "ops/prompt-packets/2026-11-05-bna-interest-launch/archive-crm-projections.product-quality.json",
+      "passed": true,
+      "error_codes": [],
+      "errors": []
+    },
+    {
+      "file": "ops/prompt-packets/2026-11-05-bna-interest-launch/archive-financial-projections.product-quality.json",
+      "passed": true,
+      "error_codes": [],
+      "errors": []
+    },
+    {
+      "file": "ops/prompt-packets/2026-11-05-bna-interest-launch/archive-mail-projections.product-quality.json",
+      "passed": true,
+      "error_codes": [],
+      "errors": []
+    },
+    {
+      "file": "ops/prompt-packets/2026-11-05-bna-interest-launch/archive-support-projections.product-quality.json",
+      "passed": true,
+      "error_codes": [],
+      "errors": []
+    },
+    {
+      "file": "ops/prompt-packets/2026-11-05-bna-interest-launch/archive-work-projections.product-quality.json",
+      "passed": true,
+      "error_codes": [],
+      "errors": []
+    },
+    {
+      "file": "ops/prompt-packets/2026-11-05-bna-interest-launch/owner-private-readback.product-quality.json",
+      "passed": true,
+      "error_codes": [],
+      "errors": []
+    },
+    {
+      "file": "ops/prompt-packets/2026-11-05-bna-interest-launch/public-academy-philosophy.product-quality.json",
+      "passed": true,
+      "error_codes": [],
+      "errors": []
+    },
+    {
+      "file": "ops/prompt-packets/2026-11-05-bna-interest-launch/public-article-support.product-quality.json",
+      "passed": true,
+      "error_codes": [],
+      "errors": []
+    },
+    {
+      "file": "ops/prompt-packets/2026-11-05-bna-interest-launch/public-faq-articles.product-quality.json",
+      "passed": true,
+      "error_codes": [],
+      "errors": []
+    },
+    {
+      "file": "ops/prompt-packets/2026-11-05-bna-interest-launch/public-he-support.product-quality.json",
+      "passed": true,
+      "error_codes": [],
+      "errors": []
+    },
+    {
+      "file": "ops/prompt-packets/2026-11-05-bna-interest-launch/public-pod-academy.product-quality.json",
+      "passed": true,
+      "error_codes": [],
+      "errors": []
+    },
+    {
+      "file": "ops/prompt-packets/2026-11-05-bna-interest-launch/public-vision-faq.product-quality.json",
       "passed": true,
       "error_codes": [],
       "errors": []

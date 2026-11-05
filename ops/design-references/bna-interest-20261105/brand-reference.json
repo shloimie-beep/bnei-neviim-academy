@@ -1,0 +1,19 @@
+{
+  "project": "bna",
+  "decision": "BNA-INTEREST-LAUNCH-20261105-01",
+  "scope": "public website only",
+  "palette": {
+    "navy": "#1e3a5f",
+    "cream": "#fbfaf6",
+    "gold": "#c9a227"
+  },
+  "fonts": [
+    "Cormorant Garamond",
+    "Inter",
+    "Noto Serif Hebrew"
+  ],
+  "asset_manifest": "ops/surface-maps/2026-11-05-bna-interest-assets.json",
+  "source_copy": "config/bna-interest-copy.json",
+  "hero_policy": "Original full bytes and composition; no regeneration, crop, recolor or overlay",
+  "reference_status": "Approved current source kit; actual implementation/local evidence in dated register"
+}
