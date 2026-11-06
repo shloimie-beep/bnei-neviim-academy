@@ -7,6 +7,7 @@ const { parseWorkbook, isEligible, nextAllowedIso, nextAsset, record, scheduledI
   publisherStatePreflightMatches, successorPreflightMatches, publicationResultPreflight,
   successorScheduleIso, heldSuccessorCalendarUpdates, scheduledSuccessorCalendarUpdates,
   invalidPublisherRecordHolds, pendingSuccessorPlan, pendingSuccessorPreflightMatches,
+  reanchorRequestKey, reanchorPreflight, authorizedReanchor,
   attachPoolErrorHandler, exactMedia, MAX_MEDIA_BYTES } = require('../src/lib/bna/life-skills-status-publisher');
 const { parseWorkbook: parseMarketingWorkbook } = require('../src/lib/bna/life-skills-marketing');
 
@@ -447,6 +448,175 @@ test('a successor schedule horizon hold becomes eligible again when Calendar is 
   const foreignHold={...extended,assets:extended.assets.map(asset=>asset.id==='C01-EN'
     ? {...asset,delivery:{...asset.delivery,predecessorReceiptId:'different-receipt'}} : asset)};
   assert.equal(pendingSuccessorPlan(foreignHold,now).reason,'SUCCESSOR_SCHEDULE_HOLD_PREDECESSOR_MISMATCH');
+});
+
+function reanchorFixture({off=true,successorDelivery='',quiet='No recorded holiday conflict',scheduledQuiet=quiet}={}) {
+  const predecessorDelivery={kind:'LIFE_SKILLS_STATUS_V1',state:'PUBLISHED',used:true,
+    assetId:'C01-EN-VERTICAL-TEAL-H2-r01',conceptId:1,language:'EN',surface:'VERTICAL',revision:'v01',
+    driveFileId:'predecessor-drive',sha256:'b'.repeat(64),anchorSlot:'D01',providerReceiptId:'Pso5yqYWQCBDlso-xGsA',
+    confirmedAt:'2026-10-05T09:23:11.000Z',verificationAt:'2026-10-05T09:23:18.000Z',providerType:'story',
+    providerWidth:1080,providerHeight:1920,nextTurnHold:{state:'HELD',language:'HE',reason:'HEBREW_CALENDAR_OFF',
+      conceptId:21,candidateAssetIds:['C21-HE-STATUS-TEAL-v04-FROZEN']}};
+  const predecessor=statusRow('C01-EN-VERTICAL-TEAL-H2-r01','EN',JSON.stringify(predecessorDelivery));
+  predecessor[1]='1';predecessor[4]='v01';predecessor[10]='https://drive.google.com/file/d/predecessor-drive/view';predecessor[12]='b'.repeat(64);
+  const successor=statusRow('C21-HE-STATUS-TEAL-v04-FROZEN','HE',successorDelivery);
+  successor[1]='21';successor[10]='https://drive.google.com/file/d/1vIZuC9WLxLiwuuKWdkVrwQyL4j6jr31r/view';
+  successor[12]='87943a42360ad8299b576ce875bca9b0ed9d6ddf51a55cd87e1aa506224512fb';
+  const d21=Array(15).fill('');Object.assign(d21,{0:'D21',1:'2026-10-05',4:calendarConceptId(21),
+    7:'MEDIA ASSOCIATED — no send queued',9:successor[10],10:`v04 FROZEN / ${successor[12]}`,11:'Approved',12:quiet,
+    13:off?'OFF — exact approved Status media associated; publishing owner must act':''});
+  const future=Array(15).fill('');Object.assign(future,{0:'D24',1:'2026-10-08',12:scheduledQuiet});
+  const assetHeader=[];const calendarHeader=[];
+  const raw={assetRows:[assetHeader,predecessor,successor],calendarRows:[calendarHeader,d21,future]};
+  return {raw,workbook:parseWorkbook({data:{valueRanges:[{values:raw.assetRows},{values:raw.calendarRows}]}})};
+}
+function reanchorAuthorization(extra={}) {
+  return {ownerAuthorized:true,predecessorReceiptId:'Pso5yqYWQCBDlso-xGsA',assetId:'C21-HE-STATUS-TEAL-v04-FROZEN',
+    language:'HE',surface:'VERTICAL',revision:'v04',driveFileId:'1vIZuC9WLxLiwuuKWdkVrwQyL4j6jr31r',
+    sha256:'87943a42360ad8299b576ce875bca9b0ed9d6ddf51a55cd87e1aa506224512fb',width:1080,height:1920,
+    scheduledAt:'2026-10-08T09:18:11.000Z',...extra};
+}
+
+test('future re-anchor remains held with D21 OFF or without explicit authorization, and never backfills',()=>{
+  const now=Date.parse('2026-10-07T08:00:00.000Z');
+  assert.equal(reanchorPreflight(reanchorFixture({off:true}).workbook,reanchorAuthorization(),{now}).reason,'HEBREW_CALENDAR_OFF');
+  assert.equal(reanchorPreflight(reanchorFixture({off:false}).workbook,reanchorAuthorization({ownerAuthorized:false}),{now}).reason,
+    'EXPLICIT_REANCHOR_AUTHORIZATION_REQUIRED');
+  assert.equal(reanchorPreflight(reanchorFixture({off:false}).workbook,
+    reanchorAuthorization({scheduledAt:'2026-10-06T09:18:11.000Z'}),{now}).reason,'AUTHORIZED_REANCHOR_TIME_NOT_FUTURE');
+});
+
+test('future re-anchor binds the exact predecessor, C21 identity, future time, and stable request key',()=>{
+  const fixture=reanchorFixture({off:false});
+  const authorization=reanchorAuthorization();
+  const result=reanchorPreflight(fixture.workbook,authorization,{now:Date.parse('2026-10-07T08:00:00.000Z')});
+  assert.equal(result.ok,true);assert.equal(result.replay,false);assert.equal(result.predecessor.id,'C01-EN-VERTICAL-TEAL-H2-r01');
+  assert.equal(result.asset.id,authorization.assetId);assert.equal(result.slot.slot,'D21');assert.equal(result.scheduledAt,authorization.scheduledAt);
+  assert.equal(result.requestKey,reanchorRequestKey(authorization));
+  assert.equal(result.requestKey,reanchorRequestKey({...authorization}));
+  assert.notEqual(result.requestKey,reanchorRequestKey({...authorization,scheduledAt:'2026-10-08T09:19:11.000Z'}));
+  assert.equal(reanchorPreflight(fixture.workbook,{...authorization,sha256:'c'.repeat(64)},{now:Date.parse('2026-10-07T08:00:00.000Z')}).reason,
+    'SUCCESSOR_EXACT_ASSET_OR_APPROVAL_CHANGED');
+});
+
+test('future re-anchor rejects quiet days and any attempted or duplicate successor delivery',()=>{
+  const now=Date.parse('2026-10-07T08:00:00.000Z'),authorization=reanchorAuthorization();
+  assert.equal(reanchorPreflight(reanchorFixture({off:false,scheduledQuiet:'HOLIDAY — no Status publication'}).workbook,authorization,{now}).reason,
+    'AUTHORIZED_REANCHOR_CALENDAR_OR_QUIET_DAY_FAILED');
+  const unknown=JSON.stringify({kind:'LIFE_SKILLS_STATUS_V1',state:'UNKNOWN',assetId:authorization.assetId,conceptId:21,
+    language:'HE',surface:'VERTICAL',revision:'v04',driveFileId:authorization.driveFileId,sha256:authorization.sha256,
+    providerReceiptId:'possible-receipt'});
+  assert.equal(reanchorPreflight(reanchorFixture({off:false,successorDelivery:unknown}).workbook,authorization,{now}).reason,
+    'UNRESOLVED_PROVIDER_DELIVERY_REQUIRES_RECONCILIATION');
+});
+
+test('authorized re-anchor uses the existing lock, writes one canonical schedule, reads it back, and replays idempotently',async()=>{
+  const fixture=reanchorFixture({off:false}),authorization=reanchorAuthorization(),writes=[];
+  const ranges=()=>[{values:fixture.raw.assetRows},{values:fixture.raw.calendarRows}];
+  const apply=(item)=>{
+    const match=item.range.match(/'(Asset Registry|30-Day Calendar)'!([A-Z]+)(\d+)/);assert.ok(match,item.range);
+    const [,sheet,column,rowText]=match;const row=Number(rowText);const index=[...column].reduce((sum,ch)=>sum*26+ch.charCodeAt(0)-64,0)-1;
+    const rows=sheet==='Asset Registry'?fixture.raw.assetRows:fixture.raw.calendarRows;
+    const offset=sheet==='Asset Registry'?1:9;const rawIndex=row-offset;
+    while(rows[rawIndex].length<=index) rows[rawIndex].push('');
+    rows[rawIndex][index]=item.values[0][0];
+  };
+  const sheets={spreadsheets:{values:{batchGet:async()=>({data:{valueRanges:ranges()}}),batchUpdate:async({requestBody})=>{
+    writes.push(requestBody.data);requestBody.data.forEach(apply);return {data:{}};}}}};
+  const queries=[];const db={query:async(sql)=>{queries.push(sql);return /pg_try_advisory_lock/.test(sql)?{rows:[{acquired:true}]}:{rows:[]};},release:()=>{}};
+  const pool={connect:async()=>db};
+  const first=await authorizedReanchor({authorization,pool,clients:{sheets},clock:()=>Date.parse('2026-10-07T08:00:00.000Z')});
+  assert.equal(first.state,'SCHEDULED');assert.equal(first.replay,false);assert.equal(first.schedulerReadback,true);assert.equal(writes.length,1);
+  const parsed=parseWorkbook({data:{valueRanges:ranges()}});const predecessor=parsed.assets[0].delivery,scheduled=parsed.assets[1].delivery;
+  assert.equal(predecessor.providerReceiptId,authorization.predecessorReceiptId);assert.equal(predecessor.confirmedAt,'2026-10-05T09:23:11.000Z');
+  assert.equal(predecessor.nextTurnHold.state,'RESOLVED');assert.equal(predecessor.nextTurnHold.reanchorRequestKey,first.reanchorRequestKey);
+  assert.equal(scheduled.state,'SCHEDULED');assert.equal(scheduled.predecessorReceiptId,authorization.predecessorReceiptId);
+  assert.equal(scheduled.scheduledAt,authorization.scheduledAt);assert.equal(scheduled.reanchorRequestKey,first.reanchorRequestKey);
+  assert.match(parsed.calendar[0].scheduler,/^SCHEDULED — .*12:18 Asia\/Jerusalem via rolling Status publisher$/);
+  const second=await authorizedReanchor({authorization,pool,clients:{sheets},clock:()=>Date.parse('2026-10-08T09:19:00.000Z')});
+  assert.equal(second.state,'SCHEDULED');assert.equal(second.replay,true);assert.equal(second.reanchorRequestKey,first.reanchorRequestKey);
+  assert.equal(writes.length,1);assert.equal(queries.filter(sql=>/pg_try_advisory_lock/.test(sql)).length,2);
+  assert.equal(queries.filter(sql=>/pg_advisory_unlock/.test(sql)).length,2);
+});
+
+test('authorized re-anchor refuses success when an owner Calendar hold appears before canonical readback',async()=>{
+  const fixture=reanchorFixture({off:false}),authorization=reanchorAuthorization(),writes=[];
+  const ranges=()=>[{values:fixture.raw.assetRows},{values:fixture.raw.calendarRows}];
+  const apply=(item)=>{
+    const match=item.range.match(/'(Asset Registry|30-Day Calendar)'!([A-Z]+)(\d+)/);assert.ok(match,item.range);
+    const [,sheet,column,rowText]=match;const row=Number(rowText);
+    const index=[...column].reduce((sum,ch)=>sum*26+ch.charCodeAt(0)-64,0)-1;
+    const rows=sheet==='Asset Registry'?fixture.raw.assetRows:fixture.raw.calendarRows;
+    const offset=sheet==='Asset Registry'?1:9;const rawIndex=row-offset;
+    while(rows[rawIndex].length<=index) rows[rawIndex].push('');
+    rows[rawIndex][index]=item.values[0][0];
+  };
+  let reads=0;
+  const sheets={spreadsheets:{values:{batchGet:async()=>{
+    reads++;
+    if(reads===3) fixture.raw.calendarRows[1][13]='OFF — owner intervention before readback';
+    return {data:{valueRanges:ranges()}};
+  },batchUpdate:async({requestBody})=>{writes.push(requestBody.data);requestBody.data.forEach(apply);return {data:{}};}}}};
+  const db={query:async(sql)=>/pg_try_advisory_lock/.test(sql)?{rows:[{acquired:true}]}:{rows:[]},release:()=>{}};
+  await assert.rejects(
+    authorizedReanchor({authorization,pool:{connect:async()=>db},clients:{sheets},clock:()=>Date.parse('2026-10-07T08:00:00.000Z')}),
+    /Canonical authorized re-anchor readback failed: HEBREW_CALENDAR_OFF/,
+  );
+  assert.equal(writes.length,1);assert.equal(reads,3);
+});
+
+test('authorized re-anchor makes no canonical write when the existing publisher lock is unavailable',async()=>{
+  let connected=false,writes=0;
+  const db={query:async(sql)=>/pg_try_advisory_lock/.test(sql)?{rows:[{acquired:false}]}:{rows:[]},release:()=>{connected=false;}};
+  const pool={connect:async()=>{connected=true;return db;}};
+  const sheets={spreadsheets:{values:{batchGet:async()=>{throw new Error('must not read without lock');},
+    batchUpdate:async()=>{writes++;}}}};
+  const result=await authorizedReanchor({authorization:reanchorAuthorization(),pool,clients:{sheets},clock:()=>Date.parse('2026-10-07T08:00:00.000Z')});
+  assert.equal(result.state,'HELD');assert.match(result.reason,/holds the production lock/);assert.equal(writes,0);assert.equal(connected,false);
+});
+
+test('re-anchor replay blocks new active, unknown, duplicate-predecessor, and Calendar hold state',()=>{
+  const fixture=reanchorFixture({off:false}),authorization=reanchorAuthorization(),requestKey=reanchorRequestKey(authorization);
+  const predecessor=fixture.workbook.assets[0],asset=fixture.workbook.assets[1],slot=fixture.workbook.calendar[0];
+  predecessor.delivery={...predecessor.delivery,nextTurnHold:{...predecessor.delivery.nextTurnHold,state:'RESOLVED',
+    scheduledAssetId:asset.id,scheduledAt:authorization.scheduledAt,reanchorRequestKey:requestKey}};
+  asset.delivery={kind:'LIFE_SKILLS_STATUS_V1',state:'SCHEDULED',assetId:asset.id,conceptId:asset.concept,
+    language:asset.language,surface:asset.surface,revision:asset.revision,driveFileId:authorization.driveFileId,sha256:authorization.sha256,
+    queuedAt:'2026-10-07T08:00:00.000Z',scheduledAt:authorization.scheduledAt,anchorSlot:slot.slot,
+    predecessorReceiptId:authorization.predecessorReceiptId,reanchorRequestKey:requestKey};
+  slot.scheduler=scheduledSuccessorCalendarUpdates(slot,authorization.scheduledAt).at(-1).values[0][0];
+  const now=Date.parse('2026-10-07T08:00:00.000Z');
+  assert.equal(reanchorPreflight(fixture.workbook,authorization,{now}).replay,true);
+  const parallel={...asset,id:'C99-EN',delivery:{state:'RESERVED'}};
+  assert.equal(reanchorPreflight({...fixture.workbook,assets:[...fixture.workbook.assets,parallel]},authorization,{now}).reason,
+    'ANOTHER_STATUS_SEND_OR_SCHEDULE_EXISTS');
+  const unknown={...asset,id:'C98-EN',delivery:{state:'UNKNOWN'}};
+  assert.equal(reanchorPreflight({...fixture.workbook,assets:[...fixture.workbook.assets,unknown]},authorization,{now}).state,'UNKNOWN');
+  const duplicatePredecessor={...predecessor,id:'C01-EN-duplicate'};
+  assert.equal(reanchorPreflight({...fixture.workbook,assets:[...fixture.workbook.assets,duplicatePredecessor]},authorization,{now}).ok,false);
+  slot.scheduler='OFF — publishing owner hold restored';
+  assert.equal(reanchorPreflight(fixture.workbook,authorization,{now}).reason,'HEBREW_CALENDAR_OFF');
+});
+
+test('authorized re-anchor rechecks the clock immediately before write and never creates a past-due schedule',async()=>{
+  const fixture=reanchorFixture({off:false}),authorization=reanchorAuthorization({scheduledAt:'2026-10-08T09:18:11.000Z'}),writes=[];
+  const ranges=()=>[{values:fixture.raw.assetRows},{values:fixture.raw.calendarRows}];
+  const sheets={spreadsheets:{values:{batchGet:async()=>({data:{valueRanges:ranges()}}),batchUpdate:async()=>{writes.push(true);}}}};
+  const db={query:async(sql)=>/pg_try_advisory_lock/.test(sql)?{rows:[{acquired:true}]}:{rows:[]},release:()=>{}};
+  const times=[Date.parse('2026-10-08T09:18:00.000Z'),Date.parse('2026-10-08T09:18:05.000Z'),Date.parse('2026-10-08T09:18:12.000Z')];
+  const result=await authorizedReanchor({authorization,pool:{connect:async()=>db},clients:{sheets},clock:()=>times.shift()});
+  assert.equal(result.state,'HELD');assert.equal(result.reason,'AUTHORIZED_REANCHOR_TIME_PASSED_BEFORE_WRITE');assert.equal(writes.length,0);
+});
+
+test('authorized re-anchor rechecks the invocation expiry immediately before write',async()=>{
+  const fixture=reanchorFixture({off:false}),authorization=reanchorAuthorization(),writes=[];
+  const ranges=()=>[{values:fixture.raw.assetRows},{values:fixture.raw.calendarRows}];
+  const sheets={spreadsheets:{values:{batchGet:async()=>({data:{valueRanges:ranges()}}),batchUpdate:async()=>{writes.push(true);}}}};
+  const db={query:async(sql)=>/pg_try_advisory_lock/.test(sql)?{rows:[{acquired:true}]}:{rows:[]},release:()=>{}};
+  const times=[Date.parse('2026-10-07T08:00:00.000Z'),Date.parse('2026-10-07T08:00:01.000Z'),Date.parse('2026-10-07T08:00:06.000Z')];
+  const result=await authorizedReanchor({authorization,authorizationExpiresAt:'2026-10-07T08:00:05.000Z',
+    pool:{connect:async()=>db},clients:{sheets},clock:()=>times.shift()});
+  assert.equal(result.state,'HELD');assert.equal(result.reason,'AUTHORIZED_REANCHOR_INVOCATION_EXPIRED_BEFORE_WRITE');assert.equal(writes.length,0);
 });
 
 test('provider result reread resolves shifted rows and preserves post-send Calendar interventions',()=>{
