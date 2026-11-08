@@ -1975,7 +1975,8 @@
         "ops/bna-interest-launch/2026-11-08/OWNER-ALERT-PREPARED.json",
         "ops/bna-interest-launch/2026-11-08/NARROW-SCOPE-SOURCE-READBACK.json",
         "ops/bna-interest-launch/2026-11-08/FORM-YEAR-VERIFICATION.json",
-        "ops/bna-interest-launch/2026-11-08/OWNER-ALERT-OPERATOR-CHECKS.json"
+        "ops/bna-interest-launch/2026-11-08/OWNER-ALERT-OPERATOR-CHECKS.json",
+        "ops/bna-interest-launch/2026-11-08/OWNER-ALERT-BLOCKED.json"
       ],
       "verification": [
         "node --test tests/bna-interest-owner-alert.test.js tests/bna-interest-store.test.js:17PASS",
@@ -2001,7 +2002,7 @@
       "live_smoke": "",
       "blocker": "DEC-20261108-003: exact new owner draft/test, recipient binding and new source pin require final review. Earlier public805 approval is already consumed.",
       "superseded_by": "",
-      "updated_at": "2026-11-08T14:03:37.441Z",
+      "updated_at": "2026-11-08T14:08:42.677Z",
       "lane": "backend",
       "scope_contract": "BNA-PUBLIC-INQUIRY-SCOPE-20261108-01",
       "blocker_owner": "operator",

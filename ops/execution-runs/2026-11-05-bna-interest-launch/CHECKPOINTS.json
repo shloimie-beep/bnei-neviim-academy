@@ -1,29 +1,29 @@
 {
   "scope_contract": "BNA-SCHOOL-SCOPE-LOCK-20261107-03",
-  "updated_at": "2026-11-08T13:44:26.157Z",
+  "updated_at": "2026-11-08T14:08:42.677Z",
   "registrations": [
     {
       "lane": "frontend",
       "id": "bna-school-frontend-checkpoint-15-minutes",
       "kind": "native heartbeat",
       "cadence_seconds": 900,
-      "status": "ACTIVE",
+      "status": "PAUSED",
       "target_thread_id": "01a1aab6-671c-7881-8aa3-f6d77a04af88",
       "created_at": 1794140512201,
-      "configuration_sha256": "7dee74a8c49a9880b90fd23c37f4b7d7ec7c1bec8cff62ea491fad83a3ec811c",
+      "configuration_sha256": "51520baacc22fb16b983d584e0b2edbfc95f32b43846f5a6f420c474daf14e4a",
       "first_observed_trigger": null,
       "scope_verification": "Same existing BNA frontend chat; prompt now public/form/storage/parent-receipt/owner-alert only. No full backend.",
       "native_scheduler_readback": {
         "id": "bna-school-frontend-checkpoint-15-minutes",
-        "status": "ACTIVE",
-        "next_run_at": 1794145067497,
+        "status": "PAUSED",
+        "next_run_at": null,
         "last_run_at": null,
         "rrule": "FREQ=MINUTELY;INTERVAL=15",
         "created_at": 1794140512201,
-        "updated_at": 1794144167497,
+        "updated_at": 1794146813891,
         "kind": "heartbeat",
         "target_thread_id": "01a1aab6-671c-7881-8aa3-f6d77a04af88",
-        "next_run_nominal_at": 1794145067497
+        "next_run_nominal_at": null
       },
       "last_active_scheduler_readback": {
         "id": "bna-school-frontend-checkpoint-15-minutes",
@@ -37,7 +37,7 @@
         "target_thread_id": "01a1aab6-671c-7881-8aa3-f6d77a04af88",
         "next_run_nominal_at": 1794141412201
       },
-      "pause_reason": null,
+      "pause_reason": "Existing prompt requires pausing repeated model runs on unchanged external blockers. Exact owner-alert approval remains pending after3goal turns. Registration retained, not deleted.",
       "native_registration_present": true
     },
     {
@@ -81,7 +81,7 @@
   ],
   "duplicate_scheduler_created": false,
   "old_fleet": "Fresh control tower: none; no matching existing school automation found before registration.",
-  "completion": "Backend deleted by operator. Retain frontend900-second checkpoint for current narrowed webpage/inquiry scope; stop when verified complete/canceled; pause unchanged blockers.",
+  "completion": "Backend remains deleted. Frontend registration retained and paused while the existing approval is pending; resume current narrow work only after actual operator input. Whole goal is not complete.",
   "proof_status": "Native delete/update and independent registration readback proved. No completed model trigger or full two-lane runtime acceptance is claimed or required for the deferred fullstack scope.",
   "completed_native_runs": 0,
   "current_scope": "RAW-20261108-004 public inquiry flow only"

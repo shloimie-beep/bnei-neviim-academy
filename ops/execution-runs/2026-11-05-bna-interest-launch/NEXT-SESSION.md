@@ -7,3 +7,5 @@ Public80575900 is already live and verified (28 states/60links/47sitemap/12asset
 Use explicit --run ops/execution-runs/2026-11-05-bna-interest-launch. Preserve global July latest, unrelated work and four old watchdog files.
 
 Prepared alert application6c1e4261c78896e0273a4c553880343d9ecd6f25 is pushed in PR196 and staged with only BNA_INTEREST_OWNER_ALERT_TO on the existing service. The combined exact approval question is already pending; do not duplicate it. Production schema readback confirmed delivery_key UNIQUE, compatible outbox states and existing inquiry/release tables; no migration is needed. Production remains80575900 until approval.
+
+Blocked audit 2026-11-08T14:08:42.677Z: same exact approval absent across3goal turns; no unblocked batch. Frontend checkpoint registration retained but PAUSED under its existing unchanged-blocker guard; backend remains deleted. Do not duplicate questioncall_3faa8fbc3c194115969d29789f69db6f. Current805 public site stays live; prepared6c1 owner alert remains inactive/staged. Resume only on actual operator answer or relevant external-state change; do not revive deferred full backend.

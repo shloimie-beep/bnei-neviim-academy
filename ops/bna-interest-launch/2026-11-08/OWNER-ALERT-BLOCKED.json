@@ -1,0 +1,29 @@
+{
+  "checked_at": "2026-11-08T14:08:42.677Z",
+  "requirement": "REQ-20261108-025",
+  "blocking_condition": "No explicit reply to the existing combined owner-alert draft/test/recipient/source-pin approval.",
+  "pending_question_id": "call_3faa8fbc3c194115969d29789f69db6f",
+  "consecutive_goal_turns": 3,
+  "turn_ids": [
+    "01a1bb14-b002-7fe0-9a7e-f6ceff78c187",
+    "01a1bb75-3788-7060-9896-15e36cdd1874",
+    "01a1bb79-b8ab-71a0-8e3e-9e75c11de0ff"
+  ],
+  "previous_turn_classification": "progress:8new exact operator-script checks passed with0real emails",
+  "current_turn_classification": "no independent progress available; scoped execution CLI validates and selects no executable batch",
+  "production": {
+    "status": 200,
+    "serving_commit": "80575900cbd0376a1db24a3267ef68be49029f29",
+    "prepared_commit": "6c1e4261c78896e0273a4c553880343d9ecd6f25",
+    "stage": "STAGED: exact BNA service source and owner-recipient variable only",
+    "no_new_deployment_or_mail": true
+  },
+  "full_backend": "Explicitly deferred by RAW-20261108-004; original IDs retained and not represented as implemented",
+  "checkpoint": {
+    "backend": "DELETED by operator",
+    "frontend": "retained registration; PAUSED under existing unchanged-external-blocker guard",
+    "goal_pause_requested": false
+  },
+  "next_action": "Answer the existing combined approval. Approval permits only the prepared BNA pin/recipient setting, one guarded owner test/readback, then new-inquiry activation. Do not ask a duplicate question or send/deploy before the reply.",
+  "whole_goal_complete": false
+}
