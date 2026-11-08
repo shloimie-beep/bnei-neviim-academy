@@ -4,7 +4,7 @@ Every new GitHub-connected ChatGPT or Codex session for this repo starts here.
 
 ## Current public inquiry scope — 8 November 2026
 
-RAW-20261108-004 narrows work to the landing/public webpage, shared form, stored inquiries, existing parent confirmation and minimal owner Gmail alert. Public80575900 is deployed/live verified (28Chrome states,60links,47sitemap,12original assets). The owner alert is locally prepared/tested and awaiting exact draft/test/source-pin review under REQ-20261108-025. Backend checkpoint deleted; frontend registration retained and paused on the unchanged final-approval blocker in the same chat. Full backend/private/fullstack work is Archived/deferred, not implemented. Read `ops/bna-interest-launch/2026-11-08/PUBLIC-VERIFICATION.md` and the existing November5 run NEXT-SESSION.md.
+Current requested public scope is verified live at6c1e4261 / Railway SUCCESSb28f5f0c: webpage/shared form, durable stored inquiries, unchanged active parent confirmations and new-inquiry owner Gmail alert. One labeled owner test reached the verified Inbox; exact approval RAW-20261108-005 and separate activation/readback are recorded. Read `ops/bna-interest-launch/2026-11-08/RESULT.md` and the existing November5 run NEXT-SESSION.md. Full backend/private/fullstack remains explicitly deferred, not implemented. Backend timer deleted; frontend checkpoint registration retained/PAUSED on current completion. No pending owner-alert approval or repeat effects.
 
 ## BNA interest launch execution — 5 November 2026
 

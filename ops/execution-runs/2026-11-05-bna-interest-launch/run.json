@@ -2,12 +2,14 @@
   "run_id": "2026-11-05-bna-interest-launch",
   "title": "BNA public website and minimal inquiry notification",
   "created_at": "2026-11-05T10:37:10.471Z",
-  "updated_at": "2026-11-08T13:44:26.157Z",
+  "updated_at": "2026-11-08T16:00:20.997Z",
   "active": false,
   "protocol": "docs/BNA-RAMBLE-TO-DONE.md",
   "requirements_file": "requirements.json",
   "scope_note": "Explicit --run selection for this existing chat; preserve the unrelated active July owner run and latest pointer.",
-  "status": "active_scoped_continuation",
+  "status": "public_inquiry_verified_full_backend_deferred",
   "initial_launch_completed_at": "2026-11-05T11:58:43.252Z",
-  "current_scope": "BNA-PUBLIC-INQUIRY-SCOPE-20261108-01"
+  "current_scope": "BNA-PUBLIC-INQUIRY-SCOPE-20261108-01",
+  "current_public_scope_completed_at": "2026-11-08T16:00:20.997Z",
+  "remaining_original_goal": "Full backend/private/fullstack work deferred by explicit RAW-20261108-004; not represented as implemented."
 }

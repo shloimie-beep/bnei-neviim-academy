@@ -1,5 +1,5 @@
-# Current public inquiry plan
+# Current public inquiry work verified
 
-The November5 launch is complete with retained live capture/parent receipt/owner/archive proof. Public .04 application80575900 is now deployed and live verified after exact approval. Current operator source RAW-20261108-004 defers full backend/private/fullstack work; all original24 school IDs are retained, with012–024 Archived/deferred rather than represented as built.
+The current operator-approved public scope is complete and live at6c1e4261. Parent receipts remain active, owner notification reached the actual Gmail Inbox, and new-inquiry owner activation is verified. Retain all proof and do not repeat effects.
 
-Complete only REQ-20261108-025: review the prepared exact owner notification/test and new BNA code pin, then deploy/test/read recipient evidence/activate within the approved boundary. Existing parent copy and transport stay unchanged; failures and unknown outcomes retain leads and prevent duplicate alerts. Backend timer is deleted; frontend checkpoint retained for this narrowed goal.
+The remaining broader original backend/private/fullstack scope is explicitly deferred by RAW-20261108-004, with original IDs/history retained. Backend timer deleted; frontend checkpoint retained/PAUSED after current completion. No automatic next implementation batch. See RESULT.md and NEXT-SESSION.md.

@@ -1,7 +1,7 @@
 {
   "run_id": "2026-11-05-bna-interest-launch",
   "title": "BNA interest launch and school fullstack continuation",
-  "updated_at": "2026-11-08T13:44:26.157Z",
+  "updated_at": "2026-11-08T16:00:20.997Z",
   "sources": [
     {
       "source_id": "RAW-20261105-001",
@@ -1963,10 +1963,10 @@
       "priority": "P0",
       "batch_id": "PUBLIC-INQUIRY-MINIMUM",
       "depends_on": [],
-      "status": "needs_operator_decision",
-      "implementation_status": "Minimal owner alert implemented with existing outbox;17 focused real-SQL tests pass. Exact saved draft and labeled owner test rendered/inspected. Connected owner profile and production BNA sender verified; parent receipt remains active. New alert is not deployed, sent or active.",
+      "status": "done",
+      "implementation_status": "Exact approved6c1e4261 deployed with matching provider/runtime identity; one labeled owner test read in verified Gmail Inbox with exact sender/reply/subject/body; owner activation then independently read back. Parent EN/HE templates remain active/unchanged. Test1row/1attempt,0new inquiries/parent tests. Enqueue/failure/dedupe proof is local SQL; no fresh live submission claimed.",
       "can_continue_without_operator": false,
-      "next_action": "Await the existing combined exact owner-alert draft/test/recipient/pin approval already presented. Do not ask a duplicate approval. After approval deploy only6c1e4261 + the owner recipient variable; one guarded owner-only test/readback, then activation.",
+      "next_action": "Current public inquiry scope verified complete. Do not repeat test/send/deploy/archive. Full backend remains explicitly deferred.",
       "acceptance_criteria": [
         "New BNA inquiry persists before email transport; exactly one owner alert to the verified SDRATLER Gmail recipient, separate from existing approved parent receipt. Failure/unknown preserves lead and suppresses duplicate send. Preview exact draft; verify sender/recipient and current activation/release gates; no historical/backfill alerts."
       ],
@@ -1976,14 +1976,23 @@
         "ops/bna-interest-launch/2026-11-08/NARROW-SCOPE-SOURCE-READBACK.json",
         "ops/bna-interest-launch/2026-11-08/FORM-YEAR-VERIFICATION.json",
         "ops/bna-interest-launch/2026-11-08/OWNER-ALERT-OPERATOR-CHECKS.json",
-        "ops/bna-interest-launch/2026-11-08/OWNER-ALERT-BLOCKED.json"
+        "ops/bna-interest-launch/2026-11-08/OWNER-ALERT-BLOCKED.json",
+        "raw-input/RAW-20261108-005-owner-alert-approval.md",
+        "ops/bna-interest-launch/2026-11-08/OWNER-ALERT-LIVE-VERIFICATION.json",
+        "ops/bna-interest-launch/2026-11-08/OWNER-ALERT-RECIPIENT-PROOF.json",
+        "ops/bna-interest-launch/2026-11-08/FORM-YEAR-LIVE-VERIFICATION.json",
+        "ops/bna-interest-launch/2026-11-08/FINAL-SOURCE-READBACK.json",
+        "ops/bna-interest-launch/2026-11-08/RESULT.md"
       ],
       "verification": [
         "node --test tests/bna-interest-owner-alert.test.js tests/bna-interest-store.test.js:17PASS",
         "BNA sender verifySender + read-only active parent release preflight:PASS",
         "Connected Gmail profile matches requested owner account; saved draft rendered and inspected.",
         "9focused public tests and2actual local Hebrew form states pass after a presentation-only year-direction correction.",
-        "Exact prepared operator script:8disposable-DB/VM checks PASS; recipient/template/approval/readback gates, concurrent claim, success/unknown/rejected replay;0real emails and0new inquiries."
+        "Exact prepared operator script:8disposable-DB/VM checks PASS; recipient/template/approval/readback gates, concurrent claim, success/unknown/rejected replay;0real emails and0new inquiries.",
+        "Live6c1e4261 / SUCCESSb28f5f0c; exact owner test Inbox1a1bbd13521e21a9;1test row/1attempt; owner and unchanged parent releases active.",
+        "Actual live Hebrew form390/1440 year-direction checks and screenshots passed; no new inquiry or parent test.",
+        "Guarded Website/log/Delivery/Continuation closeout readbacks match all inserted paragraphs and preserve every earlier paragraph; transition tab unchanged."
       ],
       "implementation_files": [
         "src/lib/bna/interest-owner-alert.js",
@@ -1997,16 +2006,19 @@
       "implementation_commit": "6c1e4261c78896e0273a4c553880343d9ecd6f25",
       "pushed_commit": "6c1e4261c78896e0273a4c553880343d9ecd6f25",
       "pull_request": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/196",
-      "deployment_id": "",
-      "deployed_commit": "",
-      "live_smoke": "",
-      "blocker": "DEC-20261108-003: exact new owner draft/test, recipient binding and new source pin require final review. Earlier public805 approval is already consumed.",
+      "deployment_id": "b28f5f0c-d94b-4edd-9af2-8aca98469517",
+      "deployed_commit": "6c1e4261c78896e0273a4c553880343d9ecd6f25",
+      "live_smoke": "ops/bna-interest-launch/2026-11-08/OWNER-ALERT-LIVE-VERIFICATION.json",
+      "blocker": "",
       "superseded_by": "",
-      "updated_at": "2026-11-08T14:08:42.677Z",
+      "updated_at": "2026-11-08T16:00:20.997Z",
       "lane": "backend",
       "scope_contract": "BNA-PUBLIC-INQUIRY-SCOPE-20261108-01",
-      "blocker_owner": "operator",
-      "blocker_next_action": "Review the saved owner alert/test and prepared exact BNA release; one combined approval covers deploy, one owner-only test and new-inquiry activation if recipient readback passes."
+      "deployment_evidence": [
+        "Railway deployment b28f5f0c-d94b-4edd-9af2-8aca98469517 SUCCESS at 6c1e4261c78896e0273a4c553880343d9ecd6f25",
+        "Live smoke passed: matching serving identity, owner Inbox recipient proof, active owner release and unchanged active parent templates.",
+        "ops/bna-interest-launch/2026-11-08/OWNER-ALERT-LIVE-VERIFICATION.json"
+      ]
     },
     {
       "id": "REQ-20261108-026",
@@ -2026,9 +2038,9 @@
       "batch_id": "PUBLIC-INQUIRY-MINIMUM",
       "depends_on": [],
       "status": "done",
-      "implementation_status": "Native backend checkpoint deleted; native database readback contains only the existing ACTIVE frontend checkpoint with narrowed public inquiry prompt. Original fullstack012–024 Archived/deferred, not implemented. Source guarded readback preserves all prior paragraphs and unchanged transition tab.",
+      "implementation_status": "Backend native checkpoint deleted by operator. Frontend900-second registration was retained for the narrowed public work and is now PAUSED under its verified-completion guard. Native database readback confirms backend absent, frontend retained/PAUSED. Original fullstack012–024 remains deferred, not implemented.",
       "can_continue_without_operator": false,
-      "next_action": "Keep frontend checkpoint for current public inquiry scope; never recreate the backend timer or resume deferred backend without new instruction.",
+      "next_action": "Retain paused frontend registration and deleted backend timer; no further automatic work. Future scope requires explicit operator instruction.",
       "acceptance_criteria": [
         "Backend15-minute checkpoint deleted; full backend/CRM/offer/billing/parent work deferred with original IDs preserved. Existing frontend15-minute checkpoint retained and bound to current public/form/receipt/owner-alert scope only. No new worker or other-program effect."
       ],
@@ -2053,7 +2065,7 @@
       "live_smoke": "",
       "blocker": "",
       "superseded_by": "",
-      "updated_at": "2026-11-08T13:44:26.157Z",
+      "updated_at": "2026-11-08T16:01:50.977Z",
       "lane": "backend",
       "scope_contract": "BNA-PUBLIC-INQUIRY-SCOPE-20261108-01"
     }

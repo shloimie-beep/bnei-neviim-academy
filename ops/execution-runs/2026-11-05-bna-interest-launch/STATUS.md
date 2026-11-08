@@ -1,9 +1,7 @@
-# Current BNA public inquiry scope
+# Current public inquiry scope — verified
 
-RAW-20261108-004 / BNA-PUBLIC-INQUIRY-SCOPE-20261108-01 narrows work to the public webpage/form, stored inquiries, existing approved parent confirmation and minimal owner Gmail alert. Full backend/private CRM/offer/billing/parent scope is Archived/deferred, not implemented. Backend checkpoint deleted; existing frontend checkpoint retained and PAUSED under the unchanged-blocker guard while final approval is pending. No completed checkpoint model trigger is claimed.
+RAW-20261108-004 requested only the public webpage/shared form, stored inquiry information, existing parent acknowledgement and minimal owner Gmail alert. That scope is now implemented and live verified at6c1e4261 / Railway SUCCESSb28f5f0c. Parent EN/HE confirmations are active and unchanged; owner alerts are active for newly saved inquiries. Exactly one labeled owner test reached the verified Gmail Inbox; test journal1row/1attempt. No new inquiry, parent test, migration, archive reapply or payment action.
 
-Public application80575900 is LIVE: Railway SUCCESSd4e8810a and serving identity match;28 live Chrome states,60 internal links,47 sitemap destinations and12 original asset hashes passed. November5 durable inquiry, recipient-visible parent receipt, owner readback and fixed reversible archive proof are retained without repeat effects.
+REQ-20261108-025 is Done;26scope/checkpoints is Done. Current register has19Done,2Already satisfied and13Archived/deferred requirements. The13fullstack items are not implemented or claimed complete: full backend/CRM/offers/billing/parent portal remains explicitly deferred. Backend timer deleted; frontend registration retained/PAUSED on current frontend completion. Broader original goal remains deferred.
 
-Only REQ-20261108-025 remains open: minimal owner alert implemented locally,17 focused SQL tests passed, exact saved preview inspected. Owner Gmail profile and production BNA sender verified; parent receipt remains active. Exact new owner draft/test, recipient variable binding and code pin await combined final review DEC-20261108-003. No owner notification/test has been sent or activated.
-
-Goal blocked audit: same approval condition verified across3consecutive goal turns; no independent executable batch. See ops/bna-interest-launch/2026-11-08/OWNER-ALERT-BLOCKED.json. This is not completion.
+Final result and proof limits: ops/bna-interest-launch/2026-11-08/RESULT.md.

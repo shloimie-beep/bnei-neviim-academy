@@ -1,6 +1,6 @@
 {
   "registry_version": "bna-action-registry-v1",
-  "updated_at": "2026-11-08T13:35:04.414Z",
+  "updated_at": "2026-11-08T16:00:20.997Z",
   "policy": {
     "visible_action_rule": "Every visible enabled action must have a working handler, working route, registered helper command, or an explicit disabled/coming-soon reason.",
     "external_write_rule": "External sends, publishes, charges, syncs, DNS writes, uploads, credential copies, and access grants require explicit approval and audit evidence.",
@@ -4135,8 +4135,8 @@
       "selector_hint": "outbox:email:bna_interest_owner_alert",
       "expected_behavior": "After a new BNA inquiry is saved, create one independent owner notification intent; deliver only the approved recipient-bound draft. Mail failure/unknown retains the inquiry; no retry duplicates, historical alerts, marketing or full backend activation.",
       "permission": "BNA system after consented inquiry save; internal owner recipient only",
-      "status": "prepared_inactive",
-      "disabled_reason": "Exact owner draft/test/activation and new source pin await final review; BNA_INTEREST_OWNER_ALERT_TO binding absent in production.",
+      "status": "verified_live",
+      "disabled_reason": "",
       "handler": "src/lib/bna/interest-owner-alert.js; existing interest-store transaction and BNA timer",
       "scope": "bna-school-coop",
       "mobile_expectation": "No form interaction change; existing saved reference and parent receipt state remain truthful in EN/HE.",
@@ -4146,7 +4146,9 @@
       },
       "evidence": [
         "tests/bna-interest-owner-alert.test.js",
-        "ops/bna-interest-launch/2026-11-08/OWNER-ALERT-PREPARED.json"
+        "ops/bna-interest-launch/2026-11-08/OWNER-ALERT-PREPARED.json",
+        "ops/bna-interest-launch/2026-11-08/OWNER-ALERT-LIVE-VERIFICATION.json",
+        "ops/bna-interest-launch/2026-11-08/OWNER-ALERT-RECIPIENT-PROOF.json"
       ],
       "related_requirement_ids": [
         "REQ-20261108-025"

@@ -25,5 +25,13 @@
     "goal_pause_requested": false
   },
   "next_action": "Answer the existing combined approval. Approval permits only the prepared BNA pin/recipient setting, one guarded owner test/readback, then new-inquiry activation. Do not ask a duplicate question or send/deploy before the reply.",
-  "whole_goal_complete": false
+  "whole_goal_complete": false,
+  "resolution": {
+    "at": "2026-11-08T16:00:20.997Z",
+    "approval_source": "RAW-20261108-005",
+    "current_blocker": false,
+    "current_public_scope_verified": true,
+    "evidence": "ops/bna-interest-launch/2026-11-08/OWNER-ALERT-LIVE-VERIFICATION.json",
+    "full_backend": "still deferred; not complete"
+  }
 }

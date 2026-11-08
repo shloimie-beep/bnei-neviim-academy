@@ -10,7 +10,7 @@
   "preview_sha256": "7db34954027570f2a0231f30a4d3fdde9c0628d106460045232e81bcd46b5c27",
   "preview_local_path": "D:\\bna-gateway-leads-20261028\\.runtime\\bna-school-fullstack-20261108\\owner-alert-draft-preview.html",
   "parent_receipts": "unchanged and previously approved",
-  "external_effects": "none; owner alert not activated or sent",
+  "external_effects": "Exact6c1e4261 deployed; one approved labeled owner test delivered to Inbox; new-inquiry owner release active. No new inquiry, parent test, migration, archive or payment effect.",
   "local_verification": {
     "command": "node --test tests/bna-interest-owner-alert.test.js tests/bna-interest-store.test.js",
     "passed": 17,
@@ -34,7 +34,8 @@
     "change": "Direction-isolate the exact2027–28 range in checkbox label and native option; no approved word changes.",
     "verification": "9focused public tests and2actual local Hebrew form viewport states pass; screenshots inspected.",
     "evidence": "ops/bna-interest-launch/2026-11-08/FORM-YEAR-VERIFICATION.json",
-    "live": false
+    "live": true,
+    "live_evidence": "ops/bna-interest-launch/2026-11-08/FORM-YEAR-LIVE-VERIFICATION.json"
   },
   "application_commit": "6c1e4261c78896e0273a4c553880343d9ecd6f25",
   "pushed": true,
@@ -59,5 +60,8 @@
     "real_emails_sent": 0,
     "new_inquiries": 0,
     "application_code_changed": false
-  }
+  },
+  "current_status": "deployed_active_recipient_verified",
+  "initial_preview_effects": "none; owner alert not activated or sent",
+  "live_verification": "ops/bna-interest-launch/2026-11-08/OWNER-ALERT-LIVE-VERIFICATION.json"
 }

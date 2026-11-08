@@ -1,0 +1,62 @@
+{
+  "checked_at": "2026-11-08 15:54:02 UTC",
+  "scope": "BNA public inquiry flow and owner alert closeout; full backend deferred",
+  "approval_source": "RAW-20261108-005",
+  "deployed_commit": "6c1e4261c78896e0273a4c553880343d9ecd6f25",
+  "guard": "requiredRevisionId, BNA prefix insertion only, exact inserted nonempty paragraphs and all prior paragraph text preserved",
+  "checks": [
+    {
+      "key": "continuation",
+      "document_id": "1q-GDEaL9JmmVfy1meQrGvu3V4H2XNJ4jp2b17ZrP6bE",
+      "tab_id": "t.5ucllbuab4bn",
+      "before_revision": "AHj4eMR08YcJEcSlPQu2Df1n9HMTfZqYLC0UUBd70eWqgtB60CSmQyOuT9jdZeF3SIewl_trHBDH6-KayRcoBMlCywIjpox94niMJdp-uyY",
+      "readback_revision": "AHj4eMQCQFpEl_r6CbPejOXZSrjhee3v2PYnNDAtBDVIuZEI2HRivuKzpy7fQAEwlyG88sy80_tHP4UZLbt4LM2wGtmw2HTcZwB6wZuH3Ns",
+      "inserted_paragraphs_exact": true,
+      "all_prior_paragraphs_preserved": true,
+      "before_count": 1352,
+      "after_count": 1358
+    },
+    {
+      "key": "delivery",
+      "document_id": "19Bm3Fw9toL1yaoATi3XtbITGK8GhxS6e64h6twEtEi4",
+      "tab_id": "t.0",
+      "before_revision": "AHj4eMRR_qwNEcNa_Y9ZgsbTX_U_jHJz8Pm9aCmfcfyVsg7Yo802q64JIzIldXe-ciyt9-bFIu1oH6nR2aSlZrWsQnnSLNUVJPXPPKN8Tbo",
+      "readback_revision": "AHj4eMTavpY9Cmg9g6Sry07PFdH5Z9IFZ-uAhMWzdLJIZF9VGlTwubUh1UFnArdlAskDp630G2EHo261BzG69UML-MglWWCmg8_lsCB9QiU",
+      "inserted_paragraphs_exact": true,
+      "all_prior_paragraphs_preserved": true,
+      "before_count": 2450,
+      "after_count": 2458
+    },
+    {
+      "key": "website",
+      "document_id": "1jw0shI2DSfUH9RpJc2WdeIqXwO1OYOUEiwuv3mdNngU",
+      "tab_id": "t.0",
+      "before_revision": "AHj4eMROoOGDSRUO6zsVMM8xJXEimRly8Avzgv1uTb4TAmg7Ul-aEUF-3EomiSSoxGyOr53iP127fPV1h1IdM4ts1LWyjSyZpPysJieLJVM",
+      "readback_revision": "AHj4eMRL4msRYhB-I9A75T_OzENHOp2ZLajFbF7ULqcp180RwJyV8Dn5XiJ_xqJtv6Ih_wiVNl6X21kH0Di8sHmsf3yh1-Eq8c13yH8xRvk",
+      "inserted_paragraphs_exact": true,
+      "all_prior_paragraphs_preserved": true,
+      "before_count": 1968,
+      "after_count": 1985
+    },
+    {
+      "key": "log",
+      "document_id": "1PExKb2PwAFAHlBtgmQ9RU-JdfTfQ-jTk41SpWetn7w8",
+      "tab_id": "t.t9isykp3kvlt",
+      "before_revision": "AHj4eMQN7p1kwlGaGmCVZW9-5BkwL5l1Q9v0R8YTuueAEC6CMERs9IBBgIyVNw778RUK0liHc70tVQyjF-Vosc4Qt5gmH8aDbtVfvRy2x5I",
+      "readback_revision": "AHj4eMSnbb_rLCA2b8fz9f-xPRaT5bErw9o8-sueCTa-LBcXvDRiGZSnprZqizOFoK9lH1L_pCkim3HQFntKLDL86ouAVWB6G6pyrDxWE38",
+      "inserted_paragraphs_exact": true,
+      "all_prior_paragraphs_preserved": true,
+      "before_count": 408,
+      "after_count": 413
+    }
+  ],
+  "transition": {
+    "unchanged": true,
+    "readback_revision": "AHj4eMSnbb_rLCA2b8fz9f-xPRaT5bErw9o8-sueCTa-LBcXvDRiGZSnprZqizOFoK9lH1L_pCkim3HQFntKLDL86ouAVWB6G6pyrDxWE38"
+  },
+  "ownerAlertActive": true,
+  "parentReceiptsUnchangedAndActive": true,
+  "newVerificationInquiries": 0,
+  "ownerTestEmails": 1,
+  "parentTestEmails": 0
+}
