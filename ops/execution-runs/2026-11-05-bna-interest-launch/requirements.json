@@ -1966,7 +1966,7 @@
       "status": "needs_operator_decision",
       "implementation_status": "Minimal owner alert implemented with existing outbox;17 focused real-SQL tests pass. Exact saved draft and labeled owner test rendered/inspected. Connected owner profile and production BNA sender verified; parent receipt remains active. New alert is not deployed, sent or active.",
       "can_continue_without_operator": false,
-      "next_action": "Commit/push prepared minimal alert, stage exact source/recipient binding and present the concrete final review.",
+      "next_action": "Await the existing combined exact owner-alert draft/test/recipient/pin approval already presented. Do not ask a duplicate approval. After approval deploy only6c1e4261 + the owner recipient variable; one guarded owner-only test/readback, then activation.",
       "acceptance_criteria": [
         "New BNA inquiry persists before email transport; exactly one owner alert to the verified SDRATLER Gmail recipient, separate from existing approved parent receipt. Failure/unknown preserves lead and suppresses duplicate send. Preview exact draft; verify sender/recipient and current activation/release gates; no historical/backfill alerts."
       ],
@@ -1991,15 +1991,15 @@
         "tests/bna-interest-pages.test.js"
       ],
       "deployment_required": true,
-      "implementation_commit": "",
-      "pushed_commit": "",
-      "pull_request": "",
+      "implementation_commit": "6c1e4261c78896e0273a4c553880343d9ecd6f25",
+      "pushed_commit": "6c1e4261c78896e0273a4c553880343d9ecd6f25",
+      "pull_request": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/196",
       "deployment_id": "",
       "deployed_commit": "",
       "live_smoke": "",
       "blocker": "DEC-20261108-003: exact new owner draft/test, recipient binding and new source pin require final review. Earlier public805 approval is already consumed.",
       "superseded_by": "",
-      "updated_at": "2026-11-08T13:44:26.157Z",
+      "updated_at": "2026-11-08T13:58:05.314Z",
       "lane": "backend",
       "scope_contract": "BNA-PUBLIC-INQUIRY-SCOPE-20261108-01",
       "blocker_owner": "operator",

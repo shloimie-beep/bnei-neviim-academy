@@ -35,5 +35,22 @@
     "verification": "9focused public tests and2actual local Hebrew form viewport states pass; screenshots inspected.",
     "evidence": "ops/bna-interest-launch/2026-11-08/FORM-YEAR-VERIFICATION.json",
     "live": false
+  },
+  "application_commit": "6c1e4261c78896e0273a4c553880343d9ecd6f25",
+  "pushed": true,
+  "staged_production": {
+    "from": "80575900cbd0376a1db24a3267ef68be49029f29",
+    "to": "6c1e4261c78896e0273a4c553880343d9ecd6f25",
+    "service": "4079db35-5f4a-44ef-a767-3406c74f6005",
+    "recipient_variable": "BNA_INTEREST_OWNER_ALERT_TO",
+    "other_service_or_database_changes": false,
+    "confirmation": "existing combined question pending"
+  },
+  "production_schema_preflight": {
+    "readOnly": true,
+    "deliveryKeyUnique": true,
+    "requiredExistingTablesPresent": true,
+    "statusValuesCompatible": true,
+    "databaseMutations": 0
   }
 }
