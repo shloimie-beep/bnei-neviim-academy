@@ -34,3 +34,36 @@ Donation checkout follows separately. No historical backfill sends, former-famil
 The initial package crash, successful rollback, two upload timeouts and the approved provider-pin resolution are recorded in RESULT.md as historical attempts. Current production is SUCCESS3854 at7d; there is no pending deployment/email approval and no unfinished launch requirement. PR196 remains open for normal integration review; production is intentionally pinned to the verified application commit. Final documentation closeout does not move that pin. Do not rerun the synthetic save or send.
 
 Owner review can use https://bneineviimacademy.org/ and https://bneineviimacademy.org/operations. Any donation or additional product work needs its own scope.
+
+## School fullstack continuation admitted —8 November2026
+
+RAW-20261108-001; BNA-FULLSTACK-TWO-LANE-20261107-02 extended by BNA-SCHOOL-SCOPE-LOCK-20261107-03. The eight launch requirements above stay completed within their original scope. The broader school request is active and not complete.24 original package IDs and all18 E2E journeys plus boundaryB01–B10 remain mandatory. No reset, re-archive, old-test resend, new business master or global latest-pointer adoption.
+
+| Canonical requirement | Original package requirement | Lane | Status |
+|---|---|---|---|
+| REQ-20261108-001 | BNA-WEB04-REQ-01 — Audit current rendered and repository state | frontend | in_progress |
+| REQ-20261108-002 | BNA-WEB04-REQ-02 — One exact Vision and Mission | frontend | not_started |
+| REQ-20261108-003 | BNA-WEB04-REQ-03 — Homepage hierarchy and image treatment | frontend | not_started |
+| REQ-20261108-004 | BNA-WEB04-REQ-04 — Shared interest save and acknowledgement | backend | not_started |
+| REQ-20261108-005 | BNA-WEB04-REQ-05 — Owner filter and reversible archive | backend | not_started |
+| REQ-20261108-006 | BNA-WEB04-REQ-06 — One philosophy article library | frontend | not_started |
+| REQ-20261108-007 | BNA-WEB04-REQ-07 — Editorial article layout and share-first CTA | frontend | not_started |
+| REQ-20261108-008 | BNA-WEB04-REQ-08 — Canonical FAQ consolidation | frontend | not_started |
+| REQ-20261108-009 | BNA-WEB04-REQ-09 — Navigation, redirects and legacy metadata | frontend | not_started |
+| REQ-20261108-010 | BNA-WEB04-REQ-10 — Visual/accessibility/performance acceptance | frontend | not_started |
+| REQ-20261108-011 | BNA-WEB04-REQ-11 — Release and owner handback | frontend | not_started |
+| REQ-20261108-012 | BNA-FS-COORD-01 — Exactly two real contexts, current source acknowledgement and exclusive file claims | frontend | in_progress |
+| REQ-20261108-013 | BNA-FS-COORD-02 — Install and prove per-lane 900-second checkpoint/resume | frontend | in_progress |
+| REQ-20261108-014 | BNA-FS-BE-01 — Current mounted backend and database/provider surface audit | backend | not_started |
+| REQ-20261108-015 | BNA-FS-BE-02 — Durable inquiry, receipt, restart and unknown outcome | backend | not_started |
+| REQ-20261108-016 | BNA-FS-BE-03 — Complete owner CRM and follow-up APIs | backend | not_started |
+| REQ-20261108-017 | BNA-FS-BE-04 — Placement, immutable offers and exact acceptance | backend | not_started |
+| REQ-20261108-018 | BNA-FS-BE-05 — BNA billing core, invoice and ledger | backend | not_started |
+| REQ-20261108-019 | BNA-FS-BE-06 — Authenticated provider webhooks and reconciliation | backend | not_started |
+| REQ-20261108-020 | BNA-FS-BE-07 — Billing lifecycle communications and private status | backend | not_started |
+| REQ-20261108-021 | BNA-FS-FE-01 — Private owner CRM, offer and billing UI | frontend | not_started |
+| REQ-20261108-022 | BNA-FS-FE-02 — Parent offer/payment/receipt UI | frontend | not_started |
+| REQ-20261108-023 | BNA-FS-INT-01 — Combined security/data/provider/visual acceptance | frontend | not_started |
+| REQ-20261108-024 | BNA-FS-INT-02 — Final release and honest remaining activation gates | frontend | not_started |
+
+Current source revisions/surface map, actual host SOURCE_READ, file claims, contract, checkpoint IDs/first triggers and completion evidence are recorded in the same scoped run. Current next IDs: REQ-20261108-001/012/013 (audit and coordination), then frontend002/003/006/007/008/009 while backend014–020 audits/extends its disjoint files. Billing merchant/offer/terms/provider gates block dependent effects only.

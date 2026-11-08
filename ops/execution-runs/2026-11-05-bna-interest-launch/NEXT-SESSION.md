@@ -1,7 +1,5 @@
-# Completed scoped launch
+# School fullstack continuation
 
-Requirements REQ-20261105-001 through REQ-20261105-008 are Done. Final receipt: `ops/bna-interest-launch/2026-11-05/RESULT.md`. Register: `tasks-pending/2026-11-05-bna-interest-launch.md`. Application commit `7d0a02a43cdabc54d20749e1422f197f3e961ab1` is pushed in PR196 and verified in production deployment `3854b4ba-e2dc-4007-8781-6d837f229f82` SUCCESS.
+Current open admission IDs: REQ-20261108-001, REQ-20261108-012 and REQ-20261108-013. Next frontend requirements are REQ-20261108-002/003/006/007/008/009; backend REQ-20261108-014 through REQ-20261108-020.
 
-There is no remaining launch requirement. Do not replay the synthetic inquiry, owner email or archive apply. The synthetic lead is retained as Not now with its test follow-up cleared. Both approved receipt languages are active only for newly saved BNA inquiries.
-
-Read the final receipt and current provider pin before later maintenance. Donation checkout is separate future scope. PR196 remains the implementation review; the unrelated July execution run/latest pointer, Buffer PR195 and Fishing remain with their existing owners.
+Use explicit --run ops/execution-runs/2026-11-05-bna-interest-launch. The8 initial launch requirements are Done;24 school package requirements continue under .03 scope lock. Read FILE-CLAIMS.json, SCHOOL-REQUIREMENT-MAP.json, current source receipts and CONTRACT_BINDINGS.json when established. Preserve branch/current local work and new inquiries; no reset/re-archive/backlog send. Frontend/integrator is01a1aab6-671c-7881-8aa3-f6d77a04af88. Exactly one verified backend peer is required; actual identity/acknowledgement pending. Install real900-second native per-lane checkpoints after host identity admission, observe triggers, dedupe and terminal stop; never infer from local fixtures.
