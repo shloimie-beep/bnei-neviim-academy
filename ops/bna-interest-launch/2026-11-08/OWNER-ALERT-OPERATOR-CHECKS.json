@@ -1,0 +1,23 @@
+{
+  "checked_at": "2026-11-08T14:02:26.493Z",
+  "requirement": "REQ-20261108-025",
+  "scope": "Exact prepared one-off operator script evaluated against disposable PGlite with stub sender/transport and synthetic recipient bindings. No production credentials, network send, live inbox evidence or actual operator approval.",
+  "checks": [
+    "unapproved operation blocked before sender verification/send",
+    "recipient fingerprint mismatch blocks operation",
+    "template fingerprint mismatch blocks operation",
+    "exact labeled test bytes/MIME and provider-accepted replay do not duplicate",
+    "activation requires separate recipient-readback evidence; status is read-only",
+    "unknown outcome parked with no automatic replay",
+    "rejected outcome parked with no automatic replay",
+    "two concurrent exact-test invocations acquire one durable claim"
+  ],
+  "checks_passed": 8,
+  "simulated_transport_calls": 4,
+  "real_emails_sent": 0,
+  "new_inquiries": 0,
+  "existing_parent_release_preserved": true,
+  "script_sha256": "070cefa183e29000cbda69160d69ee215aebe6ed1f032f7ab36f1342e53370cd",
+  "application_commit": "6c1e4261c78896e0273a4c553880343d9ecd6f25",
+  "application_code_changed": false
+}

@@ -1974,13 +1974,15 @@
         "raw-input/RAW-20261108-004-narrow-frontend-flow.md",
         "ops/bna-interest-launch/2026-11-08/OWNER-ALERT-PREPARED.json",
         "ops/bna-interest-launch/2026-11-08/NARROW-SCOPE-SOURCE-READBACK.json",
-        "ops/bna-interest-launch/2026-11-08/FORM-YEAR-VERIFICATION.json"
+        "ops/bna-interest-launch/2026-11-08/FORM-YEAR-VERIFICATION.json",
+        "ops/bna-interest-launch/2026-11-08/OWNER-ALERT-OPERATOR-CHECKS.json"
       ],
       "verification": [
         "node --test tests/bna-interest-owner-alert.test.js tests/bna-interest-store.test.js:17PASS",
         "BNA sender verifySender + read-only active parent release preflight:PASS",
         "Connected Gmail profile matches requested owner account; saved draft rendered and inspected.",
-        "9focused public tests and2actual local Hebrew form states pass after a presentation-only year-direction correction."
+        "9focused public tests and2actual local Hebrew form states pass after a presentation-only year-direction correction.",
+        "Exact prepared operator script:8disposable-DB/VM checks PASS; recipient/template/approval/readback gates, concurrent claim, success/unknown/rejected replay;0real emails and0new inquiries."
       ],
       "implementation_files": [
         "src/lib/bna/interest-owner-alert.js",
@@ -1999,7 +2001,7 @@
       "live_smoke": "",
       "blocker": "DEC-20261108-003: exact new owner draft/test, recipient binding and new source pin require final review. Earlier public805 approval is already consumed.",
       "superseded_by": "",
-      "updated_at": "2026-11-08T13:58:05.314Z",
+      "updated_at": "2026-11-08T14:03:37.441Z",
       "lane": "backend",
       "scope_contract": "BNA-PUBLIC-INQUIRY-SCOPE-20261108-01",
       "blocker_owner": "operator",

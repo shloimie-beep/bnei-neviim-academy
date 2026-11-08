@@ -52,5 +52,12 @@
     "requiredExistingTablesPresent": true,
     "statusValuesCompatible": true,
     "databaseMutations": 0
+  },
+  "operator_script_verification": {
+    "evidence": "ops/bna-interest-launch/2026-11-08/OWNER-ALERT-OPERATOR-CHECKS.json",
+    "checks_passed": 8,
+    "real_emails_sent": 0,
+    "new_inquiries": 0,
+    "application_code_changed": false
   }
 }
