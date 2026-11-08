@@ -3458,7 +3458,7 @@
       "selector_hint": "header a, footer a, .article-page a, .text-link",
       "expected_behavior": "Open the selected current bilingual BNA route or approved external source.",
       "permission": "anonymous public visitor",
-      "status": "live_verified",
+      "status": "verified_local_current_delta_pending_release",
       "handler": "SSR href routes",
       "mobile_expectation": "Keyboard and touch usable at 390px; no overflow; actual Chrome inspection required.",
       "test": {
@@ -3467,7 +3467,8 @@
       },
       "evidence": [
         "tests/bna-coop-form.test.js; tests/bna-interest-owner.test.js; tests/bna-interest-store.test.js; tasks-pending/2026-11-05-bna-interest-launch.md",
-        "ops/bna-interest-launch/2026-11-05/RESULT.md"
+        "ops/bna-interest-launch/2026-11-05/RESULT.md",
+        "ops/bna-interest-launch/2026-11-08/PUBLIC-VERIFICATION.md"
       ],
       "related_requirement_ids": [
         "REQ-20261105-007"
@@ -3481,7 +3482,7 @@
       "selector_hint": ".mobile-menu summary",
       "expected_behavior": "Expand and collapse current BNA links using native details keyboard/touch behavior.",
       "permission": "anonymous public visitor",
-      "status": "live_verified",
+      "status": "verified_local_current_delta_pending_release",
       "handler": "HTML details",
       "mobile_expectation": "Keyboard and touch usable at 390px; no overflow; actual Chrome inspection required.",
       "test": {
@@ -3490,7 +3491,8 @@
       },
       "evidence": [
         "tests/bna-coop-form.test.js; tests/bna-interest-owner.test.js; tests/bna-interest-store.test.js; tasks-pending/2026-11-05-bna-interest-launch.md",
-        "ops/bna-interest-launch/2026-11-05/RESULT.md"
+        "ops/bna-interest-launch/2026-11-05/RESULT.md",
+        "ops/bna-interest-launch/2026-11-08/PUBLIC-VERIFICATION.md"
       ],
       "related_requirement_ids": [
         "REQ-20261105-007"
@@ -3504,7 +3506,7 @@
       "selector_hint": ".faq-item summary",
       "expected_behavior": "Expand and collapse the exact approved answer with logistics omissions.",
       "permission": "anonymous public visitor",
-      "status": "live_verified",
+      "status": "verified_local_current_delta_pending_release",
       "handler": "HTML details",
       "mobile_expectation": "Keyboard and touch usable at 390px; no overflow; actual Chrome inspection required.",
       "test": {
@@ -3513,7 +3515,8 @@
       },
       "evidence": [
         "tests/bna-coop-form.test.js; tests/bna-interest-owner.test.js; tests/bna-interest-store.test.js; tasks-pending/2026-11-05-bna-interest-launch.md",
-        "ops/bna-interest-launch/2026-11-05/RESULT.md"
+        "ops/bna-interest-launch/2026-11-05/RESULT.md",
+        "ops/bna-interest-launch/2026-11-08/PUBLIC-VERIFICATION.md"
       ],
       "related_requirement_ids": [
         "REQ-20261105-007"
@@ -3527,7 +3530,7 @@
       "selector_hint": "a[href$=\"/join?interest=pod\"]",
       "expected_behavior": "Open the shared interest form with changeable pod selection.",
       "permission": "anonymous public visitor",
-      "status": "live_verified",
+      "status": "verified_local_current_delta_pending_release",
       "handler": "GET /join?interest=pod",
       "mobile_expectation": "Keyboard and touch usable at 390px; no overflow; actual Chrome inspection required.",
       "test": {
@@ -3536,7 +3539,8 @@
       },
       "evidence": [
         "tests/bna-coop-form.test.js; tests/bna-interest-owner.test.js; tests/bna-interest-store.test.js; tasks-pending/2026-11-05-bna-interest-launch.md",
-        "ops/bna-interest-launch/2026-11-05/RESULT.md"
+        "ops/bna-interest-launch/2026-11-05/RESULT.md",
+        "ops/bna-interest-launch/2026-11-08/PUBLIC-VERIFICATION.md"
       ],
       "related_requirement_ids": [
         "REQ-20261105-007"
@@ -3550,7 +3554,7 @@
       "selector_hint": "a[href$=\"/join?interest=academy\"]",
       "expected_behavior": "Open the same shared interest form with changeable Academy selection.",
       "permission": "anonymous public visitor",
-      "status": "live_verified",
+      "status": "verified_local_current_delta_pending_release",
       "handler": "GET /join?interest=academy",
       "mobile_expectation": "Keyboard and touch usable at 390px; no overflow; actual Chrome inspection required.",
       "test": {
@@ -3559,7 +3563,8 @@
       },
       "evidence": [
         "tests/bna-coop-form.test.js; tests/bna-interest-owner.test.js; tests/bna-interest-store.test.js; tasks-pending/2026-11-05-bna-interest-launch.md",
-        "ops/bna-interest-launch/2026-11-05/RESULT.md"
+        "ops/bna-interest-launch/2026-11-05/RESULT.md",
+        "ops/bna-interest-launch/2026-11-08/PUBLIC-VERIFICATION.md"
       ],
       "related_requirement_ids": [
         "REQ-20261105-007"
@@ -3573,7 +3578,7 @@
       "selector_hint": "[data-language-link], [name=language]",
       "expected_behavior": "Open the actual language route or select receipt language; preserve non-PII attribution and program query.",
       "permission": "anonymous public visitor",
-      "status": "live_verified",
+      "status": "verified_local_current_delta_pending_release",
       "handler": "SSR alternate route and field",
       "mobile_expectation": "Keyboard and touch usable at 390px; no overflow; actual Chrome inspection required.",
       "test": {
@@ -3582,7 +3587,8 @@
       },
       "evidence": [
         "tests/bna-coop-form.test.js; tests/bna-interest-owner.test.js; tests/bna-interest-store.test.js; tasks-pending/2026-11-05-bna-interest-launch.md",
-        "ops/bna-interest-launch/2026-11-05/RESULT.md"
+        "ops/bna-interest-launch/2026-11-05/RESULT.md",
+        "ops/bna-interest-launch/2026-11-08/PUBLIC-VERIFICATION.md"
       ],
       "related_requirement_ids": [
         "REQ-20261105-007"
@@ -3840,6 +3846,276 @@
         "REQ-20261105-007"
       ],
       "verification_scope": "Actual local Operations API503 error and Retry recovery to200 with explicit synthetic auth/read fixtures; no production outage induced."
+    },
+    {
+      "action_id": "ACTION-BNA-SCHOOL-SEARCH",
+      "label": "Search articles",
+      "surface": "bna_school_public",
+      "route": "/blog, /he/blog",
+      "selector_hint": "[data-library-filters]",
+      "expected_behavior": "Submit or type a title/excerpt query; filter genuine locale articles, persist URL/back/forward and show accurate count/empty state.",
+      "permission": "anonymous public visitor",
+      "status": "verified_local_pending_release",
+      "handler": "public/js/bna-articles.js + src/lib/bna/school-pages.js; server.js current public mount",
+      "scope": "bna-school-coop",
+      "mobile_expectation": "320/390 CSS px, keyboard/RTL,48px controls, no overflow; actual inspected Chrome proof.",
+      "test": {
+        "type": "source fidelity + actual mounted local Chrome",
+        "expected_result": "Submit or type a title/excerpt query; filter genuine locale articles, persist URL/back/forward and show accurate count/empty state."
+      },
+      "evidence": [
+        "ops/bna-interest-launch/2026-11-08/PUBLIC-VERIFICATION.md",
+        "tests/bna-school-pages.test.js"
+      ],
+      "related_requirement_ids": [
+        "REQ-20261108-006",
+        "REQ-20261108-007",
+        "REQ-20261108-008",
+        "REQ-20261108-010"
+      ]
+    },
+    {
+      "action_id": "ACTION-BNA-SCHOOL-TOPIC",
+      "label": "Topic",
+      "surface": "bna_school_public",
+      "route": "/blog, /he/blog",
+      "selector_hint": "[name=topic]",
+      "expected_behavior": "Choose a source topic without reordering or dropping source bodies; combine with search and preserve URL state.",
+      "permission": "anonymous public visitor",
+      "status": "verified_local_pending_release",
+      "handler": "public/js/bna-articles.js + src/lib/bna/school-pages.js; server.js current public mount",
+      "scope": "bna-school-coop",
+      "mobile_expectation": "320/390 CSS px, keyboard/RTL,48px controls, no overflow; actual inspected Chrome proof.",
+      "test": {
+        "type": "source fidelity + actual mounted local Chrome",
+        "expected_result": "Choose a source topic without reordering or dropping source bodies; combine with search and preserve URL state."
+      },
+      "evidence": [
+        "ops/bna-interest-launch/2026-11-08/PUBLIC-VERIFICATION.md",
+        "tests/bna-school-pages.test.js"
+      ],
+      "related_requirement_ids": [
+        "REQ-20261108-006",
+        "REQ-20261108-007",
+        "REQ-20261108-008",
+        "REQ-20261108-010"
+      ]
+    },
+    {
+      "action_id": "ACTION-BNA-SCHOOL-RESET",
+      "label": "Clear filters",
+      "surface": "bna_school_public",
+      "route": "/blog, /he/blog",
+      "selector_hint": "[data-clear-filters]",
+      "expected_behavior": "Clear query/topic, restore all locale articles and focus search; browser Back restores prior state.",
+      "permission": "anonymous public visitor",
+      "status": "verified_local_pending_release",
+      "handler": "public/js/bna-articles.js + src/lib/bna/school-pages.js; server.js current public mount",
+      "scope": "bna-school-coop",
+      "mobile_expectation": "320/390 CSS px, keyboard/RTL,48px controls, no overflow; actual inspected Chrome proof.",
+      "test": {
+        "type": "source fidelity + actual mounted local Chrome",
+        "expected_result": "Clear query/topic, restore all locale articles and focus search; browser Back restores prior state."
+      },
+      "evidence": [
+        "ops/bna-interest-launch/2026-11-08/PUBLIC-VERIFICATION.md",
+        "tests/bna-school-pages.test.js"
+      ],
+      "related_requirement_ids": [
+        "REQ-20261108-006",
+        "REQ-20261108-007",
+        "REQ-20261108-008",
+        "REQ-20261108-010"
+      ]
+    },
+    {
+      "action_id": "ACTION-BNA-SCHOOL-READ",
+      "label": "Read article",
+      "surface": "bna_school_public",
+      "route": "/blog, /he/blog and homepage",
+      "selector_hint": "[data-article-card] a",
+      "expected_behavior": "Open the actual selected original-language canonical full article.",
+      "permission": "anonymous public visitor",
+      "status": "verified_local_pending_release",
+      "handler": "public/js/bna-articles.js + src/lib/bna/school-pages.js; server.js current public mount",
+      "scope": "bna-school-coop",
+      "mobile_expectation": "320/390 CSS px, keyboard/RTL,48px controls, no overflow; actual inspected Chrome proof.",
+      "test": {
+        "type": "source fidelity + actual mounted local Chrome",
+        "expected_result": "Open the actual selected original-language canonical full article."
+      },
+      "evidence": [
+        "ops/bna-interest-launch/2026-11-08/PUBLIC-VERIFICATION.md",
+        "tests/bna-school-pages.test.js"
+      ],
+      "related_requirement_ids": [
+        "REQ-20261108-006",
+        "REQ-20261108-007",
+        "REQ-20261108-008",
+        "REQ-20261108-010"
+      ]
+    },
+    {
+      "action_id": "ACTION-BNA-SCHOOL-WHATSAPP",
+      "label": "Share on WhatsApp",
+      "surface": "bna_school_public",
+      "route": "/blog/:slug, /he/blog/:slug",
+      "selector_hint": "[data-article-share] a[href^=\"https://wa.me/\"]",
+      "expected_behavior": "Open user-initiated composer URL containing only exact article title and canonical public URL; never auto-send.",
+      "permission": "anonymous public visitor",
+      "status": "verified_local_pending_release",
+      "handler": "public/js/bna-articles.js + src/lib/bna/school-pages.js; server.js current public mount",
+      "scope": "bna-school-coop",
+      "mobile_expectation": "320/390 CSS px, keyboard/RTL,48px controls, no overflow; actual inspected Chrome proof.",
+      "test": {
+        "type": "source fidelity + actual mounted local Chrome",
+        "expected_result": "Open user-initiated composer URL containing only exact article title and canonical public URL; never auto-send."
+      },
+      "evidence": [
+        "ops/bna-interest-launch/2026-11-08/PUBLIC-VERIFICATION.md",
+        "tests/bna-school-pages.test.js"
+      ],
+      "related_requirement_ids": [
+        "REQ-20261108-006",
+        "REQ-20261108-007",
+        "REQ-20261108-008",
+        "REQ-20261108-010"
+      ]
+    },
+    {
+      "action_id": "ACTION-BNA-SCHOOL-SHARE",
+      "label": "Share",
+      "surface": "bna_school_public",
+      "route": "/blog/:slug, /he/blog/:slug",
+      "selector_hint": "[data-native-share]",
+      "expected_behavior": "On user gesture invoke native share when available; cancellation is normal, unsupported/failure uses copy fallback.",
+      "permission": "anonymous public visitor",
+      "status": "verified_local_pending_release",
+      "handler": "public/js/bna-articles.js + src/lib/bna/school-pages.js; server.js current public mount",
+      "scope": "bna-school-coop",
+      "mobile_expectation": "320/390 CSS px, keyboard/RTL,48px controls, no overflow; actual inspected Chrome proof.",
+      "test": {
+        "type": "source fidelity + actual mounted local Chrome",
+        "expected_result": "On user gesture invoke native share when available; cancellation is normal, unsupported/failure uses copy fallback."
+      },
+      "evidence": [
+        "ops/bna-interest-launch/2026-11-08/PUBLIC-VERIFICATION.md",
+        "tests/bna-school-pages.test.js"
+      ],
+      "related_requirement_ids": [
+        "REQ-20261108-006",
+        "REQ-20261108-007",
+        "REQ-20261108-008",
+        "REQ-20261108-010"
+      ]
+    },
+    {
+      "action_id": "ACTION-BNA-SCHOOL-COPY",
+      "label": "Copy link",
+      "surface": "bna_school_public",
+      "route": "/blog/:slug, /he/blog/:slug",
+      "selector_hint": "[data-copy-link]",
+      "expected_behavior": "Report copied only after clipboard promise resolves; denial/unavailable exposes selectable canonical URL.",
+      "permission": "anonymous public visitor",
+      "status": "verified_local_pending_release",
+      "handler": "public/js/bna-articles.js + src/lib/bna/school-pages.js; server.js current public mount",
+      "scope": "bna-school-coop",
+      "mobile_expectation": "320/390 CSS px, keyboard/RTL,48px controls, no overflow; actual inspected Chrome proof.",
+      "test": {
+        "type": "source fidelity + actual mounted local Chrome",
+        "expected_result": "Report copied only after clipboard promise resolves; denial/unavailable exposes selectable canonical URL."
+      },
+      "evidence": [
+        "ops/bna-interest-launch/2026-11-08/PUBLIC-VERIFICATION.md",
+        "tests/bna-school-pages.test.js"
+      ],
+      "related_requirement_ids": [
+        "REQ-20261108-006",
+        "REQ-20261108-007",
+        "REQ-20261108-008",
+        "REQ-20261108-010"
+      ]
+    },
+    {
+      "action_id": "ACTION-BNA-SCHOOL-COPY-FALLBACK",
+      "label": "Article link",
+      "surface": "bna_school_public",
+      "route": "/blog/:slug, /he/blog/:slug",
+      "selector_hint": ".copy-fallback input",
+      "expected_behavior": "Read/select own canonical public URL when clipboard is unavailable, with no visitor input/private token.",
+      "permission": "anonymous public visitor",
+      "status": "verified_local_pending_release",
+      "handler": "public/js/bna-articles.js + src/lib/bna/school-pages.js; server.js current public mount",
+      "scope": "bna-school-coop",
+      "mobile_expectation": "320/390 CSS px, keyboard/RTL,48px controls, no overflow; actual inspected Chrome proof.",
+      "test": {
+        "type": "source fidelity + actual mounted local Chrome",
+        "expected_result": "Read/select own canonical public URL when clipboard is unavailable, with no visitor input/private token."
+      },
+      "evidence": [
+        "ops/bna-interest-launch/2026-11-08/PUBLIC-VERIFICATION.md",
+        "tests/bna-school-pages.test.js"
+      ],
+      "related_requirement_ids": [
+        "REQ-20261108-006",
+        "REQ-20261108-007",
+        "REQ-20261108-008",
+        "REQ-20261108-010"
+      ]
+    },
+    {
+      "action_id": "ACTION-BNA-SCHOOL-FAQ-CATEGORY",
+      "label": "FAQ categories",
+      "surface": "bna_school_public",
+      "route": "/faq, /he/faq",
+      "selector_hint": ".faq-categories a",
+      "expected_behavior": "Navigate to the source category anchor; private-directory conditional entries remain withheld.",
+      "permission": "anonymous public visitor",
+      "status": "verified_local_pending_release",
+      "handler": "public/js/bna-articles.js + src/lib/bna/school-pages.js; server.js current public mount",
+      "scope": "bna-school-coop",
+      "mobile_expectation": "320/390 CSS px, keyboard/RTL,48px controls, no overflow; actual inspected Chrome proof.",
+      "test": {
+        "type": "source fidelity + actual mounted local Chrome",
+        "expected_result": "Navigate to the source category anchor; private-directory conditional entries remain withheld."
+      },
+      "evidence": [
+        "ops/bna-interest-launch/2026-11-08/PUBLIC-VERIFICATION.md",
+        "tests/bna-school-pages.test.js"
+      ],
+      "related_requirement_ids": [
+        "REQ-20261108-006",
+        "REQ-20261108-007",
+        "REQ-20261108-008",
+        "REQ-20261108-010"
+      ]
+    },
+    {
+      "action_id": "ACTION-BNA-SCHOOL-FAQ-QUESTION",
+      "label": "FAQ question",
+      "surface": "bna_school_public",
+      "route": "/faq, /he/faq",
+      "selector_hint": ".faq-item summary",
+      "expected_behavior": "Native keyboard/touch disclosure; deep-linked stable question opens and scrolls into view; multiple may stay open.",
+      "permission": "anonymous public visitor",
+      "status": "verified_local_pending_release",
+      "handler": "public/js/bna-articles.js + src/lib/bna/school-pages.js; server.js current public mount",
+      "scope": "bna-school-coop",
+      "mobile_expectation": "320/390 CSS px, keyboard/RTL,48px controls, no overflow; actual inspected Chrome proof.",
+      "test": {
+        "type": "source fidelity + actual mounted local Chrome",
+        "expected_result": "Native keyboard/touch disclosure; deep-linked stable question opens and scrolls into view; multiple may stay open."
+      },
+      "evidence": [
+        "ops/bna-interest-launch/2026-11-08/PUBLIC-VERIFICATION.md",
+        "tests/bna-school-pages.test.js"
+      ],
+      "related_requirement_ids": [
+        "REQ-20261108-006",
+        "REQ-20261108-007",
+        "REQ-20261108-008",
+        "REQ-20261108-010"
+      ]
     }
   ]
 }

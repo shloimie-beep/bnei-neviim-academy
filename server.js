@@ -11436,15 +11436,24 @@ app.get('/he', (req, res) => {
   return res.type('html').send(require('./src/lib/bna/interest-pages').renderInterestHome('he'));
 });
 
-const bnaLaunchInfoRoutes = { '/learning-pods': 'P02', '/academy-2027-28': 'P03', '/philosophy': 'P04', '/vision': 'P11', '/faq': 'P16' };
+app.get('/sitemap.xml',(req,res,next)=>{if(isOneTimeSingleTenantRuntime())return next();res.type('application/xml').sendFile(path.join(__dirname,'public','bna-school-sitemap.xml'));});
+const bnaLaunchInfoRoutes = { '/learning-pods': 'P02', '/academy-2027-28': 'P03', '/faq': 'P16', '/parents/guide': 'P17' };
+for (const alias of ['/vision','/he/vision','/philosophy','/he/philosophy','/teaching-philosophy','/he/teaching-philosophy']) {
+  app.get(alias,(req,res,next)=>{ if(isOneTimeSingleTenantRuntime()) return next(); const pre=req.path.startsWith('/he/')?'/he':''; return res.redirect(301,alias.endsWith('/vision')?(pre||'/')+'#vision':pre+'/blog#foundations'); });
+}
 app.get(['/blog', '/he/blog'], (req, res, next) => {
   if (isOneTimeSingleTenantRuntime()) return next();
   res.set('Cache-Control', 'no-store');
-  res.type('html').send(require('./src/lib/bna/interest-pages').renderArticleLibrary(req.path.startsWith('/he/') ? 'he' : 'en'));
+  res.type('html').send(require('./src/lib/bna/interest-pages').renderArticleLibrary(req.path.startsWith('/he/') ? 'he' : 'en', req.query));
 });
 app.get(['/blog/:slug', '/he/blog/:slug'], (req, res, next) => {
   if (isOneTimeSingleTenantRuntime()) return next();
-  const html = require('./src/lib/bna/interest-pages').renderArticle(req.params.slug, req.path.startsWith('/he/') ? 'he' : 'en');
+  const articlePages = require('./src/lib/bna/interest-pages');
+  const legacyArticleAliases = {'alternative-school-beit-shemesh':'alternative-torah-learning-south-florida','adhd-friendly-school-beit-shemesh':'torah-learning-attention-challenges-south-florida','homeschool-support-beit-shemesh':'homeschool-support-south-florida'};
+  const canonicalSlug=legacyArticleAliases[req.params.slug]||req.params.slug;
+  const article = articlePages.resolveArticle(canonicalSlug,req.path.startsWith('/he/')?'he':'en');
+  if (article && req.path !== article.route) return res.redirect(301,article.route);
+  const html = articlePages.renderArticle(req.params.slug,req.path.startsWith('/he/')?'he':'en');
   if (!html) return res.status(404).end();
   res.set('Cache-Control', 'no-store'); res.type('html').send(html);
 });

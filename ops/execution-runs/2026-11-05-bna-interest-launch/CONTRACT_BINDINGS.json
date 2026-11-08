@@ -1,0 +1,317 @@
+{
+  "acceptedAt": "2026-11-08T12:27:20.810Z",
+  "status": "integrator_accepted_producer_ack_pending_operator_paused",
+  "proposalSHA256": "eac01a6e1e879aef217be19f7570d7a16b7e83d27140cf0fda1c0d7eee3c332d",
+  "producerThread": "01a1bb1a-79d2-7c01-ae0c-be2c3b99263e",
+  "consumerIntegratorThread": "01a1aab6-671c-7881-8aa3-f6d77a04af88",
+  "productionMounted": false,
+  "existingInterestRoute": "/api/bna/coop-interest",
+  "existingInterestUnchanged": true,
+  "scopeContract": "BNA-SCHOOL-SCOPE-LOCK-20261107-03",
+  "proposal": {
+    "contractVersion": "bna-school.v1",
+    "status": "proposed_pending_integrator_acceptance",
+    "projectKey": "bna-school-coop",
+    "storageProjectKey": "bna",
+    "programs": [
+      "pod",
+      "academy",
+      "both"
+    ],
+    "publicOrigin": "https://bneineviimacademy.org",
+    "backendThreadId": "01a1bb1a-79d2-7c01-ae0c-be2c3b99263e",
+    "integratorThreadId": "01a1aab6-671c-7881-8aa3-f6d77a04af88",
+    "baseline": {
+      "head": "7eacc29248c2c5afa613c9993f089283788c2bef",
+      "interestRoute": "/api/bna/coop-interest",
+      "interestCompatibility": "Existing GET challenge and POST submit/recover shapes remain supported. Existing saved/reference/email.state response remains unchanged. No new school account, offer, invoice, payment or marketing effect on interest submission.",
+      "archive": "Existing fixed-cutoff archive and restore APIs remain owned by the established policy. No repeat archive."
+    },
+    "composition": {
+      "module": "src/lib/bna/school-http.js",
+      "factory": "createSchoolRouter({store, resolveOwner, resolveParent, provider, enabled, origin})",
+      "storeFactory": "createSchoolStore({pool, now, policy})",
+      "schema": "school-schema.js exports additive SQL only; integrator numbers and mounts migration",
+      "ownerResolver": "Integrator resolves the current existing ordinary-owner session on EVERY request, maps only a verified BNA owner to {role:'owner',actorId,projectKey:'bna-school-coop',sessionValid:true}. A provider, view-as, revoked or other-business identity must not map. Do not trust request body/query/header identity.",
+      "parentResolver": "Default store.authenticateParent(bearerToken) uses hashed expiring/revocable inquiry-specific capability; integrator may adapt existing verified parent session to the same scoped principal. GET/HEAD no mutation. Tokens never in URL/logs.",
+      "providerMount": "Mount /api/bna/school/provider/stripe with original bytes BEFORE global JSON middleware. Production enablement and configuration are integrator gates."
+    },
+    "routes": [
+      {
+        "method": "GET",
+        "path": "/api/bna/school/inquiries",
+        "auth": "owner",
+        "query": [
+          "program=pod|academy|both",
+          "area",
+          "preferredArea",
+          "followUp",
+          "nextAction",
+          "ackAttention=true",
+          "enrollment",
+          "financialAttention=true",
+          "archived=true",
+          "limit=1..50",
+          "offset"
+        ],
+        "response": "{contractVersion,data:{items,total,limit,offset}}; identical authorization/filter predicates for items and total; both included in pod/academy"
+      },
+      {
+        "method": "GET",
+        "path": "/api/bna/school/inquiries/:inquiryId",
+        "auth": "owner",
+        "response": "{contractVersion,data:OwnerCase}"
+      },
+      {
+        "method": "POST",
+        "path": "/api/bna/school/inquiries/:inquiryId/commands",
+        "auth": "owner + same-origin JSON",
+        "request": "CommandEnvelope",
+        "response": "MutationReceipt"
+      },
+      {
+        "method": "GET",
+        "path": "/api/bna/school/inquiries/:inquiryId/operations/:operationId",
+        "auth": "same authorized actor/inquiry",
+        "response": "MutationReceipt or OPERATION_NOT_FOUND"
+      },
+      {
+        "method": "GET",
+        "path": "/api/bna/school/parent/:inquiryId",
+        "auth": "parent capability or verified scoped session",
+        "response": "{contractVersion,data:ParentCase}; no internal notes, contact history or other family"
+      },
+      {
+        "method": "POST",
+        "path": "/api/bna/school/parent/:inquiryId/commands",
+        "auth": "parent + same-origin JSON",
+        "request": "CommandEnvelope, only acceptOffer / prepareCheckout",
+        "response": "MutationReceipt with ParentCase projection"
+      },
+      {
+        "method": "GET",
+        "path": "/api/bna/school/parent/:inquiryId/operations/:operationId",
+        "auth": "same parent scope and actor",
+        "response": "MutationReceipt with ParentCase projection"
+      },
+      {
+        "method": "POST",
+        "path": "/api/bna/school/provider/stripe",
+        "auth": "raw-byte signature + exact admitted account/mode/school binding",
+        "response": "{received:true,eventId,outcome}; durable dedupe and reconciliation, no success-page settlement"
+      }
+    ],
+    "commandEnvelope": {
+      "contractVersion": "bna-school.v1",
+      "operationId": "UUIDv4 stable across uncertain retry",
+      "expectedRevision": "nonnegative integer; initial 0",
+      "type": "named command",
+      "payload": "strict command-specific keys; browser cannot supply authoritative actor/project/merchant/payment truth"
+    },
+    "commands": {
+      "setFollowUp": {
+        "state": "new|contacted|waiting|closed",
+        "assignedTo": "string or null",
+        "nextAction": "string or null",
+        "dueAt": "UTC instant or null"
+      },
+      "addNote": {
+        "text": "bounded internal note"
+      },
+      "recordContact": {
+        "channel": "phone|email|whatsapp|in_person",
+        "outcome": "bounded text; does not send",
+        "occurredAt": "UTC instant",
+        "evidenceRef": "optional bounded reference"
+      },
+      "setChildren": {
+        "children": "[{id:UUID,name?:string,age:integer}]; explicit owner identity mapping; cannot remove children already referenced by offers/ledger"
+      },
+      "proposePlacement": {
+        "childId": "existing case child UUID",
+        "program": "pod|academy",
+        "serviceRef": "explicit versioned school service reference",
+        "details": "bounded private proposal"
+      },
+      "confirmPlacement": {
+        "placementId": "UUID",
+        "authorityRef": "explicit approval evidence; never implies account/payment"
+      },
+      "createOffer": {
+        "offerId": "UUID",
+        "version": "explicit immutable version",
+        "childIds": "existing children",
+        "program": "pod|academy",
+        "serviceRef": "explicit BNA service version",
+        "currency": "ISO uppercase currency",
+        "amountMinor": "positive safe integer",
+        "servicePeriod": "{start,end,timeZone:'America/New_York'}",
+        "termsRef": "explicit versioned terms",
+        "policyRef": "explicit policy",
+        "approvalRef": "owner review evidence",
+        "installments": "[{dueAt:UTC instant,amountMinor:positive integer}], sum equals amountMinor; applicable annual plan carries original twelve dates and late-entry calculation evidence",
+        "expiresAt": "UTC instant",
+        "renewal": "false; recurring collection unsupported without separate approved contract"
+      },
+      "issueOffer": {
+        "offerId": "UUID; mark issued with evidence, no message send",
+        "evidenceRef": "actual review/issue evidence"
+      },
+      "withdrawOffer": {
+        "offerId": "UUID",
+        "reason": "bounded reason"
+      },
+      "acceptOffer": {
+        "offerId": "UUID",
+        "version": "exact immutable version",
+        "termsRef": "exact version",
+        "accepted": true
+      },
+      "issueInvoice": {
+        "invoiceId": "UUID",
+        "offerId": "accepted current offer",
+        "installmentIndex": "index within immutable offer; one obligation per installment"
+      },
+      "prepareCheckout": {
+        "invoiceId": "UUID; exact server-side amount/account/product/mode/config gate; records pending/unknown attempt; no browser return settlement"
+      },
+      "recordManualReceipt": {
+        "invoiceId": "UUID",
+        "receiptId": "UUID",
+        "amountMinor": "positive safe integer <= outstanding",
+        "currency": "exact invoice currency",
+        "method": "policy-approved method",
+        "receivedAt": "UTC instant",
+        "evidenceRef": "required payment evidence"
+      },
+      "reverseManualReceipt": {
+        "receiptId": "original manual receipt UUID",
+        "reversalId": "UUID",
+        "amountMinor": "positive <= unreversed original receipt",
+        "reason": "required",
+        "evidenceRef": "required"
+      },
+      "voidInvoice": {
+        "invoiceId": "UUID with no unreversed settlement",
+        "reason": "required"
+      },
+      "recordReconciliation": {
+        "itemId": "UUID",
+        "resolution": "evidence-only note; never marks paid",
+        "evidenceRef": "required",
+        "note": "required"
+      },
+      "grantParentAccess": {
+        "expiresAt": "explicit UTC future <=30 days",
+        "offerIds": "explicit issued offer UUIDs; hashed capability returned once only, never logged/persisted raw"
+      },
+      "revokeParentAccess": {
+        "grantId": "UUID"
+      }
+    },
+    "caseShape": {
+      "OwnerCase": [
+        "inquiryId",
+        "reference",
+        "revision",
+        "createdAt",
+        "originalInquiry",
+        "acknowledgement",
+        "archived",
+        "children",
+        "followUp",
+        "notes",
+        "contacts",
+        "placements",
+        "offers",
+        "invoices",
+        "attempts",
+        "ledger",
+        "reconciliation",
+        "communications",
+        "balanceByCurrency",
+        "allowedActions",
+        "gates"
+      ],
+      "ParentCase": [
+        "inquiryId",
+        "reference",
+        "revision",
+        "children (only granted offer children)",
+        "offers (only granted issued/accepted)",
+        "invoices (only granted offer invoices)",
+        "attempts (minimal own invoice states)",
+        "receipts (own allocation only)",
+        "balanceByCurrency",
+        "allowedActions",
+        "gates"
+      ],
+      "MutationReceipt": {
+        "contractVersion": "bna-school.v1",
+        "data": {
+          "operationId": "stable UUID",
+          "reference": "inquiry UUID",
+          "revision": "persisted revision",
+          "saveOutcome": "persisted",
+          "notificationOutcome": "not_sent or separately evidenced",
+          "enrollmentOutcome": "not_enrolled or explicit confirmed projection",
+          "paymentOutcome": "not_paid|pending|partial|paid|unknown|review",
+          "replayed": "boolean",
+          "case": "authorized projection",
+          "allowedActions": "authorized commands"
+        }
+      },
+      "error": {
+        "contractVersion": "bna-school.v1",
+        "error": {
+          "code": "stable code",
+          "details": "safe validation field or missing gates only",
+          "operationId": "when validated"
+        }
+      },
+      "errorStatuses": {
+        "400": "invalid/unknown field or state",
+        "401": "unauthenticated/revoked",
+        "403": "wrong scope/origin/role",
+        "404": "not found in authorized scope",
+        "409": "STALE_REVISION / OPERATION_CONFLICT / state conflict",
+        "422": "CONFIGURATION_REQUIRED with exact gates",
+        "503": "STORE_UNAVAILABLE / PROVIDER_OUTCOME_UNKNOWN; retry/recover same operation"
+      }
+    },
+    "effectGates": [
+      "verified school service/database namespace",
+      "explicit provider account + mode + BNA product/immutable price version mapping",
+      "current offer/service/terms approval",
+      "current live collection approval independently of sandbox",
+      "reviewed per-purpose billing message templates, sender, recipient and suppression",
+      "manual-method policy before manual receipts",
+      "no production migration/provider mutation/send/charge/refund/deploy in backend lane"
+    ],
+    "proof": [
+      "actual mounted router through local HTTP and persistent disposable SQL",
+      "process reopen, operation replay/conflict, revision conflict",
+      "two families/two children and foreign program fixture denial",
+      "signed webhook invalid/duplicate/reordered/mismatched scope/amount",
+      "partial manual receipt + additive reversal",
+      "provider mock evidence labeled synthetic; real sandbox remains gated"
+    ],
+    "nextRequirements": [
+      "REQ-20261108-014",
+      "REQ-20261108-015",
+      "REQ-20261108-016",
+      "REQ-20261108-017",
+      "REQ-20261108-018",
+      "REQ-20261108-019",
+      "REQ-20261108-020"
+    ]
+  },
+  "gateNotes": [
+    "No live merchant/offer/terms/manual-method approval inferred. Provider and communication effects stay fail closed.",
+    "Owner identity freshly resolved server-side; grant/capability issued only by explicit owner command, hashed expiring revocable, no URL credential.",
+    "Unknown grant result never causes blind reissue or token exposure; revoke/explicitly issue a distinct operation when necessary.",
+    "Shared server raw-body/auth/migration/dependency composition stays integrator-owned."
+  ],
+  "backendPaused": true,
+  "pausePrecedence": "No backend implementation/resume until explicit human resumption; acceptance is preserved software seam only."
+}

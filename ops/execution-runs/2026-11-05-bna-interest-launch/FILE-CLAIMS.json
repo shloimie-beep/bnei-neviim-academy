@@ -1,6 +1,6 @@
 {
   "scope_contract": "BNA-SCHOOL-SCOPE-LOCK-20261107-03",
-  "updated_at": "2026-11-08T12:19:24.756Z",
+  "updated_at": "2026-11-08T12:26:13.466Z",
   "frontend": {
     "thread_id": "01a1aab6-671c-7881-8aa3-f6d77a04af88",
     "worktree": "D:\\bna-gateway-leads-20261028",
@@ -19,7 +19,8 @@
       "src/lib/bna/school-pages.js",
       "public/operations.html",
       "tests/bna-school-pages.test.js",
-      "tests/bna-school-browser.test.js"
+      "tests/bna-school-browser.test.js",
+      "public/bna-school-sitemap.xml"
     ],
     "shared_integration_files": [
       "server.js",
@@ -35,8 +36,8 @@
     ]
   },
   "backend": {
-    "thread_id": null,
-    "worktree": null,
+    "thread_id": "01a1bb1a-79d2-7c01-ae0c-be2c3b99263e",
+    "worktree": "C:/Users/User/.codex/worktrees/1832/bna-gateway-leads-20261028",
     "role": "one backend peer; admission pending",
     "files": [
       "src/lib/bna/school-contract.js",
@@ -65,7 +66,9 @@
       "tests/bna-interest-archive.test.js",
       "tests/bna-coop-form.test.js",
       "ops/bna-interest-launch/2026-11-08/backend/"
-    ]
+    ],
+    "admission": "Host project/cwd/original task and exact Git origin/push inspected; peer SOURCE_READ received. Initial detached HEAD7eacc292; backend creates its own codex branch.",
+    "status": "operator_paused"
   },
   "rules": [
     "Backend edits only listed exact files or handback folder; missing paths require integrator allocation.",

@@ -79,12 +79,12 @@
       ],
       "canonical_target": "/",
       "security_expectation": "No private records in HTML. Shared form persists required purpose consent and optional marketing separately; no payment or account creation.",
-      "smoke_expectation": "tests/bna-coop-form.test.js; tests/bna-interest-owner.test.js; tests/bna-interest-store.test.js; tasks-pending/2026-11-05-bna-interest-launch.md; ops/bna-interest-launch/2026-11-05/RESULT.md",
+      "smoke_expectation": "tests/bna-coop-form.test.js; tests/bna-interest-owner.test.js; tests/bna-interest-store.test.js; tasks-pending/2026-11-05-bna-interest-launch.md; ops/bna-interest-launch/2026-11-05/RESULT.md; ops/bna-interest-launch/2026-11-08/PUBLIC-VERIFICATION.md",
       "requirement_ids": [
         "REQ-20261105-002",
         "REQ-20261105-003"
       ],
-      "live_status": "live_verified"
+      "live_status": "verified_local_current_delta_pending_release"
     },
     {
       "route": "/life-skills/",
@@ -136,12 +136,12 @@
       ],
       "canonical_target": "/he",
       "security_expectation": "No private records in HTML. Shared form persists required purpose consent and optional marketing separately; no payment or account creation.",
-      "smoke_expectation": "tests/bna-coop-form.test.js; tests/bna-interest-owner.test.js; tests/bna-interest-store.test.js; tasks-pending/2026-11-05-bna-interest-launch.md; ops/bna-interest-launch/2026-11-05/RESULT.md",
+      "smoke_expectation": "tests/bna-coop-form.test.js; tests/bna-interest-owner.test.js; tests/bna-interest-store.test.js; tasks-pending/2026-11-05-bna-interest-launch.md; ops/bna-interest-launch/2026-11-05/RESULT.md; ops/bna-interest-launch/2026-11-08/PUBLIC-VERIFICATION.md",
       "requirement_ids": [
         "REQ-20261105-002",
         "REQ-20261105-003"
       ],
-      "live_status": "live_verified"
+      "live_status": "verified_local_current_delta_pending_release"
     },
     {
       "route": "/school",
@@ -3420,12 +3420,12 @@
       "privacy_risk": "anonymous-safe",
       "canonical_target": "/philosophy",
       "security_expectation": "No private records in HTML. Shared form persists required purpose consent and optional marketing separately; no payment or account creation.",
-      "smoke_expectation": "tests/bna-coop-form.test.js; tests/bna-interest-owner.test.js; tests/bna-interest-store.test.js; tasks-pending/2026-11-05-bna-interest-launch.md; ops/bna-interest-launch/2026-11-05/RESULT.md",
+      "smoke_expectation": "tests/bna-coop-form.test.js; tests/bna-interest-owner.test.js; tests/bna-interest-store.test.js; tasks-pending/2026-11-05-bna-interest-launch.md; ops/bna-interest-launch/2026-11-05/RESULT.md; ops/bna-interest-launch/2026-11-08/PUBLIC-VERIFICATION.md",
       "requirement_ids": [
         "REQ-20261105-002",
         "REQ-20261105-003"
       ],
-      "live_status": "live_verified"
+      "live_status": "verified_local_current_delta_pending_release"
     },
     {
       "route": "/he/philosophy",
@@ -3439,12 +3439,12 @@
       "privacy_risk": "anonymous-safe",
       "canonical_target": "/he/philosophy",
       "security_expectation": "No private records in HTML. Shared form persists required purpose consent and optional marketing separately; no payment or account creation.",
-      "smoke_expectation": "tests/bna-coop-form.test.js; tests/bna-interest-owner.test.js; tests/bna-interest-store.test.js; tasks-pending/2026-11-05-bna-interest-launch.md; ops/bna-interest-launch/2026-11-05/RESULT.md",
+      "smoke_expectation": "tests/bna-coop-form.test.js; tests/bna-interest-owner.test.js; tests/bna-interest-store.test.js; tasks-pending/2026-11-05-bna-interest-launch.md; ops/bna-interest-launch/2026-11-05/RESULT.md; ops/bna-interest-launch/2026-11-08/PUBLIC-VERIFICATION.md",
       "requirement_ids": [
         "REQ-20261105-002",
         "REQ-20261105-003"
       ],
-      "live_status": "live_verified"
+      "live_status": "verified_local_current_delta_pending_release"
     },
     {
       "route": "/vision",
@@ -3458,12 +3458,12 @@
       "privacy_risk": "anonymous-safe",
       "canonical_target": "/vision",
       "security_expectation": "No private records in HTML. Shared form persists required purpose consent and optional marketing separately; no payment or account creation.",
-      "smoke_expectation": "tests/bna-coop-form.test.js; tests/bna-interest-owner.test.js; tests/bna-interest-store.test.js; tasks-pending/2026-11-05-bna-interest-launch.md; ops/bna-interest-launch/2026-11-05/RESULT.md",
+      "smoke_expectation": "tests/bna-coop-form.test.js; tests/bna-interest-owner.test.js; tests/bna-interest-store.test.js; tasks-pending/2026-11-05-bna-interest-launch.md; ops/bna-interest-launch/2026-11-05/RESULT.md; ops/bna-interest-launch/2026-11-08/PUBLIC-VERIFICATION.md",
       "requirement_ids": [
         "REQ-20261105-002",
         "REQ-20261105-003"
       ],
-      "live_status": "live_verified"
+      "live_status": "verified_local_current_delta_pending_release"
     },
     {
       "route": "/he/vision",
@@ -3477,12 +3477,12 @@
       "privacy_risk": "anonymous-safe",
       "canonical_target": "/he/vision",
       "security_expectation": "No private records in HTML. Shared form persists required purpose consent and optional marketing separately; no payment or account creation.",
-      "smoke_expectation": "tests/bna-coop-form.test.js; tests/bna-interest-owner.test.js; tests/bna-interest-store.test.js; tasks-pending/2026-11-05-bna-interest-launch.md; ops/bna-interest-launch/2026-11-05/RESULT.md",
+      "smoke_expectation": "tests/bna-coop-form.test.js; tests/bna-interest-owner.test.js; tests/bna-interest-store.test.js; tasks-pending/2026-11-05-bna-interest-launch.md; ops/bna-interest-launch/2026-11-05/RESULT.md; ops/bna-interest-launch/2026-11-08/PUBLIC-VERIFICATION.md",
       "requirement_ids": [
         "REQ-20261105-002",
         "REQ-20261105-003"
       ],
-      "live_status": "live_verified"
+      "live_status": "verified_local_current_delta_pending_release"
     },
     {
       "route": "/faq",
@@ -3496,12 +3496,12 @@
       "privacy_risk": "anonymous-safe",
       "canonical_target": "/faq",
       "security_expectation": "No private records in HTML. Shared form persists required purpose consent and optional marketing separately; no payment or account creation.",
-      "smoke_expectation": "tests/bna-coop-form.test.js; tests/bna-interest-owner.test.js; tests/bna-interest-store.test.js; tasks-pending/2026-11-05-bna-interest-launch.md; ops/bna-interest-launch/2026-11-05/RESULT.md",
+      "smoke_expectation": "tests/bna-coop-form.test.js; tests/bna-interest-owner.test.js; tests/bna-interest-store.test.js; tasks-pending/2026-11-05-bna-interest-launch.md; ops/bna-interest-launch/2026-11-05/RESULT.md; ops/bna-interest-launch/2026-11-08/PUBLIC-VERIFICATION.md",
       "requirement_ids": [
         "REQ-20261105-002",
         "REQ-20261105-003"
       ],
-      "live_status": "live_verified"
+      "live_status": "verified_local_current_delta_pending_release"
     },
     {
       "route": "/he/faq",
@@ -3515,12 +3515,12 @@
       "privacy_risk": "anonymous-safe",
       "canonical_target": "/he/faq",
       "security_expectation": "No private records in HTML. Shared form persists required purpose consent and optional marketing separately; no payment or account creation.",
-      "smoke_expectation": "tests/bna-coop-form.test.js; tests/bna-interest-owner.test.js; tests/bna-interest-store.test.js; tasks-pending/2026-11-05-bna-interest-launch.md; ops/bna-interest-launch/2026-11-05/RESULT.md",
+      "smoke_expectation": "tests/bna-coop-form.test.js; tests/bna-interest-owner.test.js; tests/bna-interest-store.test.js; tasks-pending/2026-11-05-bna-interest-launch.md; ops/bna-interest-launch/2026-11-05/RESULT.md; ops/bna-interest-launch/2026-11-08/PUBLIC-VERIFICATION.md",
       "requirement_ids": [
         "REQ-20261105-002",
         "REQ-20261105-003"
       ],
-      "live_status": "live_verified"
+      "live_status": "verified_local_current_delta_pending_release"
     },
     {
       "route": "/blog",
@@ -3534,12 +3534,12 @@
       "privacy_risk": "anonymous-safe",
       "canonical_target": "/blog",
       "security_expectation": "No private records in HTML. Shared form persists required purpose consent and optional marketing separately; no payment or account creation.",
-      "smoke_expectation": "tests/bna-coop-form.test.js; tests/bna-interest-owner.test.js; tests/bna-interest-store.test.js; tasks-pending/2026-11-05-bna-interest-launch.md; ops/bna-interest-launch/2026-11-05/RESULT.md",
+      "smoke_expectation": "tests/bna-coop-form.test.js; tests/bna-interest-owner.test.js; tests/bna-interest-store.test.js; tasks-pending/2026-11-05-bna-interest-launch.md; ops/bna-interest-launch/2026-11-05/RESULT.md; ops/bna-interest-launch/2026-11-08/PUBLIC-VERIFICATION.md",
       "requirement_ids": [
         "REQ-20261105-002",
         "REQ-20261105-003"
       ],
-      "live_status": "live_verified"
+      "live_status": "verified_local_current_delta_pending_release"
     },
     {
       "route": "/he/blog",
@@ -3553,12 +3553,12 @@
       "privacy_risk": "anonymous-safe",
       "canonical_target": "/he/blog",
       "security_expectation": "No private records in HTML. Shared form persists required purpose consent and optional marketing separately; no payment or account creation.",
-      "smoke_expectation": "tests/bna-coop-form.test.js; tests/bna-interest-owner.test.js; tests/bna-interest-store.test.js; tasks-pending/2026-11-05-bna-interest-launch.md; ops/bna-interest-launch/2026-11-05/RESULT.md",
+      "smoke_expectation": "tests/bna-coop-form.test.js; tests/bna-interest-owner.test.js; tests/bna-interest-store.test.js; tasks-pending/2026-11-05-bna-interest-launch.md; ops/bna-interest-launch/2026-11-05/RESULT.md; ops/bna-interest-launch/2026-11-08/PUBLIC-VERIFICATION.md",
       "requirement_ids": [
         "REQ-20261105-002",
         "REQ-20261105-003"
       ],
-      "live_status": "live_verified"
+      "live_status": "verified_local_current_delta_pending_release"
     },
     {
       "route": "/blog/:slug",
@@ -3572,12 +3572,12 @@
       "privacy_risk": "anonymous-safe",
       "canonical_target": "/blog/:slug",
       "security_expectation": "No private records in HTML. Shared form persists required purpose consent and optional marketing separately; no payment or account creation.",
-      "smoke_expectation": "tests/bna-coop-form.test.js; tests/bna-interest-owner.test.js; tests/bna-interest-store.test.js; tasks-pending/2026-11-05-bna-interest-launch.md; ops/bna-interest-launch/2026-11-05/RESULT.md",
+      "smoke_expectation": "tests/bna-coop-form.test.js; tests/bna-interest-owner.test.js; tests/bna-interest-store.test.js; tasks-pending/2026-11-05-bna-interest-launch.md; ops/bna-interest-launch/2026-11-05/RESULT.md; ops/bna-interest-launch/2026-11-08/PUBLIC-VERIFICATION.md",
       "requirement_ids": [
         "REQ-20261105-002",
         "REQ-20261105-003"
       ],
-      "live_status": "live_verified"
+      "live_status": "verified_local_current_delta_pending_release"
     },
     {
       "route": "/he/blog/:slug",
@@ -3591,12 +3591,12 @@
       "privacy_risk": "anonymous-safe",
       "canonical_target": "/he/blog/:slug",
       "security_expectation": "No private records in HTML. Shared form persists required purpose consent and optional marketing separately; no payment or account creation.",
-      "smoke_expectation": "tests/bna-coop-form.test.js; tests/bna-interest-owner.test.js; tests/bna-interest-store.test.js; tasks-pending/2026-11-05-bna-interest-launch.md; ops/bna-interest-launch/2026-11-05/RESULT.md",
+      "smoke_expectation": "tests/bna-coop-form.test.js; tests/bna-interest-owner.test.js; tests/bna-interest-store.test.js; tasks-pending/2026-11-05-bna-interest-launch.md; ops/bna-interest-launch/2026-11-05/RESULT.md; ops/bna-interest-launch/2026-11-08/PUBLIC-VERIFICATION.md",
       "requirement_ids": [
         "REQ-20261105-002",
         "REQ-20261105-003"
       ],
-      "live_status": "live_verified"
+      "live_status": "verified_local_current_delta_pending_release"
     },
     {
       "route": "/support/vision",
@@ -3899,6 +3899,111 @@
       "privacy_risk": "anonymous-safe",
       "security_expectation": "No legacy program logistics or private data.",
       "smoke_expectation": "tests/bna-coop-form.test.js; tests/bna-interest-owner.test.js; tests/bna-interest-store.test.js; tasks-pending/2026-11-05-bna-interest-launch.md"
+    },
+    {
+      "route": "/parents/guide",
+      "surface": "bna_school_public",
+      "access": "public",
+      "required_role": null,
+      "workspace_scope_required": false,
+      "public_allowed": true,
+      "expected_logged_out_behavior": "Exact current approved public P17/HP17 educational guide with only launch omissions; no directory",
+      "expected_logged_in_behavior": "same anonymous-safe output",
+      "privacy_risk": "anonymous-safe",
+      "canonical_target": "/parents/guide",
+      "security_expectation": "BNA-only runtime guard. No family records, parent-directory exposure or private tokens. Original other-program/static sitemap remains untouched.",
+      "smoke_expectation": "tests/bna-school-pages.test.js; actual mounted local browser/HTTP; ops/bna-interest-launch/2026-11-08/PUBLIC-VERIFICATION.md",
+      "requirement_ids": [
+        "REQ-20261108-009"
+      ],
+      "live_status": "verified_local_pending_release"
+    },
+    {
+      "route": "/he/parents/guide",
+      "surface": "bna_school_public",
+      "access": "public",
+      "required_role": null,
+      "workspace_scope_required": false,
+      "public_allowed": true,
+      "expected_logged_out_behavior": "Exact current approved public P17/HP17 educational guide with only launch omissions; no directory",
+      "expected_logged_in_behavior": "same anonymous-safe output",
+      "privacy_risk": "anonymous-safe",
+      "canonical_target": "/he/parents/guide",
+      "security_expectation": "BNA-only runtime guard. No family records, parent-directory exposure or private tokens. Original other-program/static sitemap remains untouched.",
+      "smoke_expectation": "tests/bna-school-pages.test.js; actual mounted local browser/HTTP; ops/bna-interest-launch/2026-11-08/PUBLIC-VERIFICATION.md",
+      "requirement_ids": [
+        "REQ-20261108-009"
+      ],
+      "live_status": "verified_local_pending_release"
+    },
+    {
+      "route": "/teaching-philosophy",
+      "surface": "bna_school_public",
+      "access": "public",
+      "required_role": null,
+      "workspace_scope_required": false,
+      "public_allowed": true,
+      "expected_logged_out_behavior": "301 to equivalent locale single library anchor",
+      "expected_logged_in_behavior": "same anonymous-safe output",
+      "privacy_risk": "anonymous-safe",
+      "canonical_target": "/blog#foundations",
+      "security_expectation": "BNA-only runtime guard. No family records, parent-directory exposure or private tokens. Original other-program/static sitemap remains untouched.",
+      "smoke_expectation": "tests/bna-school-pages.test.js; actual mounted local browser/HTTP; ops/bna-interest-launch/2026-11-08/PUBLIC-VERIFICATION.md",
+      "requirement_ids": [
+        "REQ-20261108-009"
+      ],
+      "live_status": "verified_local_pending_release"
+    },
+    {
+      "route": "/he/teaching-philosophy",
+      "surface": "bna_school_public",
+      "access": "public",
+      "required_role": null,
+      "workspace_scope_required": false,
+      "public_allowed": true,
+      "expected_logged_out_behavior": "301 to equivalent locale single library anchor",
+      "expected_logged_in_behavior": "same anonymous-safe output",
+      "privacy_risk": "anonymous-safe",
+      "canonical_target": "/he/blog#foundations",
+      "security_expectation": "BNA-only runtime guard. No family records, parent-directory exposure or private tokens. Original other-program/static sitemap remains untouched.",
+      "smoke_expectation": "tests/bna-school-pages.test.js; actual mounted local browser/HTTP; ops/bna-interest-launch/2026-11-08/PUBLIC-VERIFICATION.md",
+      "requirement_ids": [
+        "REQ-20261108-009"
+      ],
+      "live_status": "verified_local_pending_release"
+    },
+    {
+      "route": "/sitemap.xml",
+      "surface": "bna_school_public",
+      "access": "public",
+      "required_role": null,
+      "workspace_scope_required": false,
+      "public_allowed": true,
+      "expected_logged_out_behavior": "47 current canonical public school routes; no private/other-program/history URLs",
+      "expected_logged_in_behavior": "same anonymous-safe output",
+      "privacy_risk": "anonymous-safe",
+      "canonical_target": "/sitemap.xml",
+      "security_expectation": "BNA-only runtime guard. No family records, parent-directory exposure or private tokens. Original other-program/static sitemap remains untouched.",
+      "smoke_expectation": "tests/bna-school-pages.test.js; actual mounted local browser/HTTP; ops/bna-interest-launch/2026-11-08/PUBLIC-VERIFICATION.md",
+      "requirement_ids": [
+        "REQ-20261108-009"
+      ],
+      "live_status": "verified_local_pending_release"
+    },
+    {
+      "route": "/bna-school-sitemap.xml",
+      "surface": "bna_school_public",
+      "access": "public",
+      "public_allowed": true,
+      "workspace_scope_required": false,
+      "required_role": null,
+      "expected_logged_out_behavior": "Same current public-school canonical sitemap XML",
+      "expected_logged_in_behavior": "same public output",
+      "canonical_target": "/sitemap.xml",
+      "privacy_risk": "anonymous-safe",
+      "security_expectation": "Only public canonical school paths; no private tokens or family records",
+      "smoke_expectation": "PUBLIC-VERIFICATION.md47destination check",
+      "live_status": "verified_local_pending_release"
     }
   ]
 }

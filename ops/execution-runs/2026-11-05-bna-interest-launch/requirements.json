@@ -1,7 +1,7 @@
 {
   "run_id": "2026-11-05-bna-interest-launch",
   "title": "BNA interest launch and school fullstack continuation",
-  "updated_at": "2026-11-08T12:19:24.756Z",
+  "updated_at": "2026-11-08T12:57:57.011Z",
   "sources": [
     {
       "source_id": "RAW-20261105-001",
@@ -701,18 +701,32 @@
       "priority": "P0",
       "batch_id": "WEB04",
       "depends_on": [],
-      "status": "in_progress",
-      "implementation_status": "Current school context/package admitted; actual app/provider/state audit precedes implementation.",
+      "status": "needs_verification",
+      "implementation_status": "Public school slice implemented and verified_local:9 source/join tests +14 privacy tests,28 actual local Chrome states,60internal links,47sitemap destinations. Current production remains7d; new delta awaits exact scoped production approval and live readback.",
       "can_continue_without_operator": true,
-      "next_action": "Complete current source/surface/contract admission and exact disjoint file claims; continue safe assigned scope.",
+      "next_action": "Prepared public-only production pin approval, then provider/live source/render/link readback without repeat inquiry/send/archive.",
       "acceptance_criteria": [
         "Record current head/worktree, deployment route, original source receipt, route/component/API/store/test map and before screenshots; no other worker ownership displaced."
       ],
       "evidence": [
-        "raw-input/RAW-20261108-001-bna-school-fullstack.md"
+        "ops/bna-interest-launch/2026-11-08/PUBLIC-VERIFICATION.md",
+        "ops/bna-interest-launch/2026-11-08/PUBLIC-VERIFICATION.json",
+        "ops/bna-interest-launch/2026-11-08/CURRENT-COPYBOOK-COMPARISON.json"
       ],
-      "verification": [],
-      "implementation_files": [],
+      "verification": [
+        "node --test tests/bna-school-pages.test.js tests/bna-interest-pages.test.js tests/bna-coop-join-page.test.js:9PASS",
+        "node --test tests/bna-privacy-policy.test.js tests/public-homepage-privacy.test.js tests/public-route-privacy-contract.test.js tests/public-content-contamination-guard.test.js:14PASS",
+        "actual local server.js Chrome matrix:16 states; zero detected axe A/AA violations, overflow, missing images or page errors; functional actions pass"
+      ],
+      "implementation_files": [
+        "src/lib/bna/interest-pages.js",
+        "src/lib/bna/school-pages.js",
+        "config/bna-school-content.json",
+        "public/js/bna-articles.js",
+        "public/css/bna-interest-launch.css",
+        "public/bna-school-sitemap.xml",
+        "server.js"
+      ],
       "deployment_required": false,
       "implementation_commit": "",
       "pushed_commit": "",
@@ -722,7 +736,7 @@
       "live_smoke": "",
       "blocker": "",
       "superseded_by": "",
-      "updated_at": "2026-11-08T12:19:24.756Z",
+      "updated_at": "2026-11-08T12:57:57.011Z",
       "lane": "frontend",
       "scope_contract": "BNA-SCHOOL-SCOPE-LOCK-20261107-03"
     },
@@ -745,18 +759,32 @@
       "depends_on": [
         "REQ-20261108-001"
       ],
-      "status": "not_started",
-      "implementation_status": "Current school context/package admitted; actual app/provider/state audit precedes implementation.",
+      "status": "needs_verification",
+      "implementation_status": "Public school slice implemented and verified_local:9 source/join tests +14 privacy tests,28 actual local Chrome states,60internal links,47sitemap destinations. Current production remains7d; new delta awaits exact scoped production approval and live readback.",
       "can_continue_without_operator": true,
-      "next_action": "Complete current source/surface/contract admission and exact disjoint file claims; continue safe assigned scope.",
+      "next_action": "Prepared public-only production pin approval, then provider/live source/render/link readback without repeat inquiry/send/archive.",
       "acceptance_criteria": [
         "New EN/HE copy exact; Our Vision and Our Mission each once; no third BNA Vision, no rejected vague pull quote; protected copy unchanged."
       ],
       "evidence": [
-        "raw-input/RAW-20261108-001-bna-school-fullstack.md"
+        "ops/bna-interest-launch/2026-11-08/PUBLIC-VERIFICATION.md",
+        "ops/bna-interest-launch/2026-11-08/PUBLIC-VERIFICATION.json",
+        "ops/bna-interest-launch/2026-11-08/CURRENT-COPYBOOK-COMPARISON.json"
       ],
-      "verification": [],
-      "implementation_files": [],
+      "verification": [
+        "node --test tests/bna-school-pages.test.js tests/bna-interest-pages.test.js tests/bna-coop-join-page.test.js:9PASS",
+        "node --test tests/bna-privacy-policy.test.js tests/public-homepage-privacy.test.js tests/public-route-privacy-contract.test.js tests/public-content-contamination-guard.test.js:14PASS",
+        "actual local server.js Chrome matrix:16 states; zero detected axe A/AA violations, overflow, missing images or page errors; functional actions pass"
+      ],
+      "implementation_files": [
+        "src/lib/bna/interest-pages.js",
+        "src/lib/bna/school-pages.js",
+        "config/bna-school-content.json",
+        "public/js/bna-articles.js",
+        "public/css/bna-interest-launch.css",
+        "public/bna-school-sitemap.xml",
+        "server.js"
+      ],
       "deployment_required": true,
       "implementation_commit": "",
       "pushed_commit": "",
@@ -766,7 +794,7 @@
       "live_smoke": "",
       "blocker": "",
       "superseded_by": "",
-      "updated_at": "2026-11-08T12:19:24.756Z",
+      "updated_at": "2026-11-08T12:57:57.011Z",
       "lane": "frontend",
       "scope_contract": "BNA-SCHOOL-SCOPE-LOCK-20261107-03"
     },
@@ -789,18 +817,32 @@
       "depends_on": [
         "REQ-20261108-001"
       ],
-      "status": "not_started",
-      "implementation_status": "Current school context/package admitted; actual app/provider/state audit precedes implementation.",
+      "status": "needs_verification",
+      "implementation_status": "Public school slice implemented and verified_local:9 source/join tests +14 privacy tests,28 actual local Chrome states,60internal links,47sitemap destinations. Current production remains7d; new delta awaits exact scoped production approval and live readback.",
       "can_continue_without_operator": true,
-      "next_action": "Complete current source/surface/contract admission and exact disjoint file claims; continue safe assigned scope.",
+      "next_action": "Prepared public-only production pin approval, then provider/live source/render/link readback without repeat inquiry/send/archive.",
       "acceptance_criteria": [
         "Fixed order, two contextual program CTAs, exact protected hero masters, image pairings, desktop/mobile/RTL proof."
       ],
       "evidence": [
-        "raw-input/RAW-20261108-001-bna-school-fullstack.md"
+        "ops/bna-interest-launch/2026-11-08/PUBLIC-VERIFICATION.md",
+        "ops/bna-interest-launch/2026-11-08/PUBLIC-VERIFICATION.json",
+        "ops/bna-interest-launch/2026-11-08/CURRENT-COPYBOOK-COMPARISON.json"
       ],
-      "verification": [],
-      "implementation_files": [],
+      "verification": [
+        "node --test tests/bna-school-pages.test.js tests/bna-interest-pages.test.js tests/bna-coop-join-page.test.js:9PASS",
+        "node --test tests/bna-privacy-policy.test.js tests/public-homepage-privacy.test.js tests/public-route-privacy-contract.test.js tests/public-content-contamination-guard.test.js:14PASS",
+        "actual local server.js Chrome matrix:16 states; zero detected axe A/AA violations, overflow, missing images or page errors; functional actions pass"
+      ],
+      "implementation_files": [
+        "src/lib/bna/interest-pages.js",
+        "src/lib/bna/school-pages.js",
+        "config/bna-school-content.json",
+        "public/js/bna-articles.js",
+        "public/css/bna-interest-launch.css",
+        "public/bna-school-sitemap.xml",
+        "server.js"
+      ],
       "deployment_required": true,
       "implementation_commit": "",
       "pushed_commit": "",
@@ -810,7 +852,7 @@
       "live_smoke": "",
       "blocker": "",
       "superseded_by": "",
-      "updated_at": "2026-11-08T12:19:24.756Z",
+      "updated_at": "2026-11-08T12:57:57.011Z",
       "lane": "frontend",
       "scope_contract": "BNA-SCHOOL-SCOPE-LOCK-20261107-03"
     },
@@ -833,10 +875,10 @@
       "depends_on": [
         "REQ-20261108-001"
       ],
-      "status": "not_started",
+      "status": "blocked",
       "implementation_status": "Current school context/package admitted; actual app/provider/state audit precedes implementation.",
-      "can_continue_without_operator": true,
-      "next_action": "Complete current source/surface/contract admission and exact disjoint file claims; continue safe assigned scope.",
+      "can_continue_without_operator": false,
+      "next_action": "Explicit operator resumption in backend chat; preserve current worktree and handback. No replacement worker or timer.",
       "acceptance_criteria": [
         "Existing .01 requirements: durable idempotent save, actual reference, truthful outbox states, verified recipient path and owner refresh. Reuse .01 reported proof for unchanged behavior; no re-archive or test-email resend. Only remaining .04 regressions require new proof."
       ],
@@ -852,11 +894,13 @@
       "deployment_id": "",
       "deployed_commit": "",
       "live_smoke": "",
-      "blocker": "",
+      "blocker": "Explicit operator instruction in backend chat: For now, pause the backend stuff.",
       "superseded_by": "",
-      "updated_at": "2026-11-08T12:19:24.756Z",
+      "updated_at": "2026-11-08T12:27:54.289Z",
       "lane": "backend",
-      "scope_contract": "BNA-SCHOOL-SCOPE-LOCK-20261107-03"
+      "scope_contract": "BNA-SCHOOL-SCOPE-LOCK-20261107-03",
+      "blocker_owner": "operator",
+      "blocker_next_action": "Explicit operator resumption in backend chat; preserve current worktree and handback. No replacement worker or timer."
     },
     {
       "id": "REQ-20261108-005",
@@ -877,10 +921,10 @@
       "depends_on": [
         "REQ-20261108-001"
       ],
-      "status": "not_started",
+      "status": "blocked",
       "implementation_status": "Current school context/package admitted; actual app/provider/state audit precedes implementation.",
-      "can_continue_without_operator": true,
-      "next_action": "Complete current source/surface/contract admission and exact disjoint file claims; continue safe assigned scope.",
+      "can_continue_without_operator": false,
+      "next_action": "Explicit operator resumption in backend chat; preserve current worktree and handback. No replacement worker or timer.",
       "acceptance_criteria": [
         "Existing .01 fixed-cutoff archive, rollback/inventory, new arrivals intact, ordinary-owner filters and scoped access. Reuse .01 reported proof for unchanged behavior; no re-archive or test-email resend. Only remaining .04 regressions require new proof."
       ],
@@ -896,11 +940,13 @@
       "deployment_id": "",
       "deployed_commit": "",
       "live_smoke": "",
-      "blocker": "",
+      "blocker": "Explicit operator instruction in backend chat: For now, pause the backend stuff.",
       "superseded_by": "",
-      "updated_at": "2026-11-08T12:19:24.756Z",
+      "updated_at": "2026-11-08T12:27:54.289Z",
       "lane": "backend",
-      "scope_contract": "BNA-SCHOOL-SCOPE-LOCK-20261107-03"
+      "scope_contract": "BNA-SCHOOL-SCOPE-LOCK-20261107-03",
+      "blocker_owner": "operator",
+      "blocker_next_action": "Explicit operator resumption in backend chat; preserve current worktree and handback. No replacement worker or timer."
     },
     {
       "id": "REQ-20261108-006",
@@ -921,18 +967,32 @@
       "depends_on": [
         "REQ-20261108-001"
       ],
-      "status": "not_started",
-      "implementation_status": "Current school context/package admitted; actual app/provider/state audit precedes implementation.",
+      "status": "needs_verification",
+      "implementation_status": "Public school slice implemented and verified_local:9 source/join tests +14 privacy tests,28 actual local Chrome states,60internal links,47sitemap destinations. Current production remains7d; new delta awaits exact scoped production approval and live readback.",
       "can_continue_without_operator": true,
-      "next_action": "Complete current source/surface/contract admission and exact disjoint file claims; continue safe assigned scope.",
+      "next_action": "Prepared public-only production pin approval, then provider/live source/render/link readback without repeat inquiry/send/archive.",
       "acceptance_criteria": [
         "All 29 existing bodies accounted for; current routes, topic/search/reset states, correct language coverage, no duplicate philosophy hub."
       ],
       "evidence": [
-        "raw-input/RAW-20261108-001-bna-school-fullstack.md"
+        "ops/bna-interest-launch/2026-11-08/PUBLIC-VERIFICATION.md",
+        "ops/bna-interest-launch/2026-11-08/PUBLIC-VERIFICATION.json",
+        "ops/bna-interest-launch/2026-11-08/CURRENT-COPYBOOK-COMPARISON.json"
       ],
-      "verification": [],
-      "implementation_files": [],
+      "verification": [
+        "node --test tests/bna-school-pages.test.js tests/bna-interest-pages.test.js tests/bna-coop-join-page.test.js:9PASS",
+        "node --test tests/bna-privacy-policy.test.js tests/public-homepage-privacy.test.js tests/public-route-privacy-contract.test.js tests/public-content-contamination-guard.test.js:14PASS",
+        "actual local server.js Chrome matrix:16 states; zero detected axe A/AA violations, overflow, missing images or page errors; functional actions pass"
+      ],
+      "implementation_files": [
+        "src/lib/bna/interest-pages.js",
+        "src/lib/bna/school-pages.js",
+        "config/bna-school-content.json",
+        "public/js/bna-articles.js",
+        "public/css/bna-interest-launch.css",
+        "public/bna-school-sitemap.xml",
+        "server.js"
+      ],
       "deployment_required": true,
       "implementation_commit": "",
       "pushed_commit": "",
@@ -942,7 +1002,7 @@
       "live_smoke": "",
       "blocker": "",
       "superseded_by": "",
-      "updated_at": "2026-11-08T12:19:24.756Z",
+      "updated_at": "2026-11-08T12:57:57.011Z",
       "lane": "frontend",
       "scope_contract": "BNA-SCHOOL-SCOPE-LOCK-20261107-03"
     },
@@ -965,18 +1025,32 @@
       "depends_on": [
         "REQ-20261108-001"
       ],
-      "status": "not_started",
-      "implementation_status": "Current school context/package admitted; actual app/provider/state audit precedes implementation.",
+      "status": "needs_verification",
+      "implementation_status": "Public school slice implemented and verified_local:9 source/join tests +14 privacy tests,28 actual local Chrome states,60internal links,47sitemap destinations. Current production remains7d; new delta awaits exact scoped production approval and live readback.",
       "can_continue_without_operator": true,
-      "next_action": "Complete current source/surface/contract admission and exact disjoint file claims; continue safe assigned scope.",
+      "next_action": "Prepared public-only production pin approval, then provider/live source/render/link readback without repeat inquiry/send/archive.",
       "acceptance_criteria": [
         "Exact body/omission diff, source-substring emphasis, WhatsApp/share/copy fallback, canonical public links and metadata verified."
       ],
       "evidence": [
-        "raw-input/RAW-20261108-001-bna-school-fullstack.md"
+        "ops/bna-interest-launch/2026-11-08/PUBLIC-VERIFICATION.md",
+        "ops/bna-interest-launch/2026-11-08/PUBLIC-VERIFICATION.json",
+        "ops/bna-interest-launch/2026-11-08/CURRENT-COPYBOOK-COMPARISON.json"
       ],
-      "verification": [],
-      "implementation_files": [],
+      "verification": [
+        "node --test tests/bna-school-pages.test.js tests/bna-interest-pages.test.js tests/bna-coop-join-page.test.js:9PASS",
+        "node --test tests/bna-privacy-policy.test.js tests/public-homepage-privacy.test.js tests/public-route-privacy-contract.test.js tests/public-content-contamination-guard.test.js:14PASS",
+        "actual local server.js Chrome matrix:16 states; zero detected axe A/AA violations, overflow, missing images or page errors; functional actions pass"
+      ],
+      "implementation_files": [
+        "src/lib/bna/interest-pages.js",
+        "src/lib/bna/school-pages.js",
+        "config/bna-school-content.json",
+        "public/js/bna-articles.js",
+        "public/css/bna-interest-launch.css",
+        "public/bna-school-sitemap.xml",
+        "server.js"
+      ],
       "deployment_required": true,
       "implementation_commit": "",
       "pushed_commit": "",
@@ -986,7 +1060,7 @@
       "live_smoke": "",
       "blocker": "",
       "superseded_by": "",
-      "updated_at": "2026-11-08T12:19:24.756Z",
+      "updated_at": "2026-11-08T12:57:57.011Z",
       "lane": "frontend",
       "scope_contract": "BNA-SCHOOL-SCOPE-LOCK-20261107-03"
     },
@@ -1009,18 +1083,32 @@
       "depends_on": [
         "REQ-20261108-001"
       ],
-      "status": "not_started",
-      "implementation_status": "Current school context/package admitted; actual app/provider/state audit precedes implementation.",
+      "status": "needs_verification",
+      "implementation_status": "Public school slice implemented and verified_local:9 source/join tests +14 privacy tests,28 actual local Chrome states,60internal links,47sitemap destinations. Current production remains7d; new delta awaits exact scoped production approval and live readback.",
       "can_continue_without_operator": true,
-      "next_action": "Complete current source/surface/contract admission and exact disjoint file claims; continue safe assigned scope.",
+      "next_action": "Prepared public-only production pin approval, then provider/live source/render/link readback without repeat inquiry/send/archive.",
       "acceptance_criteria": [
         "80 source Q/A records accounted for, suppressed logistics not leaked, source categories preserved, one full page per language, home invitation only."
       ],
       "evidence": [
-        "raw-input/RAW-20261108-001-bna-school-fullstack.md"
+        "ops/bna-interest-launch/2026-11-08/PUBLIC-VERIFICATION.md",
+        "ops/bna-interest-launch/2026-11-08/PUBLIC-VERIFICATION.json",
+        "ops/bna-interest-launch/2026-11-08/CURRENT-COPYBOOK-COMPARISON.json"
       ],
-      "verification": [],
-      "implementation_files": [],
+      "verification": [
+        "node --test tests/bna-school-pages.test.js tests/bna-interest-pages.test.js tests/bna-coop-join-page.test.js:9PASS",
+        "node --test tests/bna-privacy-policy.test.js tests/public-homepage-privacy.test.js tests/public-route-privacy-contract.test.js tests/public-content-contamination-guard.test.js:14PASS",
+        "actual local server.js Chrome matrix:16 states; zero detected axe A/AA violations, overflow, missing images or page errors; functional actions pass"
+      ],
+      "implementation_files": [
+        "src/lib/bna/interest-pages.js",
+        "src/lib/bna/school-pages.js",
+        "config/bna-school-content.json",
+        "public/js/bna-articles.js",
+        "public/css/bna-interest-launch.css",
+        "public/bna-school-sitemap.xml",
+        "server.js"
+      ],
       "deployment_required": true,
       "implementation_commit": "",
       "pushed_commit": "",
@@ -1030,7 +1118,7 @@
       "live_smoke": "",
       "blocker": "",
       "superseded_by": "",
-      "updated_at": "2026-11-08T12:19:24.756Z",
+      "updated_at": "2026-11-08T12:57:57.011Z",
       "lane": "frontend",
       "scope_contract": "BNA-SCHOOL-SCOPE-LOCK-20261107-03"
     },
@@ -1053,18 +1141,32 @@
       "depends_on": [
         "REQ-20261108-001"
       ],
-      "status": "not_started",
-      "implementation_status": "Current school context/package admitted; actual app/provider/state audit precedes implementation.",
+      "status": "needs_verification",
+      "implementation_status": "Public school slice implemented and verified_local:9 source/join tests +14 privacy tests,28 actual local Chrome states,60internal links,47sitemap destinations. Current production remains7d; new delta awaits exact scoped production approval and live readback.",
       "can_continue_without_operator": true,
-      "next_action": "Complete current source/surface/contract admission and exact disjoint file claims; continue safe assigned scope.",
+      "next_action": "Prepared public-only production pin approval, then provider/live source/render/link readback without repeat inquiry/send/archive.",
       "acceptance_criteria": [
         "No public Fishing/provider funnel; old equivalent paths redirect without losing relevant content; portal access preserved; full link/metadata audit."
       ],
       "evidence": [
-        "raw-input/RAW-20261108-001-bna-school-fullstack.md"
+        "ops/bna-interest-launch/2026-11-08/PUBLIC-VERIFICATION.md",
+        "ops/bna-interest-launch/2026-11-08/PUBLIC-VERIFICATION.json",
+        "ops/bna-interest-launch/2026-11-08/CURRENT-COPYBOOK-COMPARISON.json"
       ],
-      "verification": [],
-      "implementation_files": [],
+      "verification": [
+        "node --test tests/bna-school-pages.test.js tests/bna-interest-pages.test.js tests/bna-coop-join-page.test.js:9PASS",
+        "node --test tests/bna-privacy-policy.test.js tests/public-homepage-privacy.test.js tests/public-route-privacy-contract.test.js tests/public-content-contamination-guard.test.js:14PASS",
+        "actual local server.js Chrome matrix:16 states; zero detected axe A/AA violations, overflow, missing images or page errors; functional actions pass"
+      ],
+      "implementation_files": [
+        "src/lib/bna/interest-pages.js",
+        "src/lib/bna/school-pages.js",
+        "config/bna-school-content.json",
+        "public/js/bna-articles.js",
+        "public/css/bna-interest-launch.css",
+        "public/bna-school-sitemap.xml",
+        "server.js"
+      ],
       "deployment_required": true,
       "implementation_commit": "",
       "pushed_commit": "",
@@ -1074,7 +1176,7 @@
       "live_smoke": "",
       "blocker": "",
       "superseded_by": "",
-      "updated_at": "2026-11-08T12:19:24.756Z",
+      "updated_at": "2026-11-08T12:57:57.011Z",
       "lane": "frontend",
       "scope_contract": "BNA-SCHOOL-SCOPE-LOCK-20261107-03"
     },
@@ -1097,18 +1199,32 @@
       "depends_on": [
         "REQ-20261108-001"
       ],
-      "status": "not_started",
-      "implementation_status": "Current school context/package admitted; actual app/provider/state audit precedes implementation.",
+      "status": "needs_verification",
+      "implementation_status": "Public school slice implemented and verified_local:9 source/join tests +14 privacy tests,28 actual local Chrome states,60internal links,47sitemap destinations. Current production remains7d; new delta awaits exact scoped production approval and live readback.",
       "can_continue_without_operator": true,
-      "next_action": "Complete current source/surface/contract admission and exact disjoint file claims; continue safe assigned scope.",
+      "next_action": "Prepared public-only production pin approval, then provider/live source/render/link readback without repeat inquiry/send/archive.",
       "acceptance_criteria": [
         "320/390/768/1440 screenshots EN/HE, real assets; keyboard/contrast/zoom/reduced-motion; no overflow or shifted hero; actual before/after comparison."
       ],
       "evidence": [
-        "raw-input/RAW-20261108-001-bna-school-fullstack.md"
+        "ops/bna-interest-launch/2026-11-08/PUBLIC-VERIFICATION.md",
+        "ops/bna-interest-launch/2026-11-08/PUBLIC-VERIFICATION.json",
+        "ops/bna-interest-launch/2026-11-08/CURRENT-COPYBOOK-COMPARISON.json"
       ],
-      "verification": [],
-      "implementation_files": [],
+      "verification": [
+        "node --test tests/bna-school-pages.test.js tests/bna-interest-pages.test.js tests/bna-coop-join-page.test.js:9PASS",
+        "node --test tests/bna-privacy-policy.test.js tests/public-homepage-privacy.test.js tests/public-route-privacy-contract.test.js tests/public-content-contamination-guard.test.js:14PASS",
+        "actual local server.js Chrome matrix:16 states; zero detected axe A/AA violations, overflow, missing images or page errors; functional actions pass"
+      ],
+      "implementation_files": [
+        "src/lib/bna/interest-pages.js",
+        "src/lib/bna/school-pages.js",
+        "config/bna-school-content.json",
+        "public/js/bna-articles.js",
+        "public/css/bna-interest-launch.css",
+        "public/bna-school-sitemap.xml",
+        "server.js"
+      ],
       "deployment_required": true,
       "implementation_commit": "",
       "pushed_commit": "",
@@ -1118,7 +1234,7 @@
       "live_smoke": "",
       "blocker": "",
       "superseded_by": "",
-      "updated_at": "2026-11-08T12:19:24.756Z",
+      "updated_at": "2026-11-08T12:57:57.011Z",
       "lane": "frontend",
       "scope_contract": "BNA-SCHOOL-SCOPE-LOCK-20261107-03"
     },
@@ -1141,15 +1257,15 @@
       "depends_on": [
         "REQ-20261108-001"
       ],
-      "status": "not_started",
+      "status": "needs_operator_decision",
       "implementation_status": "Current school context/package admitted; actual app/provider/state audit precedes implementation.",
-      "can_continue_without_operator": true,
-      "next_action": "Complete current source/surface/contract admission and exact disjoint file claims; continue safe assigned scope.",
+      "can_continue_without_operator": false,
+      "next_action": "Review prepared public-only PR196 and approve the exact new BNA service pin if desired. This does not resume backend or authorize payment/send/configuration effects.",
       "acceptance_criteria": [
         "Current release gate; deployed commit and date evidence only if actually released, live smoke, known gaps; no package-only completion claim."
       ],
       "evidence": [
-        "raw-input/RAW-20261108-001-bna-school-fullstack.md"
+        "ops/bna-interest-launch/2026-11-08/PUBLIC-VERIFICATION.md"
       ],
       "verification": [],
       "implementation_files": [],
@@ -1160,11 +1276,13 @@
       "deployment_id": "",
       "deployed_commit": "",
       "live_smoke": "",
-      "blocker": "",
+      "blocker": "New public frontend application commit requires the existing production deployment confirmation; priorNov5 approval named the old pin. Broader fullstack acceptance also retains the explicit backend pause.",
       "superseded_by": "",
-      "updated_at": "2026-11-08T12:19:24.756Z",
+      "updated_at": "2026-11-08T12:57:57.011Z",
       "lane": "frontend",
-      "scope_contract": "BNA-SCHOOL-SCOPE-LOCK-20261107-03"
+      "scope_contract": "BNA-SCHOOL-SCOPE-LOCK-20261107-03",
+      "blocker_owner": "operator",
+      "blocker_next_action": "Review prepared public-only PR196 and approve the exact new BNA service pin if desired. This does not resume backend or authorize payment/send/configuration effects."
     },
     {
       "id": "REQ-20261108-012",
@@ -1183,15 +1301,16 @@
       "priority": "P0",
       "batch_id": "COORDINATION",
       "depends_on": [],
-      "status": "in_progress",
-      "implementation_status": "Current school context/package admitted; actual app/provider/state audit precedes implementation.",
+      "status": "needs_verification",
+      "implementation_status": "Actual host/Git school frontend/backend identity and separate worktrees observed; backend SOURCE_READ received; versioned API contract proposal pending.",
       "can_continue_without_operator": true,
       "next_action": "Complete current source/surface/contract admission and exact disjoint file claims; continue safe assigned scope.",
       "acceptance_criteria": [
         "Both actual IDs/worktrees/claims recorded; no duplicate active workers; current contract acknowledged."
       ],
       "evidence": [
-        "raw-input/RAW-20261108-001-bna-school-fullstack.md"
+        "ops/execution-runs/2026-11-05-bna-interest-launch/FILE-CLAIMS.json",
+        "ops/bna-interest-launch/2026-11-08/CURRENT-STATE.json"
       ],
       "verification": [],
       "implementation_files": [],
@@ -1204,7 +1323,7 @@
       "live_smoke": "",
       "blocker": "",
       "superseded_by": "",
-      "updated_at": "2026-11-08T12:19:24.756Z",
+      "updated_at": "2026-11-08T12:26:13.466Z",
       "lane": "frontend",
       "scope_contract": "BNA-SCHOOL-SCOPE-LOCK-20261107-03"
     },
@@ -1225,15 +1344,16 @@
       "priority": "P0",
       "batch_id": "COORDINATION",
       "depends_on": [],
-      "status": "in_progress",
-      "implementation_status": "Current school context/package admitted; actual app/provider/state audit precedes implementation.",
-      "can_continue_without_operator": true,
-      "next_action": "Complete current source/surface/contract admission and exact disjoint file claims; continue safe assigned scope.",
+      "status": "blocked",
+      "implementation_status": "Two native same-thread900-second registrations installed ACTIVE and file/card readback checked; first true due events and busy/dedupe/restart/unknown/stop proof pending.",
+      "can_continue_without_operator": false,
+      "next_action": "Preserve backend pause. Observe frontend natural idle trigger when permitted; full two-lane acceptance awaits explicit backend resumption and real native receipts.",
       "acceptance_criteria": [
         "Actual host scheduler/adapter verified for both lanes, busy dedupe/restart/stop tested; not merely a prompt."
       ],
       "evidence": [
-        "raw-input/RAW-20261108-001-bna-school-fullstack.md"
+        "ops/execution-runs/2026-11-05-bna-interest-launch/CHECKPOINTS.json",
+        "ops/bna-interest-launch/2026-11-08/PUBLIC-VERIFICATION.md"
       ],
       "verification": [],
       "implementation_files": [],
@@ -1244,11 +1364,13 @@
       "deployment_id": "",
       "deployed_commit": "",
       "live_smoke": "",
-      "blocker": "",
+      "blocker": "Backend heartbeat paused before first trigger by direct operator instruction; frontend current turn remains busy with native deferred scheduling and no completed idle trigger. No fully proved two-lane restart/unknown/stop acceptance.",
       "superseded_by": "",
-      "updated_at": "2026-11-08T12:19:24.756Z",
+      "updated_at": "2026-11-08T12:57:57.011Z",
       "lane": "frontend",
-      "scope_contract": "BNA-SCHOOL-SCOPE-LOCK-20261107-03"
+      "scope_contract": "BNA-SCHOOL-SCOPE-LOCK-20261107-03",
+      "blocker_owner": "operator / native host runtime",
+      "blocker_next_action": "Preserve backend pause. Observe frontend natural idle trigger when permitted; full two-lane acceptance awaits explicit backend resumption and real native receipts."
     },
     {
       "id": "REQ-20261108-014",
@@ -1267,10 +1389,10 @@
       "priority": "P0",
       "batch_id": "BACKEND",
       "depends_on": [],
-      "status": "not_started",
+      "status": "blocked",
       "implementation_status": "Current school context/package admitted; actual app/provider/state audit precedes implementation.",
-      "can_continue_without_operator": true,
-      "next_action": "Complete current source/surface/contract admission and exact disjoint file claims; continue safe assigned scope.",
+      "can_continue_without_operator": false,
+      "next_action": "Explicit operator resumption in backend chat; preserve current worktree and handback. No replacement worker or timer.",
       "acceptance_criteria": [
         "Correct serving worktree/schema/worker/API map and source scope; `.01` retained; stale GitHub not reset."
       ],
@@ -1286,11 +1408,13 @@
       "deployment_id": "",
       "deployed_commit": "",
       "live_smoke": "",
-      "blocker": "",
+      "blocker": "Explicit operator instruction in backend chat: For now, pause the backend stuff.",
       "superseded_by": "",
-      "updated_at": "2026-11-08T12:19:24.756Z",
+      "updated_at": "2026-11-08T12:27:54.289Z",
       "lane": "backend",
-      "scope_contract": "BNA-SCHOOL-SCOPE-LOCK-20261107-03"
+      "scope_contract": "BNA-SCHOOL-SCOPE-LOCK-20261107-03",
+      "blocker_owner": "operator",
+      "blocker_next_action": "Explicit operator resumption in backend chat; preserve current worktree and handback. No replacement worker or timer."
     },
     {
       "id": "REQ-20261108-015",
@@ -1309,10 +1433,10 @@
       "priority": "P0",
       "batch_id": "BACKEND",
       "depends_on": [],
-      "status": "not_started",
+      "status": "blocked",
       "implementation_status": "Current school context/package admitted; actual app/provider/state audit precedes implementation.",
-      "can_continue_without_operator": true,
-      "next_action": "Complete current source/surface/contract admission and exact disjoint file claims; continue safe assigned scope.",
+      "can_continue_without_operator": false,
+      "next_action": "Explicit operator resumption in backend chat; preserve current worktree and handback. No replacement worker or timer.",
       "acceptance_criteria": [
         "E2E01–05 pass through actual mounted durable storage; separate notification truth."
       ],
@@ -1328,11 +1452,13 @@
       "deployment_id": "",
       "deployed_commit": "",
       "live_smoke": "",
-      "blocker": "",
+      "blocker": "Explicit operator instruction in backend chat: For now, pause the backend stuff.",
       "superseded_by": "",
-      "updated_at": "2026-11-08T12:19:24.756Z",
+      "updated_at": "2026-11-08T12:27:54.289Z",
       "lane": "backend",
-      "scope_contract": "BNA-SCHOOL-SCOPE-LOCK-20261107-03"
+      "scope_contract": "BNA-SCHOOL-SCOPE-LOCK-20261107-03",
+      "blocker_owner": "operator",
+      "blocker_next_action": "Explicit operator resumption in backend chat; preserve current worktree and handback. No replacement worker or timer."
     },
     {
       "id": "REQ-20261108-016",
@@ -1351,10 +1477,10 @@
       "priority": "P0",
       "batch_id": "BACKEND",
       "depends_on": [],
-      "status": "not_started",
+      "status": "blocked",
       "implementation_status": "Current school context/package admitted; actual app/provider/state audit precedes implementation.",
-      "can_continue_without_operator": true,
-      "next_action": "Complete current source/surface/contract admission and exact disjoint file claims; continue safe assigned scope.",
+      "can_continue_without_operator": false,
+      "next_action": "Explicit operator resumption in backend chat; preserve current worktree and handback. No replacement worker or timer.",
       "acceptance_criteria": [
         "E2E06,12,13; program/area/next-action/readback/revision/isolation; no legacy migration repetition."
       ],
@@ -1370,11 +1496,13 @@
       "deployment_id": "",
       "deployed_commit": "",
       "live_smoke": "",
-      "blocker": "",
+      "blocker": "Explicit operator instruction in backend chat: For now, pause the backend stuff.",
       "superseded_by": "",
-      "updated_at": "2026-11-08T12:19:24.756Z",
+      "updated_at": "2026-11-08T12:27:54.289Z",
       "lane": "backend",
-      "scope_contract": "BNA-SCHOOL-SCOPE-LOCK-20261107-03"
+      "scope_contract": "BNA-SCHOOL-SCOPE-LOCK-20261107-03",
+      "blocker_owner": "operator",
+      "blocker_next_action": "Explicit operator resumption in backend chat; preserve current worktree and handback. No replacement worker or timer."
     },
     {
       "id": "REQ-20261108-017",
@@ -1393,10 +1521,10 @@
       "priority": "P0",
       "batch_id": "BACKEND",
       "depends_on": [],
-      "status": "not_started",
+      "status": "blocked",
       "implementation_status": "Current school context/package admitted; actual app/provider/state audit precedes implementation.",
-      "can_continue_without_operator": true,
-      "next_action": "Complete current source/surface/contract admission and exact disjoint file claims; continue safe assigned scope.",
+      "can_continue_without_operator": false,
+      "next_action": "Explicit operator resumption in backend chat; preserve current worktree and handback. No replacement worker or timer.",
       "acceptance_criteria": [
         "E2E07; proposal/acceptance/enrollment distinct; no implicit charge/seat/account."
       ],
@@ -1412,11 +1540,13 @@
       "deployment_id": "",
       "deployed_commit": "",
       "live_smoke": "",
-      "blocker": "",
+      "blocker": "Explicit operator instruction in backend chat: For now, pause the backend stuff.",
       "superseded_by": "",
-      "updated_at": "2026-11-08T12:19:24.756Z",
+      "updated_at": "2026-11-08T12:27:54.289Z",
       "lane": "backend",
-      "scope_contract": "BNA-SCHOOL-SCOPE-LOCK-20261107-03"
+      "scope_contract": "BNA-SCHOOL-SCOPE-LOCK-20261107-03",
+      "blocker_owner": "operator",
+      "blocker_next_action": "Explicit operator resumption in backend chat; preserve current worktree and handback. No replacement worker or timer."
     },
     {
       "id": "REQ-20261108-018",
@@ -1435,10 +1565,10 @@
       "priority": "P0",
       "batch_id": "BACKEND",
       "depends_on": [],
-      "status": "not_started",
+      "status": "blocked",
       "implementation_status": "Current school context/package admitted; actual app/provider/state audit precedes implementation.",
-      "can_continue_without_operator": true,
-      "next_action": "Complete current source/surface/contract admission and exact disjoint file claims; continue safe assigned scope.",
+      "can_continue_without_operator": false,
+      "next_action": "Explicit operator resumption in backend chat; preserve current worktree and handback. No replacement worker or timer.",
       "acceptance_criteria": [
         "Integer currency, family/child/period allocation, partial/manual correction; E2E08,10,14."
       ],
@@ -1454,11 +1584,13 @@
       "deployment_id": "",
       "deployed_commit": "",
       "live_smoke": "",
-      "blocker": "",
+      "blocker": "Explicit operator instruction in backend chat: For now, pause the backend stuff.",
       "superseded_by": "",
-      "updated_at": "2026-11-08T12:19:24.756Z",
+      "updated_at": "2026-11-08T12:27:54.289Z",
       "lane": "backend",
-      "scope_contract": "BNA-SCHOOL-SCOPE-LOCK-20261107-03"
+      "scope_contract": "BNA-SCHOOL-SCOPE-LOCK-20261107-03",
+      "blocker_owner": "operator",
+      "blocker_next_action": "Explicit operator resumption in backend chat; preserve current worktree and handback. No replacement worker or timer."
     },
     {
       "id": "REQ-20261108-019",
@@ -1477,10 +1609,10 @@
       "priority": "P0",
       "batch_id": "BACKEND",
       "depends_on": [],
-      "status": "not_started",
+      "status": "blocked",
       "implementation_status": "Current school context/package admitted; actual app/provider/state audit precedes implementation.",
-      "can_continue_without_operator": true,
-      "next_action": "Complete current source/surface/contract admission and exact disjoint file claims; continue safe assigned scope.",
+      "can_continue_without_operator": false,
+      "next_action": "Explicit operator resumption in backend chat; preserve current worktree and handback. No replacement worker or timer.",
       "acceptance_criteria": [
         "E2E09,11,12 plus admitted real sandbox proof; unknown/duplicate/order/account/mode safe."
       ],
@@ -1496,11 +1628,13 @@
       "deployment_id": "",
       "deployed_commit": "",
       "live_smoke": "",
-      "blocker": "",
+      "blocker": "Explicit operator instruction in backend chat: For now, pause the backend stuff.",
       "superseded_by": "",
-      "updated_at": "2026-11-08T12:19:24.756Z",
+      "updated_at": "2026-11-08T12:27:54.289Z",
       "lane": "backend",
-      "scope_contract": "BNA-SCHOOL-SCOPE-LOCK-20261107-03"
+      "scope_contract": "BNA-SCHOOL-SCOPE-LOCK-20261107-03",
+      "blocker_owner": "operator",
+      "blocker_next_action": "Explicit operator resumption in backend chat; preserve current worktree and handback. No replacement worker or timer."
     },
     {
       "id": "REQ-20261108-020",
@@ -1519,10 +1653,10 @@
       "priority": "P0",
       "batch_id": "BACKEND",
       "depends_on": [],
-      "status": "not_started",
+      "status": "blocked",
       "implementation_status": "Current school context/package admitted; actual app/provider/state audit precedes implementation.",
-      "can_continue_without_operator": true,
-      "next_action": "Complete current source/surface/contract admission and exact disjoint file claims; continue safe assigned scope.",
+      "can_continue_without_operator": false,
+      "next_action": "Explicit operator resumption in backend chat; preserve current worktree and handback. No replacement worker or timer.",
       "acceptance_criteria": [
         "Source-reviewed templates, real due dates, suppression/dedupe, no automatic renewal or other-program policies."
       ],
@@ -1538,11 +1672,13 @@
       "deployment_id": "",
       "deployed_commit": "",
       "live_smoke": "",
-      "blocker": "",
+      "blocker": "Explicit operator instruction in backend chat: For now, pause the backend stuff.",
       "superseded_by": "",
-      "updated_at": "2026-11-08T12:19:24.756Z",
+      "updated_at": "2026-11-08T12:27:54.289Z",
       "lane": "backend",
-      "scope_contract": "BNA-SCHOOL-SCOPE-LOCK-20261107-03"
+      "scope_contract": "BNA-SCHOOL-SCOPE-LOCK-20261107-03",
+      "blocker_owner": "operator",
+      "blocker_next_action": "Explicit operator resumption in backend chat; preserve current worktree and handback. No replacement worker or timer."
     },
     {
       "id": "REQ-20261108-021",
@@ -1561,15 +1697,16 @@
       "priority": "P0",
       "batch_id": "INTEGRATION",
       "depends_on": [],
-      "status": "not_started",
+      "status": "blocked",
       "implementation_status": "Current school context/package admitted; actual app/provider/state audit precedes implementation.",
-      "can_continue_without_operator": true,
-      "next_action": "Complete current source/surface/contract admission and exact disjoint file claims; continue safe assigned scope.",
+      "can_continue_without_operator": false,
+      "next_action": "Explicit operator backend resumption; then consume actual durable backend contract and perform combined owner/parent journeys under current effect gates.",
       "acceptance_criteria": [
         "Real backend connected; E2E06–11; loading/error/unknown/stale/permission and refresh states."
       ],
       "evidence": [
-        "raw-input/RAW-20261108-001-bna-school-fullstack.md"
+        "raw-input/RAW-20261108-002-backend-pause.md",
+        "ops/bna-interest-launch/2026-11-08/PUBLIC-VERIFICATION.md"
       ],
       "verification": [],
       "implementation_files": [],
@@ -1580,11 +1717,13 @@
       "deployment_id": "",
       "deployed_commit": "",
       "live_smoke": "",
-      "blocker": "",
+      "blocker": "Backend-only operator pause: new private CRM/offer/billing/parent services have not been implemented. Do not substitute mock/optimistic UI or take over paused backend files.",
       "superseded_by": "",
-      "updated_at": "2026-11-08T12:19:24.756Z",
+      "updated_at": "2026-11-08T12:57:57.011Z",
       "lane": "frontend",
-      "scope_contract": "BNA-SCHOOL-SCOPE-LOCK-20261107-03"
+      "scope_contract": "BNA-SCHOOL-SCOPE-LOCK-20261107-03",
+      "blocker_owner": "operator",
+      "blocker_next_action": "Explicit operator backend resumption; then consume actual durable backend contract and perform combined owner/parent journeys under current effect gates."
     },
     {
       "id": "REQ-20261108-022",
@@ -1603,15 +1742,16 @@
       "priority": "P0",
       "batch_id": "INTEGRATION",
       "depends_on": [],
-      "status": "not_started",
+      "status": "blocked",
       "implementation_status": "Current school context/package admitted; actual app/provider/state audit precedes implementation.",
-      "can_continue_without_operator": true,
-      "next_action": "Complete current source/surface/contract admission and exact disjoint file claims; continue safe assigned scope.",
+      "can_continue_without_operator": false,
+      "next_action": "Explicit operator backend resumption; then consume actual durable backend contract and perform combined owner/parent journeys under current effect gates.",
       "acceptance_criteria": [
         "Own-family-only status/actions; GET no effect; provider return not paid; E2E07–12,16."
       ],
       "evidence": [
-        "raw-input/RAW-20261108-001-bna-school-fullstack.md"
+        "raw-input/RAW-20261108-002-backend-pause.md",
+        "ops/bna-interest-launch/2026-11-08/PUBLIC-VERIFICATION.md"
       ],
       "verification": [],
       "implementation_files": [],
@@ -1622,11 +1762,13 @@
       "deployment_id": "",
       "deployed_commit": "",
       "live_smoke": "",
-      "blocker": "",
+      "blocker": "Backend-only operator pause: new private CRM/offer/billing/parent services have not been implemented. Do not substitute mock/optimistic UI or take over paused backend files.",
       "superseded_by": "",
-      "updated_at": "2026-11-08T12:19:24.756Z",
+      "updated_at": "2026-11-08T12:57:57.011Z",
       "lane": "frontend",
-      "scope_contract": "BNA-SCHOOL-SCOPE-LOCK-20261107-03"
+      "scope_contract": "BNA-SCHOOL-SCOPE-LOCK-20261107-03",
+      "blocker_owner": "operator",
+      "blocker_next_action": "Explicit operator backend resumption; then consume actual durable backend contract and perform combined owner/parent journeys under current effect gates."
     },
     {
       "id": "REQ-20261108-023",
@@ -1645,15 +1787,16 @@
       "priority": "P0",
       "batch_id": "INTEGRATION",
       "depends_on": [],
-      "status": "not_started",
+      "status": "blocked",
       "implementation_status": "Current school context/package admitted; actual app/provider/state audit precedes implementation.",
-      "can_continue_without_operator": true,
-      "next_action": "Complete current source/surface/contract admission and exact disjoint file claims; continue safe assigned scope.",
+      "can_continue_without_operator": false,
+      "next_action": "Explicit operator backend resumption; then consume actual durable backend contract and perform combined owner/parent journeys under current effect gates.",
       "acceptance_criteria": [
         "All E2E cases evidenced, affected regression suite and exact source/asset comparison."
       ],
       "evidence": [
-        "raw-input/RAW-20261108-001-bna-school-fullstack.md"
+        "raw-input/RAW-20261108-002-backend-pause.md",
+        "ops/bna-interest-launch/2026-11-08/PUBLIC-VERIFICATION.md"
       ],
       "verification": [],
       "implementation_files": [],
@@ -1664,11 +1807,13 @@
       "deployment_id": "",
       "deployed_commit": "",
       "live_smoke": "",
-      "blocker": "",
+      "blocker": "Backend-only operator pause: new private CRM/offer/billing/parent services have not been implemented. Do not substitute mock/optimistic UI or take over paused backend files.",
       "superseded_by": "",
-      "updated_at": "2026-11-08T12:19:24.756Z",
+      "updated_at": "2026-11-08T12:57:57.011Z",
       "lane": "frontend",
-      "scope_contract": "BNA-SCHOOL-SCOPE-LOCK-20261107-03"
+      "scope_contract": "BNA-SCHOOL-SCOPE-LOCK-20261107-03",
+      "blocker_owner": "operator",
+      "blocker_next_action": "Explicit operator backend resumption; then consume actual durable backend contract and perform combined owner/parent journeys under current effect gates."
     },
     {
       "id": "REQ-20261108-024",
@@ -1687,15 +1832,15 @@
       "priority": "P0",
       "batch_id": "INTEGRATION",
       "depends_on": [],
-      "status": "not_started",
+      "status": "needs_operator_decision",
       "implementation_status": "Current school context/package admitted; actual app/provider/state audit precedes implementation.",
-      "can_continue_without_operator": true,
-      "next_action": "Complete current source/surface/contract admission and exact disjoint file claims; continue safe assigned scope.",
+      "can_continue_without_operator": false,
+      "next_action": "Review prepared public-only PR196 and approve the exact new BNA service pin if desired. This does not resume backend or authorize payment/send/configuration effects.",
       "acceptance_criteria": [
         "Live serving identity and ordinary-owner readback; billing live gate explicit; timers stopped only at full verification/cancel, blocked not complete."
       ],
       "evidence": [
-        "raw-input/RAW-20261108-001-bna-school-fullstack.md"
+        "ops/bna-interest-launch/2026-11-08/PUBLIC-VERIFICATION.md"
       ],
       "verification": [],
       "implementation_files": [],
@@ -1706,11 +1851,13 @@
       "deployment_id": "",
       "deployed_commit": "",
       "live_smoke": "",
-      "blocker": "",
+      "blocker": "New public frontend application commit requires the existing production deployment confirmation; priorNov5 approval named the old pin. Broader fullstack acceptance also retains the explicit backend pause.",
       "superseded_by": "",
-      "updated_at": "2026-11-08T12:19:24.756Z",
+      "updated_at": "2026-11-08T12:57:57.011Z",
       "lane": "frontend",
-      "scope_contract": "BNA-SCHOOL-SCOPE-LOCK-20261107-03"
+      "scope_contract": "BNA-SCHOOL-SCOPE-LOCK-20261107-03",
+      "blocker_owner": "operator",
+      "blocker_next_action": "Review prepared public-only PR196 and approve the exact new BNA service pin if desired. This does not resume backend or authorize payment/send/configuration effects."
     }
   ]
 }

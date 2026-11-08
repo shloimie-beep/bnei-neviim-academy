@@ -1,0 +1,59 @@
+{
+  "scope_contract": "BNA-SCHOOL-SCOPE-LOCK-20261107-03",
+  "updated_at": "2026-11-08T12:58:24.911Z",
+  "registrations": [
+    {
+      "lane": "frontend",
+      "id": "bna-school-frontend-checkpoint-15-minutes",
+      "kind": "native heartbeat",
+      "cadence_seconds": 900,
+      "status": "ACTIVE",
+      "target_thread_id": "01a1aab6-671c-7881-8aa3-f6d77a04af88",
+      "created_at": 1794140512201,
+      "configuration_sha256": "37a51bdf81e2d6e518ad83d5421760c584cd5fac295555e22337b56f2a93220d",
+      "first_observed_trigger": null,
+      "scope_verification": "Actual host identity/root/origin read; bound native same-thread scheduler. Per-turn identity/claims gates required; first busy/dedupe/restart/unknown/stop proof pending.",
+      "native_scheduler_readback": {
+        "id": "bna-school-frontend-checkpoint-15-minutes",
+        "status": "ACTIVE",
+        "next_run_at": 1794141893203,
+        "last_run_at": null,
+        "rrule": "FREQ=MINUTELY;INTERVAL=15",
+        "created_at": 1794140512201,
+        "updated_at": 1794140906094,
+        "kind": "heartbeat",
+        "target_thread_id": "01a1aab6-671c-7881-8aa3-f6d77a04af88",
+        "next_run_nominal_at": 1794141412201
+      }
+    },
+    {
+      "lane": "backend",
+      "id": "bna-school-backend-checkpoint-15-minutes",
+      "kind": "native heartbeat",
+      "cadence_seconds": 900,
+      "status": "PAUSED",
+      "target_thread_id": "01a1bb1a-79d2-7c01-ae0c-be2c3b99263e",
+      "created_at": 1794140512483,
+      "configuration_sha256": "d5d05ce38b620d6cc1fc488a178195ba11153a491c2c9b07bf02fdb47eb125e2",
+      "first_observed_trigger": null,
+      "scope_verification": "Actual host identity/root/origin read; bound native same-thread scheduler. Per-turn identity/claims gates required; first busy/dedupe/restart/unknown/stop proof pending.",
+      "pause_reason": "Explicit user backend-only pause; first trigger not observed; no backend effects.",
+      "native_scheduler_readback": {
+        "id": "bna-school-backend-checkpoint-15-minutes",
+        "status": "PAUSED",
+        "next_run_at": null,
+        "last_run_at": null,
+        "rrule": "FREQ=MINUTELY;INTERVAL=15",
+        "created_at": 1794140512483,
+        "updated_at": 1794140823547,
+        "kind": "heartbeat",
+        "target_thread_id": "01a1bb1a-79d2-7c01-ae0c-be2c3b99263e",
+        "next_run_nominal_at": null
+      }
+    }
+  ],
+  "duplicate_scheduler_created": false,
+  "old_fleet": "Fresh control tower: none; no matching existing school automation found before registration.",
+  "completion": "Both registrations must stop only on accepted whole-goal completion/cancel; unchanged external blockers pause repeated model runs.",
+  "proof_status": "Native configurations read back; frontend due nominal time retained with deferred attempts while actual chat active, no completed trigger; backend explicitly PAUSED before trigger. Both-lane runtime acceptance remains unverified."
+}

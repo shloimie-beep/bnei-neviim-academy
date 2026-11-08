@@ -41,29 +41,33 @@ RAW-20261108-001; BNA-FULLSTACK-TWO-LANE-20261107-02 extended by BNA-SCHOOL-SCOP
 
 | Canonical requirement | Original package requirement | Lane | Status |
 |---|---|---|---|
-| REQ-20261108-001 | BNA-WEB04-REQ-01 — Audit current rendered and repository state | frontend | in_progress |
-| REQ-20261108-002 | BNA-WEB04-REQ-02 — One exact Vision and Mission | frontend | not_started |
-| REQ-20261108-003 | BNA-WEB04-REQ-03 — Homepage hierarchy and image treatment | frontend | not_started |
-| REQ-20261108-004 | BNA-WEB04-REQ-04 — Shared interest save and acknowledgement | backend | not_started |
-| REQ-20261108-005 | BNA-WEB04-REQ-05 — Owner filter and reversible archive | backend | not_started |
-| REQ-20261108-006 | BNA-WEB04-REQ-06 — One philosophy article library | frontend | not_started |
-| REQ-20261108-007 | BNA-WEB04-REQ-07 — Editorial article layout and share-first CTA | frontend | not_started |
-| REQ-20261108-008 | BNA-WEB04-REQ-08 — Canonical FAQ consolidation | frontend | not_started |
-| REQ-20261108-009 | BNA-WEB04-REQ-09 — Navigation, redirects and legacy metadata | frontend | not_started |
-| REQ-20261108-010 | BNA-WEB04-REQ-10 — Visual/accessibility/performance acceptance | frontend | not_started |
-| REQ-20261108-011 | BNA-WEB04-REQ-11 — Release and owner handback | frontend | not_started |
-| REQ-20261108-012 | BNA-FS-COORD-01 — Exactly two real contexts, current source acknowledgement and exclusive file claims | frontend | in_progress |
-| REQ-20261108-013 | BNA-FS-COORD-02 — Install and prove per-lane 900-second checkpoint/resume | frontend | in_progress |
-| REQ-20261108-014 | BNA-FS-BE-01 — Current mounted backend and database/provider surface audit | backend | not_started |
-| REQ-20261108-015 | BNA-FS-BE-02 — Durable inquiry, receipt, restart and unknown outcome | backend | not_started |
-| REQ-20261108-016 | BNA-FS-BE-03 — Complete owner CRM and follow-up APIs | backend | not_started |
-| REQ-20261108-017 | BNA-FS-BE-04 — Placement, immutable offers and exact acceptance | backend | not_started |
-| REQ-20261108-018 | BNA-FS-BE-05 — BNA billing core, invoice and ledger | backend | not_started |
-| REQ-20261108-019 | BNA-FS-BE-06 — Authenticated provider webhooks and reconciliation | backend | not_started |
-| REQ-20261108-020 | BNA-FS-BE-07 — Billing lifecycle communications and private status | backend | not_started |
-| REQ-20261108-021 | BNA-FS-FE-01 — Private owner CRM, offer and billing UI | frontend | not_started |
-| REQ-20261108-022 | BNA-FS-FE-02 — Parent offer/payment/receipt UI | frontend | not_started |
-| REQ-20261108-023 | BNA-FS-INT-01 — Combined security/data/provider/visual acceptance | frontend | not_started |
-| REQ-20261108-024 | BNA-FS-INT-02 — Final release and honest remaining activation gates | frontend | not_started |
+| REQ-20261108-001 | BNA-WEB04-REQ-01 — Audit current rendered and repository state | frontend | needs_verification |
+| REQ-20261108-002 | BNA-WEB04-REQ-02 — One exact Vision and Mission | frontend | needs_verification |
+| REQ-20261108-003 | BNA-WEB04-REQ-03 — Homepage hierarchy and image treatment | frontend | needs_verification |
+| REQ-20261108-004 | BNA-WEB04-REQ-04 — Shared interest save and acknowledgement | backend | blocked |
+| REQ-20261108-005 | BNA-WEB04-REQ-05 — Owner filter and reversible archive | backend | blocked |
+| REQ-20261108-006 | BNA-WEB04-REQ-06 — One philosophy article library | frontend | needs_verification |
+| REQ-20261108-007 | BNA-WEB04-REQ-07 — Editorial article layout and share-first CTA | frontend | needs_verification |
+| REQ-20261108-008 | BNA-WEB04-REQ-08 — Canonical FAQ consolidation | frontend | needs_verification |
+| REQ-20261108-009 | BNA-WEB04-REQ-09 — Navigation, redirects and legacy metadata | frontend | needs_verification |
+| REQ-20261108-010 | BNA-WEB04-REQ-10 — Visual/accessibility/performance acceptance | frontend | needs_verification |
+| REQ-20261108-011 | BNA-WEB04-REQ-11 — Release and owner handback | frontend | needs_operator_decision |
+| REQ-20261108-012 | BNA-FS-COORD-01 — Exactly two real contexts, current source acknowledgement and exclusive file claims | frontend | needs_verification |
+| REQ-20261108-013 | BNA-FS-COORD-02 — Install and prove per-lane 900-second checkpoint/resume | frontend | blocked |
+| REQ-20261108-014 | BNA-FS-BE-01 — Current mounted backend and database/provider surface audit | backend | blocked |
+| REQ-20261108-015 | BNA-FS-BE-02 — Durable inquiry, receipt, restart and unknown outcome | backend | blocked |
+| REQ-20261108-016 | BNA-FS-BE-03 — Complete owner CRM and follow-up APIs | backend | blocked |
+| REQ-20261108-017 | BNA-FS-BE-04 — Placement, immutable offers and exact acceptance | backend | blocked |
+| REQ-20261108-018 | BNA-FS-BE-05 — BNA billing core, invoice and ledger | backend | blocked |
+| REQ-20261108-019 | BNA-FS-BE-06 — Authenticated provider webhooks and reconciliation | backend | blocked |
+| REQ-20261108-020 | BNA-FS-BE-07 — Billing lifecycle communications and private status | backend | blocked |
+| REQ-20261108-021 | BNA-FS-FE-01 — Private owner CRM, offer and billing UI | frontend | blocked |
+| REQ-20261108-022 | BNA-FS-FE-02 — Parent offer/payment/receipt UI | frontend | blocked |
+| REQ-20261108-023 | BNA-FS-INT-01 — Combined security/data/provider/visual acceptance | frontend | blocked |
+| REQ-20261108-024 | BNA-FS-INT-02 — Final release and honest remaining activation gates | frontend | needs_operator_decision |
 
-Current source revisions/surface map, actual host SOURCE_READ, file claims, contract, checkpoint IDs/first triggers and completion evidence are recorded in the same scoped run. Current next IDs: REQ-20261108-001/012/013 (audit and coordination), then frontend002/003/006/007/008/009 while backend014–020 audits/extends its disjoint files. Billing merchant/offer/terms/provider gates block dependent effects only.
+Public slice: implemented/verified_local; ops/bna-interest-launch/2026-11-08/PUBLIC-VERIFICATION.md. Current production remains7d0a02a4. New public deployment requires exact confirmation and live readback; not yet deployed. No repeat save/send/archive or backend/production data effect.
+
+RAW-20261108-002: direct backend-only user pause. Backend thread and heartbeat PAUSED; do not replace, resume or take over its files. Private CRM/billing/parent/integration work is blocked. Frontend independent public scope proceeds.
+
+Actual host/Git SOURCE_READ and disjoint claims are in FILE-CLAIMS.json; bna-school.v1 is integrator-accepted with producer acknowledgement deferred by pause. CHECKPOINTS.json distinguishes installed registrations from absent real trigger/idle/restart/stop proof. All24 original requirements and18 journeys plusB01–B10 remain; the goal is not complete.
