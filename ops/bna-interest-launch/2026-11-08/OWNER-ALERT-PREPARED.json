@@ -1,0 +1,39 @@
+{
+  "requirement": "REQ-20261108-025",
+  "version": "BNA-INTEREST-OWNER-ALERT-20261108-v1",
+  "subject": "New BNA interest form received",
+  "pattern": "A new BNA interest form has been saved.\n\nInterest: {{program}}\nArea: {{area}}\nReference: {{reference}}\n\nSign in to view the request:\nhttps://bneineviimacademy.org/operations",
+  "from": "office@bneineviimacademy.org",
+  "recipient_binding": "Verified owner Gmail profile; private preview and explicit BNA_INTEREST_OWNER_ALERT_TO environment binding",
+  "recipient_sha256": "fab156df2719852de2dafb24f3e29548d4a2c5e8ef2374f7d3db47a0cef645e8",
+  "templateHash": "22aa3575300c3c2872cea8fe8194b85fad77723133796ec041ea66a9e6abdeee",
+  "preview_sha256": "7db34954027570f2a0231f30a4d3fdde9c0628d106460045232e81bcd46b5c27",
+  "preview_local_path": "D:\\bna-gateway-leads-20261028\\.runtime\\bna-school-fullstack-20261108\\owner-alert-draft-preview.html",
+  "parent_receipts": "unchanged and previously approved",
+  "external_effects": "none; owner alert not activated or sent",
+  "local_verification": {
+    "command": "node --test tests/bna-interest-owner-alert.test.js tests/bna-interest-store.test.js",
+    "passed": 17,
+    "failed": 0,
+    "senderPreflight": "Production BNA sender verified; parent receipt active; owner binding absent",
+    "recipientProfile": "Connected Gmail owner profile verified",
+    "preview": "Rendered and visually inspected exact owner/test and unchanged parent drafts",
+    "syntaxChecks": [
+      "server.js",
+      "src/lib/bna/interest-owner-alert.js"
+    ],
+    "watchdogs": {
+      "actions": 0,
+      "security_routes": 0,
+      "protocol": 0
+    },
+    "newProductionEmails": 0
+  },
+  "related_frontend_fix": {
+    "observed": "Live805 Hebrew form displayed the Academy year range in reverse order.",
+    "change": "Direction-isolate the exact2027–28 range in checkbox label and native option; no approved word changes.",
+    "verification": "9focused public tests and2actual local Hebrew form viewport states pass; screenshots inspected.",
+    "evidence": "ops/bna-interest-launch/2026-11-08/FORM-YEAR-VERIFICATION.json",
+    "live": false
+  }
+}

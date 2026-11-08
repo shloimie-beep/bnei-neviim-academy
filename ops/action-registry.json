@@ -1,6 +1,6 @@
 {
   "registry_version": "bna-action-registry-v1",
-  "updated_at": "2026-11-05T10:32:55.250Z",
+  "updated_at": "2026-11-08T13:35:04.414Z",
   "policy": {
     "visible_action_rule": "Every visible enabled action must have a working handler, working route, registered helper command, or an explicit disabled/coming-soon reason.",
     "external_write_rule": "External sends, publishes, charges, syncs, DNS writes, uploads, credential copies, and access grants require explicit approval and audit evidence.",
@@ -3855,7 +3855,7 @@
       "selector_hint": "[data-library-filters]",
       "expected_behavior": "Submit or type a title/excerpt query; filter genuine locale articles, persist URL/back/forward and show accurate count/empty state.",
       "permission": "anonymous public visitor",
-      "status": "verified_local_pending_release",
+      "status": "verified_live",
       "handler": "public/js/bna-articles.js + src/lib/bna/school-pages.js; server.js current public mount",
       "scope": "bna-school-coop",
       "mobile_expectation": "320/390 CSS px, keyboard/RTL,48px controls, no overflow; actual inspected Chrome proof.",
@@ -3865,7 +3865,8 @@
       },
       "evidence": [
         "ops/bna-interest-launch/2026-11-08/PUBLIC-VERIFICATION.md",
-        "tests/bna-school-pages.test.js"
+        "tests/bna-school-pages.test.js",
+        "ops/bna-interest-launch/2026-11-08/LIVE-PUBLIC-VERIFICATION.json"
       ],
       "related_requirement_ids": [
         "REQ-20261108-006",
@@ -3882,7 +3883,7 @@
       "selector_hint": "[name=topic]",
       "expected_behavior": "Choose a source topic without reordering or dropping source bodies; combine with search and preserve URL state.",
       "permission": "anonymous public visitor",
-      "status": "verified_local_pending_release",
+      "status": "verified_live",
       "handler": "public/js/bna-articles.js + src/lib/bna/school-pages.js; server.js current public mount",
       "scope": "bna-school-coop",
       "mobile_expectation": "320/390 CSS px, keyboard/RTL,48px controls, no overflow; actual inspected Chrome proof.",
@@ -3892,7 +3893,8 @@
       },
       "evidence": [
         "ops/bna-interest-launch/2026-11-08/PUBLIC-VERIFICATION.md",
-        "tests/bna-school-pages.test.js"
+        "tests/bna-school-pages.test.js",
+        "ops/bna-interest-launch/2026-11-08/LIVE-PUBLIC-VERIFICATION.json"
       ],
       "related_requirement_ids": [
         "REQ-20261108-006",
@@ -3909,7 +3911,7 @@
       "selector_hint": "[data-clear-filters]",
       "expected_behavior": "Clear query/topic, restore all locale articles and focus search; browser Back restores prior state.",
       "permission": "anonymous public visitor",
-      "status": "verified_local_pending_release",
+      "status": "verified_live",
       "handler": "public/js/bna-articles.js + src/lib/bna/school-pages.js; server.js current public mount",
       "scope": "bna-school-coop",
       "mobile_expectation": "320/390 CSS px, keyboard/RTL,48px controls, no overflow; actual inspected Chrome proof.",
@@ -3919,7 +3921,8 @@
       },
       "evidence": [
         "ops/bna-interest-launch/2026-11-08/PUBLIC-VERIFICATION.md",
-        "tests/bna-school-pages.test.js"
+        "tests/bna-school-pages.test.js",
+        "ops/bna-interest-launch/2026-11-08/LIVE-PUBLIC-VERIFICATION.json"
       ],
       "related_requirement_ids": [
         "REQ-20261108-006",
@@ -3936,7 +3939,7 @@
       "selector_hint": "[data-article-card] a",
       "expected_behavior": "Open the actual selected original-language canonical full article.",
       "permission": "anonymous public visitor",
-      "status": "verified_local_pending_release",
+      "status": "verified_live",
       "handler": "public/js/bna-articles.js + src/lib/bna/school-pages.js; server.js current public mount",
       "scope": "bna-school-coop",
       "mobile_expectation": "320/390 CSS px, keyboard/RTL,48px controls, no overflow; actual inspected Chrome proof.",
@@ -3946,7 +3949,8 @@
       },
       "evidence": [
         "ops/bna-interest-launch/2026-11-08/PUBLIC-VERIFICATION.md",
-        "tests/bna-school-pages.test.js"
+        "tests/bna-school-pages.test.js",
+        "ops/bna-interest-launch/2026-11-08/LIVE-PUBLIC-VERIFICATION.json"
       ],
       "related_requirement_ids": [
         "REQ-20261108-006",
@@ -3963,7 +3967,7 @@
       "selector_hint": "[data-article-share] a[href^=\"https://wa.me/\"]",
       "expected_behavior": "Open user-initiated composer URL containing only exact article title and canonical public URL; never auto-send.",
       "permission": "anonymous public visitor",
-      "status": "verified_local_pending_release",
+      "status": "verified_live",
       "handler": "public/js/bna-articles.js + src/lib/bna/school-pages.js; server.js current public mount",
       "scope": "bna-school-coop",
       "mobile_expectation": "320/390 CSS px, keyboard/RTL,48px controls, no overflow; actual inspected Chrome proof.",
@@ -3973,7 +3977,8 @@
       },
       "evidence": [
         "ops/bna-interest-launch/2026-11-08/PUBLIC-VERIFICATION.md",
-        "tests/bna-school-pages.test.js"
+        "tests/bna-school-pages.test.js",
+        "ops/bna-interest-launch/2026-11-08/LIVE-PUBLIC-VERIFICATION.json"
       ],
       "related_requirement_ids": [
         "REQ-20261108-006",
@@ -3990,7 +3995,7 @@
       "selector_hint": "[data-native-share]",
       "expected_behavior": "On user gesture invoke native share when available; cancellation is normal, unsupported/failure uses copy fallback.",
       "permission": "anonymous public visitor",
-      "status": "verified_local_pending_release",
+      "status": "verified_live",
       "handler": "public/js/bna-articles.js + src/lib/bna/school-pages.js; server.js current public mount",
       "scope": "bna-school-coop",
       "mobile_expectation": "320/390 CSS px, keyboard/RTL,48px controls, no overflow; actual inspected Chrome proof.",
@@ -4000,7 +4005,8 @@
       },
       "evidence": [
         "ops/bna-interest-launch/2026-11-08/PUBLIC-VERIFICATION.md",
-        "tests/bna-school-pages.test.js"
+        "tests/bna-school-pages.test.js",
+        "ops/bna-interest-launch/2026-11-08/LIVE-PUBLIC-VERIFICATION.json"
       ],
       "related_requirement_ids": [
         "REQ-20261108-006",
@@ -4017,7 +4023,7 @@
       "selector_hint": "[data-copy-link]",
       "expected_behavior": "Report copied only after clipboard promise resolves; denial/unavailable exposes selectable canonical URL.",
       "permission": "anonymous public visitor",
-      "status": "verified_local_pending_release",
+      "status": "verified_live",
       "handler": "public/js/bna-articles.js + src/lib/bna/school-pages.js; server.js current public mount",
       "scope": "bna-school-coop",
       "mobile_expectation": "320/390 CSS px, keyboard/RTL,48px controls, no overflow; actual inspected Chrome proof.",
@@ -4027,7 +4033,8 @@
       },
       "evidence": [
         "ops/bna-interest-launch/2026-11-08/PUBLIC-VERIFICATION.md",
-        "tests/bna-school-pages.test.js"
+        "tests/bna-school-pages.test.js",
+        "ops/bna-interest-launch/2026-11-08/LIVE-PUBLIC-VERIFICATION.json"
       ],
       "related_requirement_ids": [
         "REQ-20261108-006",
@@ -4044,7 +4051,7 @@
       "selector_hint": ".copy-fallback input",
       "expected_behavior": "Read/select own canonical public URL when clipboard is unavailable, with no visitor input/private token.",
       "permission": "anonymous public visitor",
-      "status": "verified_local_pending_release",
+      "status": "verified_live",
       "handler": "public/js/bna-articles.js + src/lib/bna/school-pages.js; server.js current public mount",
       "scope": "bna-school-coop",
       "mobile_expectation": "320/390 CSS px, keyboard/RTL,48px controls, no overflow; actual inspected Chrome proof.",
@@ -4054,7 +4061,8 @@
       },
       "evidence": [
         "ops/bna-interest-launch/2026-11-08/PUBLIC-VERIFICATION.md",
-        "tests/bna-school-pages.test.js"
+        "tests/bna-school-pages.test.js",
+        "ops/bna-interest-launch/2026-11-08/LIVE-PUBLIC-VERIFICATION.json"
       ],
       "related_requirement_ids": [
         "REQ-20261108-006",
@@ -4071,7 +4079,7 @@
       "selector_hint": ".faq-categories a",
       "expected_behavior": "Navigate to the source category anchor; private-directory conditional entries remain withheld.",
       "permission": "anonymous public visitor",
-      "status": "verified_local_pending_release",
+      "status": "verified_live",
       "handler": "public/js/bna-articles.js + src/lib/bna/school-pages.js; server.js current public mount",
       "scope": "bna-school-coop",
       "mobile_expectation": "320/390 CSS px, keyboard/RTL,48px controls, no overflow; actual inspected Chrome proof.",
@@ -4081,7 +4089,8 @@
       },
       "evidence": [
         "ops/bna-interest-launch/2026-11-08/PUBLIC-VERIFICATION.md",
-        "tests/bna-school-pages.test.js"
+        "tests/bna-school-pages.test.js",
+        "ops/bna-interest-launch/2026-11-08/LIVE-PUBLIC-VERIFICATION.json"
       ],
       "related_requirement_ids": [
         "REQ-20261108-006",
@@ -4098,7 +4107,7 @@
       "selector_hint": ".faq-item summary",
       "expected_behavior": "Native keyboard/touch disclosure; deep-linked stable question opens and scrolls into view; multiple may stay open.",
       "permission": "anonymous public visitor",
-      "status": "verified_local_pending_release",
+      "status": "verified_live",
       "handler": "public/js/bna-articles.js + src/lib/bna/school-pages.js; server.js current public mount",
       "scope": "bna-school-coop",
       "mobile_expectation": "320/390 CSS px, keyboard/RTL,48px controls, no overflow; actual inspected Chrome proof.",
@@ -4108,13 +4117,39 @@
       },
       "evidence": [
         "ops/bna-interest-launch/2026-11-08/PUBLIC-VERIFICATION.md",
-        "tests/bna-school-pages.test.js"
+        "tests/bna-school-pages.test.js",
+        "ops/bna-interest-launch/2026-11-08/LIVE-PUBLIC-VERIFICATION.json"
       ],
       "related_requirement_ids": [
         "REQ-20261108-006",
         "REQ-20261108-007",
         "REQ-20261108-008",
         "REQ-20261108-010"
+      ]
+    },
+    {
+      "action_id": "ACTION-BNA-INTEREST-OWNER-ALERT",
+      "label": "New inquiry owner email alert",
+      "surface": "bna_interest_launch",
+      "route": "/api/bna/coop-interest; saved-inquiry outbox",
+      "selector_hint": "outbox:email:bna_interest_owner_alert",
+      "expected_behavior": "After a new BNA inquiry is saved, create one independent owner notification intent; deliver only the approved recipient-bound draft. Mail failure/unknown retains the inquiry; no retry duplicates, historical alerts, marketing or full backend activation.",
+      "permission": "BNA system after consented inquiry save; internal owner recipient only",
+      "status": "prepared_inactive",
+      "disabled_reason": "Exact owner draft/test/activation and new source pin await final review; BNA_INTEREST_OWNER_ALERT_TO binding absent in production.",
+      "handler": "src/lib/bna/interest-owner-alert.js; existing interest-store transaction and BNA timer",
+      "scope": "bna-school-coop",
+      "mobile_expectation": "No form interaction change; existing saved reference and parent receipt state remain truthful in EN/HE.",
+      "test": {
+        "type": "real disposable PostgreSQL + concurrency/uncertainty/retention tests",
+        "expected_result": "One owner intent per inquiry; inactive/tampered/wrong-recipient/foreign/archived sends prevented; failure/unknown retains inquiry and never auto-resends."
+      },
+      "evidence": [
+        "tests/bna-interest-owner-alert.test.js",
+        "ops/bna-interest-launch/2026-11-08/OWNER-ALERT-PREPARED.json"
+      ],
+      "related_requirement_ids": [
+        "REQ-20261108-025"
       ]
     }
   ]

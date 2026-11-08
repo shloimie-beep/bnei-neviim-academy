@@ -2,6 +2,7 @@
 const { randomUUID, randomBytes, createHash } = require('node:crypto');
 const { DECISION, NOTICE, problem } = require('./interest-launch');
 const { draftEmail, CHANNEL } = require('./interest-email');
+const { enqueueOwnerAlert } = require('./interest-owner-alert');
 const SCHEMA_SQL = `
 CREATE TABLE IF NOT EXISTS bna_interest_challenges (
  token_hash text PRIMARY KEY, issued_at timestamptz NOT NULL DEFAULT NOW(), expires_at timestamptz NOT NULL,
@@ -38,7 +39,7 @@ CREATE TABLE IF NOT EXISTS bna_interest_archive_items (
 );
 CREATE INDEX IF NOT EXISTS bna_interest_archive_active ON bna_interest_archive_items(entity_table,entity_id) WHERE archived_at IS NOT NULL AND restored_at IS NULL;`;
 const tokenHash = token => createHash('sha256').update(token).digest('hex');
-function createInterestStore({ pool, now = () => Date.now(), minChallengeAge = 1200, privacyVersion = 'BNA-ACQUISITION-PRIVACY-v1' }) {
+function createInterestStore({ pool, now = () => Date.now(), minChallengeAge = 1200, privacyVersion = 'BNA-ACQUISITION-PRIVACY-v1', ownerAlertRecipient = process.env.BNA_INTEREST_OWNER_ALERT_TO || '' }) {
   async function project(db) {
     const rows = (await db.query("SELECT id FROM bna_projects WHERE project_key='bna' LIMIT 2")).rows;
     if (rows.length !== 1) throw problem('BNA_PROJECT_UNAVAILABLE', 503); return rows[0].id;
@@ -85,6 +86,7 @@ function createInterestStore({ pool, now = () => Date.now(), minChallengeAge = 1
       const activated = Array.isArray(release?.template_hashes) && release.template_hashes.includes(message.templateHash);
       const outbox = (await db.query(`INSERT INTO assistant_delivery_outbox(delivery_key,channel_key,recipient_identity_key,payload,idempotency_key,status) VALUES($1,$2,$3,$4::jsonb,$1,$5) RETURNING id`, [`bna-interest:${id}`, CHANNEL, `bna-lead:${lead.id}`, JSON.stringify({ workspace_key: 'bna', project_key: 'bna', lead_id: lead.id, inquiry_reference: id, to: f.email, message, delivery_state: activated ? 'queued' : 'draft', activation_required: !activated }), activated ? 'queued' : 'cancelled'])).rows[0];
       await db.query('INSERT INTO bna_interest_inquiries(id,project_id,parent_lead_id,payload_digest,fields,attribution,notice_version,privacy_version,outbox_id) VALUES($1,$2,$3,$4,$5::jsonb,$6::jsonb,$7,$8,$9)', [id, projectId, lead.id, input.digest, JSON.stringify(f), JSON.stringify(input.attribution), NOTICE.version, privacyVersion, outbox.id]);
+      await enqueueOwnerAlert({ db, inquiryId: id, leadId: lead.id, fields: f, to: ownerAlertRecipient });
       await db.query('INSERT INTO bna_interest_operations(operation_id,inquiry_id,payload_digest,recovery_hash) VALUES($1,$2,$3,$4)', [input.operationId, id, input.digest, input.recoveryHash]);
       await db.query('UPDATE bna_interest_challenges SET consumed_at=NOW() WHERE token_hash=$1', [tokenHash(challenge)]);
       const saved = await result(db, id); await db.query('COMMIT'); return { ...saved, replayed: false };

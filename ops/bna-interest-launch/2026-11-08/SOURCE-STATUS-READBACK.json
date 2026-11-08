@@ -1,0 +1,70 @@
+{
+  "scope": "BNA school public frontend execution receipt; backend remains operator-paused",
+  "application_commit": "80575900cbd0376a1db24a3267ef68be49029f29",
+  "live_application_commit": "7d0a02a43cdabc54d20749e1422f197f3e961ab1",
+  "new_production_pin": "awaiting explicit confirmation",
+  "guard": "native requiredRevisionId; inserted only before existing BNA .03 heading, after new regional cover section; text tool omits empty paragraphs",
+  "sources": [
+    {
+      "key": "delivery",
+      "document_id": "19Bm3Fw9toL1yaoATi3XtbITGK8GhxS6e64h6twEtEi4",
+      "tab_id": "t.0",
+      "checked_at": "2026-11-08 13:12:23 UTC",
+      "before_revision": "AHj4eMQy7CmjrBgU9AnxahCtID6YOFW70FMsub5rEXOV8IMkUPJUj_U7QgpRHxPDIP3Jul8k5zSfiXnwo005ckRc9OOArY96hehTeFRNM2M",
+      "readback_revision": "AHj4eMSWIMiYTV8ed615QA7U3vhAhO2pRnRhOrFMs9oJSoOk3PpYYYNyUc0opg7i9KqlQIoVmxEXNSbN8OxoBDA9SPe-ysjNM7EUJ9hm2ag",
+      "insert_index": 3716,
+      "all_inserted_nonempty_paragraphs_exact": true,
+      "all_prior_paragraph_texts_preserved": true,
+      "new_regional_prefix_unchanged": true,
+      "paragraph_counts": {
+        "before": 2406,
+        "after": 2413,
+        "inserted": 7,
+        "remaining": 2406
+      }
+    },
+    {
+      "key": "continuation",
+      "document_id": "1q-GDEaL9JmmVfy1meQrGvu3V4H2XNJ4jp2b17ZrP6bE",
+      "tab_id": "t.5ucllbuab4bn",
+      "checked_at": "2026-11-08 13:12:25 UTC",
+      "before_revision": "AHj4eMQwysgti90UZ3bYqISl1KYJdQ1t7g4Un_TG-27UoHbv5jnBYIFGJ0-njdrWKoLOV_wGvS3Wtgb3gWZXYFyKaqytxW9g-roqH5c_8jo",
+      "readback_revision": "AHj4eMQe6FdHdCiI15jKMUt8Jio7r5BX7GY6yBVY1JhVfS9nUo12Y-5pQuW6LGdoziWNUnZHKK7oo5B_KizNz46yK3nTWh8wBwGjt6Ldc2Q",
+      "insert_index": 1656,
+      "all_inserted_nonempty_paragraphs_exact": true,
+      "all_prior_paragraph_texts_preserved": true,
+      "new_regional_prefix_unchanged": true,
+      "paragraph_counts": {
+        "before": 1312,
+        "after": 1318,
+        "inserted": 6,
+        "remaining": 1312
+      }
+    },
+    {
+      "key": "log",
+      "document_id": "1PExKb2PwAFAHlBtgmQ9RU-JdfTfQ-jTk41SpWetn7w8",
+      "tab_id": "t.t9isykp3kvlt",
+      "checked_at": "2026-11-08 13:12:30 UTC",
+      "before_revision": "AHj4eMQVE2pBupn_U4x02Hw2PuP1CoIlkvbxojlf7qkDFvBJzSJRBKgdUp6LSj0ATkgTVDnR_rASulwCxe_DYtASaJIUUhbKxv4vcVy3HRI",
+      "readback_revision": "AHj4eMTteIY2Am-E6wWjb1HtOsldJAH4MpuFTviPVRwQCZzUtElRfeaABeNNMBOSyLwWNpUnPGecWr67k2LAAqJc1rCLloQIDX1CBe1lko0",
+      "insert_index": 4341,
+      "all_inserted_nonempty_paragraphs_exact": true,
+      "all_prior_paragraph_texts_preserved": true,
+      "new_regional_prefix_unchanged": true,
+      "paragraph_counts": {
+        "before": 396,
+        "after": 401,
+        "inserted": 5,
+        "remaining": 396
+      }
+    }
+  ],
+  "later_checkpoint_state": {
+    "checked_at": "2026-11-08T13:16:21.026Z",
+    "frontend": "PAUSED for unchanged approval/backend blockers",
+    "backend": "PAUSED by operator",
+    "completed_native_runs": 0,
+    "whole_goal": "open"
+  }
+}

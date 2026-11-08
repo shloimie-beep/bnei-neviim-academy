@@ -1,7 +1,5 @@
-# PLAN
+# Current public inquiry plan
 
-Scoped existing BNA implementation. Canonical register: tasks-pending/2026-11-05-bna-interest-launch.md.
+The November5 launch is complete with retained live capture/parent receipt/owner/archive proof. Public .04 application80575900 is now deployed and live verified after exact approval. Current operator source RAW-20261108-004 defers full backend/private/fullstack work; all original24 school IDs are retained, with012–024 Archived/deferred rather than represented as built.
 
-REQ-20261105-001 through REQ-20261105-008 remain open for release/live proof.
-
-Read the register for current evidence and the exact next action.
+Complete only REQ-20261108-025: review the prepared exact owner notification/test and new BNA code pin, then deploy/test/read recipient evidence/activate within the approved boundary. Existing parent copy and transport stay unchanged; failures and unknown outcomes retain leads and prevent duplicate alerts. Backend timer is deleted; frontend checkpoint retained for this narrowed goal.

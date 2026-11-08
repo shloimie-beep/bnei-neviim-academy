@@ -1,0 +1,27 @@
+{
+  "checked_at": "2026-11-08T13:51:43.331Z",
+  "environment": "actual local server.js with synthetic loopback database and no provider credentials; only affected form presentation changed",
+  "results": [
+    {
+      "width": 390,
+      "language": "he",
+      "status": 200,
+      "yearLabelLTR": true,
+      "nativeOptionIsolated": true,
+      "overflow": false,
+      "violations": [],
+      "newSubmissions": 0
+    },
+    {
+      "width": 1440,
+      "language": "he",
+      "status": 200,
+      "yearLabelLTR": true,
+      "nativeOptionIsolated": true,
+      "overflow": false,
+      "violations": [],
+      "newSubmissions": 0
+    }
+  ],
+  "sourceWordChanges": 0
+}

@@ -1,5 +1,7 @@
-# Current BNA school status
+# Current BNA public inquiry scope
 
-Eight original November5 launch requirements remain Done. The24 original school extension requirements remain open in the same run. Public frontend .04 is implemented/verified_local;ops/bna-interest-launch/2026-11-08/PUBLIC-VERIFICATION.md records23 focused tests,28actual viewport states,60links and47sitemap destinations. New public delta is not yet deployed; exact existing-service production confirmation/live proof pending.
+RAW-20261108-004 / BNA-PUBLIC-INQUIRY-SCOPE-20261108-01 narrows work to the public webpage/form, stored inquiries, existing approved parent confirmation and minimal owner Gmail alert. Full backend/private CRM/offer/billing/parent scope is Archived/deferred, not implemented. Backend checkpoint deleted; existing frontend checkpoint ACTIVE with the narrow prompt. No completed checkpoint model trigger is claimed.
 
-Backend and its heartbeat are explicitly operator-PAUSED (RAW-20261108-002). No replacement/takeover/resume. Owner/parent CRM/billing and combined acceptance depend on resumption. Native frontend900-second registration is ACTIVE with busy deferment observed, but completed trigger/idle-resume/restart/stop is not fully proved. Global July run/latest and other businesses remain untouched.
+Public application80575900 is LIVE: Railway SUCCESSd4e8810a and serving identity match;28 live Chrome states,60 internal links,47 sitemap destinations and12 original asset hashes passed. November5 durable inquiry, recipient-visible parent receipt, owner readback and fixed reversible archive proof are retained without repeat effects.
+
+Only REQ-20261108-025 remains open: minimal owner alert implemented locally,17 focused SQL tests passed, exact saved preview inspected. Owner Gmail profile and production BNA sender verified; parent receipt remains active. Exact new owner draft/test, recipient variable binding and code pin await combined final review DEC-20261108-003. No owner notification/test has been sent or activated.

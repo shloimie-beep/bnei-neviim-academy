@@ -23,7 +23,7 @@
   },
   "stage": "STAGE_3_CODEX_IMPLEMENTATION",
   "packet_role": "IMPLEMENTATION_PACKET",
-  "status": "needs_verification",
+  "status": "done",
   "title": "BNA source-linked public parent guide",
   "created_at": "2026-11-08T12:26:13.466Z",
   "workspace_key": "bna",
@@ -548,7 +548,8 @@
       "ops/bna-interest-launch/2026-11-08/CURRENT-STATE.json",
       "ops/bna-interest-launch/2026-11-08/ASSET-CHECK.json",
       "tasks-pending/2026-11-05-bna-interest-launch.md",
-      ".runtime/bna-school-fullstack-20261108/current-sources/P17.md"
+      ".runtime/bna-school-fullstack-20261108/current-sources/P17.md",
+      "ops/bna-interest-launch/2026-11-08/LIVE-PUBLIC-VERIFICATION.json"
     ]
   },
   "app_visible": true,
@@ -590,9 +591,9 @@
     "expected_result": "No unsupported implementation or UI done claim."
   },
   "next_packet": {
-    "type": "VERIFIER_PACKET",
-    "description": "Current public implementation is locally verified; scoped production confirmation/live proof pending. Backend remains operator-paused.",
-    "path": "ops/execution-runs/2026-11-05-bna-interest-launch/NEXT-SESSION.md"
+    "type": "NONE",
+    "description": "Public80575900 slice deployed/live verified. Current owner-alert feature is separately025; fullstack deferred by RAW-20261108-004.",
+    "path": "tasks-pending/2026-11-05-bna-interest-launch.md"
   },
   "source_files": [
     "server.js",

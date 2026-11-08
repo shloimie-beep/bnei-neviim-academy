@@ -1,6 +1,6 @@
 {
   "scope": "bna-school-coop",
-  "claim": "public frontend verified_local; backend operator-paused; not yet deployed",
+  "claim": "Public80575900 is deployed and live verified; minimal owner-alert feature is separately prepared/inactive.",
   "initial_browser_matrix": {
     "checkedAt": "2026-11-08T12:40:30.022Z",
     "environment": "actual local server.js with compatibility/database boot disabled; synthetic loopback DB URL and no provider credentials",
@@ -350,5 +350,16 @@
     ],
     "reason": "Repository PQC requires430 and1024 viewport coverage in addition to package320/390/768/1440."
   },
-  "total_browser_states": 28
+  "total_browser_states": 28,
+  "application_commit": "80575900cbd0376a1db24a3267ef68be49029f29",
+  "pushed_commit": "80575900cbd0376a1db24a3267ef68be49029f29",
+  "pull_request": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/196",
+  "source_status_readback": "ops/bna-interest-launch/2026-11-08/SOURCE-STATUS-READBACK.json",
+  "production": {
+    "application_commit": "80575900cbd0376a1db24a3267ef68be49029f29",
+    "deployment_id": "d4e8810a-5422-48e9-b516-b25c3cd48cb3",
+    "status": "SUCCESS",
+    "live_verification": "ops/bna-interest-launch/2026-11-08/LIVE-PUBLIC-VERIFICATION.json"
+  },
+  "current_scope": "RAW-20261108-004 public inquiry flow only; full backend deferred"
 }

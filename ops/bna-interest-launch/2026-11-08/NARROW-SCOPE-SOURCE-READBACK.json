@@ -1,0 +1,57 @@
+{
+  "scope_id": "BNA-PUBLIC-INQUIRY-SCOPE-20261108-01",
+  "source": "RAW-20261108-004",
+  "checked_at": "2026-11-08 13:39:18 UTC",
+  "guard": "requiredRevisionId; BNA-only prefix insertion; no prior paragraphs changed",
+  "checks": [
+    {
+      "key": "continuation",
+      "document_id": "1q-GDEaL9JmmVfy1meQrGvu3V4H2XNJ4jp2b17ZrP6bE",
+      "tab_id": "t.5ucllbuab4bn",
+      "before_revision": "AHj4eMT5FQoedBBshCVbAADcwmA0svmr-i-zZBvrfU6MP8E1MyzfMfhCH8uAkbRQlLy1aJo8JxEmgbRtHpbydVCBvc5ny0QOOYiqfI99Rt8",
+      "readback_revision": "AHj4eMStkervu7JiJF-yCFVosjDJSRmKIeknlf6DTmI_iVJS20JXKHLmubNnMB9BQfpIZaeKCsSLWkz-nh3-OXPtQP0oXC3FDPprc_WZrlY",
+      "inserted_paragraphs_exact": true,
+      "all_prior_paragraphs_preserved": true,
+      "before_count": 1323,
+      "after_count": 1329
+    },
+    {
+      "key": "website",
+      "document_id": "1jw0shI2DSfUH9RpJc2WdeIqXwO1OYOUEiwuv3mdNngU",
+      "tab_id": "t.0",
+      "before_revision": "AHj4eMRG2IyVUI3WOSGx8CIxdw2_hBy-Xh9zqaldwZw3X1qHAidMWKSLPxi3flYDVlvvKcPi_QVJP8fxx4YjEt-s1Az8cBCDrcbqpluGTls",
+      "readback_revision": "AHj4eMQV6HTWcj74LECVrI-bhFIhH-lsif9jUHdoI_aYX3mvsC3uggTs1lpxk-oO3mWbmrDk_2QPJFn3Z2T5hXUeSFlegss2ZnxRBRhk9bw",
+      "inserted_paragraphs_exact": true,
+      "all_prior_paragraphs_preserved": true,
+      "before_count": 1967,
+      "after_count": 1974
+    },
+    {
+      "key": "delivery",
+      "document_id": "19Bm3Fw9toL1yaoATi3XtbITGK8GhxS6e64h6twEtEi4",
+      "tab_id": "t.0",
+      "before_revision": "AHj4eMTse1Xm4Z5H8uYbJS9lHZ6fq-G-HNjb2cy-UZoDvhdXxMX0ohMcmajre4c7T9xzrAViHuqyKi1qQzvoWJ229UeaPFjBJPlmXolqxUo",
+      "readback_revision": "AHj4eMSt9f_lZ8_SRujLmKfEdwaUTyW4npTX0K90fUkax4e7PUhglwkNUoMpmK7uOZKPVtY1yYhHUtZZSyK_sJ1aA8io-Hvy6TrHSOS-YFg",
+      "inserted_paragraphs_exact": true,
+      "all_prior_paragraphs_preserved": true,
+      "before_count": 2418,
+      "after_count": 2425
+    },
+    {
+      "key": "log",
+      "document_id": "1PExKb2PwAFAHlBtgmQ9RU-JdfTfQ-jTk41SpWetn7w8",
+      "tab_id": "t.t9isykp3kvlt",
+      "before_revision": "AHj4eMTteIY2Am-E6wWjb1HtOsldJAH4MpuFTviPVRwQCZzUtElRfeaABeNNMBOSyLwWNpUnPGecWr67k2LAAqJc1rCLloQIDX1CBe1lko0",
+      "readback_revision": "AHj4eMTlZn0hTZgquFVNid6p7wMMWj7t4Ou4JaD1B9gA32x0VTngYPlJygPlnd7bYDZv7Au-E-8WINaFF4k-IJi-ebRPTLxkNPHD8uBFQFE",
+      "inserted_paragraphs_exact": true,
+      "all_prior_paragraphs_preserved": true,
+      "before_count": 401,
+      "after_count": 406
+    }
+  ],
+  "transition": {
+    "unchanged": true,
+    "readback_revision": "AHj4eMTlZn0hTZgquFVNid6p7wMMWj7t4Ou4JaD1B9gA32x0VTngYPlJygPlnd7bYDZv7Au-E-8WINaFF4k-IJi-ebRPTLxkNPHD8uBFQFE"
+  },
+  "implementation": "public80575900 is live; owner alert locally prepared, not sent or activated"
+}

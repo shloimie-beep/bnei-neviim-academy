@@ -11073,9 +11073,12 @@ function bnaLegacyActiveSql(table, alias) { return isOneTimeSingleTenantRuntime(
 const bnaInterestStore = require('./src/lib/bna/interest-store').createInterestStore({ pool });
 const bnaInterestMailTransport = require('./src/lib/bna/interest-mail-runtime').createBnaGmailTransport({ createAuth: createGoogleClientFromRefreshToken });
 const bnaInterestMailWorker = require('./src/lib/bna/interest-mail-runtime').createBnaAcknowledgementWorker({ pool, transport: bnaInterestMailTransport });
+const bnaInterestOwnerAlertWorker = require('./src/lib/bna/interest-owner-alert').createOwnerAlertWorker({ pool, transport: bnaInterestMailTransport, to: process.env.BNA_INTEREST_OWNER_ALERT_TO });
 if (DATABASE_URL && !isOneTimeSingleTenantRuntime() && process.env.BNA_COOP_FORM_ENABLED === 'true') {
   const bnaInterestMailTimer = setInterval(() => bnaInterestMailWorker.tick().catch(() => console.warn('BNA receipt worker unavailable; saved inquiries retained.')), 30000);
   bnaInterestMailTimer.unref();
+  const bnaInterestOwnerAlertTimer = setInterval(() => bnaInterestOwnerAlertWorker.tick().catch(() => console.warn('BNA owner notification unavailable; saved inquiries retained.')), 30000);
+  bnaInterestOwnerAlertTimer.unref();
 }
 app.use(require('./src/lib/bna/interest-http').createInterestRouter({
   store: bnaInterestStore,

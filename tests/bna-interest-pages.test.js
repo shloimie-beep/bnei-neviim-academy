@@ -22,6 +22,7 @@ test('shared form retains three program choices, required email, area and separa
     assert.match(html,/name="email"[^>]*required/);assert.match(html,/name="area"/);assert.match(html,/name="preferredArea"/);
     assert.doesNotMatch(html,/name="(?:articleUpdates|podUpdates|academyUpdates)"[^>]*checked/);
     assert.match(html,/fieldset disabled/);assert.match(html,/\/privacy/);
+    assert.match(html, /data-academy-updates[\s\S]*?<bdi dir="ltr">2027–28<\/bdi>/);
   }
 });
 test('landing uses approved source sections and original full hero bytes in both languages',()=>{

@@ -71,3 +71,22 @@ Public slice: implemented/verified_local; ops/bna-interest-launch/2026-11-08/PUB
 RAW-20261108-002: direct backend-only user pause. Backend thread and heartbeat PAUSED; do not replace, resume or take over its files. Private CRM/billing/parent/integration work is blocked. Frontend independent public scope proceeds.
 
 Actual host/Git SOURCE_READ and disjoint claims are in FILE-CLAIMS.json; bna-school.v1 is integrator-accepted with producer acknowledgement deferred by pause. CHECKPOINTS.json distinguishes installed registrations from absent real trigger/idle/restart/stop proof. All24 original requirements and18 journeys plusB01–B10 remain; the goal is not complete.
+
+
+## November8 school continuation — pending public release
+
+REQ-20261108-001 and REQ-20261108-010 evidence mapping: `ops/watchdog-audits/2026-11-08-product-quality-drift` has0 findings; retain as local public implementation proof. Public live release remains pending DEC-20261108-001.
+
+REQ-20261108-010 evidence mapping: `ops/watchdog-audits/2026-11-08-watchdog-action-audit` has0 findings across the current action registries. This is local registry evidence; live release remains pending DEC-20261108-001.
+
+REQ-20261108-010 evidence mapping: `ops/watchdog-audits/2026-11-08-watchdog-security-routes` has0 findings across current route registries. New fullstack family/provider isolation remains blocked by DEC-20261108-002; public live release remains pending DEC-20261108-001.
+
+Public application `80575900cbd0376a1db24a3267ef68be49029f29` is pushed in PR196.23 focused tests,28 Chrome states,60 internal links and47 sitemap destinations passed locally; exact current source/12 original assets were retained. Current live pin remains7d0a02a4. New public pin confirmation is pending under DEC-20261108-001. Public requirements002/003/006/007/008/009/010 remain `needs_operator_decision`; source/current-state audit001 is Done. All24 original school IDs remain in the existing run. Backend and dependent private/integration work remain operator-paused under DEC-20261108-002. No repeated inquiry/email/archive effect was performed. Source receipt readback preserved all prior target paragraphs including the newer regional cover sections.
+
+
+## Current operator scope — public inquiry flow only
+
+RAW-20261108-004 narrows the current goal to landing/public webpage, shared interest form, stored inquiry information, existing approved EN/HE parent acknowledgement and a new-signup alert to the owner Gmail inbox. REQ-20261108-025 covers the minimal owner alert; REQ-20261108-026 covers scope/checkpoints. Original fullstack012–024 are Archived/deferred for now, with all package IDs/history retained; no full backend completion is claimed. The backend timer was deleted and frontend timer retained with a narrowed prompt. Existing backend chat/worktree stay paused; no new worker. Approved public80575900 deployment succeeded; live readback is underway. No new inquiry/email/archive effect has occurred in that public release.
+
+
+Current public80575900 is LIVE: Railway SUCCESSd4e8810a and serving identity match;28 live Chrome states,60links,47sitemap routes and12asset hashes passed, with0new inquiries/emails/archive actions. Existing parent receipt is active and sender verified. New minimal owner alert025 is implemented/tested locally (17 focused SQL tests), exact preview inspected, awaiting combined draft/test/pin review. Backend checkpoint deleted, frontend ACTIVE; full backend scope Archived/deferred by RAW-20261108-004. Source correction/readback preserves every prior paragraph and transition tab.

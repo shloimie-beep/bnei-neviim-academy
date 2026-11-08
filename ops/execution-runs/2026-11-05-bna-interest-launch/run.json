@@ -1,13 +1,13 @@
 {
   "run_id": "2026-11-05-bna-interest-launch",
-  "title": "BNA November 5 interest launch",
+  "title": "BNA public website and minimal inquiry notification",
   "created_at": "2026-11-05T10:37:10.471Z",
-  "updated_at": "2026-11-08T12:19:24.756Z",
+  "updated_at": "2026-11-08T13:44:26.157Z",
   "active": false,
   "protocol": "docs/BNA-RAMBLE-TO-DONE.md",
   "requirements_file": "requirements.json",
   "scope_note": "Explicit --run selection for this existing chat; preserve the unrelated active July owner run and latest pointer.",
   "status": "active_scoped_continuation",
   "initial_launch_completed_at": "2026-11-05T11:58:43.252Z",
-  "current_scope": "BNA-SCHOOL-SCOPE-LOCK-20261107-03"
+  "current_scope": "BNA-PUBLIC-INQUIRY-SCOPE-20261108-01"
 }

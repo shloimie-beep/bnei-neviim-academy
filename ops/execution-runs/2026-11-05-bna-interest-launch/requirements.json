@@ -1,7 +1,7 @@
 {
   "run_id": "2026-11-05-bna-interest-launch",
   "title": "BNA interest launch and school fullstack continuation",
-  "updated_at": "2026-11-08T12:57:57.011Z",
+  "updated_at": "2026-11-08T13:44:26.157Z",
   "sources": [
     {
       "source_id": "RAW-20261105-001",
@@ -22,6 +22,16 @@
       "workspace": "bna-school-coop",
       "project": "bnei_neviim_academy",
       "source_type": "codex_chat_school_recovery_package"
+    },
+    {
+      "source_id": "RAW-20261108-004",
+      "source_path": "raw-input/RAW-20261108-004-narrow-frontend-flow.md",
+      "captured_at": "2026-11-08T13:26:23.982Z",
+      "content_fingerprint": "sha256:22f78184bef3b4e5c5c756f7065ac2dfd0891c40790ebe232c990934b1418107",
+      "privacy_classification": "internal_redacted",
+      "workspace": "bna",
+      "project": "bnei_neviim_academy",
+      "source_type": "codex_chat_direct_scope_reduction"
     }
   ],
   "source_statements": [
@@ -240,6 +250,18 @@
       "source_statement": "Live serving identity and ordinary-owner readback; billing live gate explicit; timers stopped only at full verification/cancel, blocked not complete.",
       "requirement_id": "REQ-20261108-024",
       "package_requirement_id": "BNA-FS-INT-02"
+    },
+    {
+      "statement_id": "SRC-20261108-025",
+      "source_id": "RAW-20261108-004",
+      "source_statement": "New BNA inquiry persists before email transport; exactly one owner alert to the verified SDRATLER Gmail recipient, separate from existing approved parent receipt. Failure/unknown preserves lead and suppresses duplicate send. Preview exact draft; verify sender/recipient and current activation/release gates; no historical/backfill alerts.",
+      "requirement_id": "REQ-20261108-025"
+    },
+    {
+      "statement_id": "SRC-20261108-026",
+      "source_id": "RAW-20261108-004",
+      "source_statement": "Backend15-minute checkpoint deleted; full backend/CRM/offer/billing/parent work deferred with original IDs preserved. Existing frontend15-minute checkpoint retained and bound to current public/form/receipt/owner-alert scope only. No new worker or other-program effect.",
+      "requirement_id": "REQ-20261108-026"
     }
   ],
   "requirements": [
@@ -701,22 +723,25 @@
       "priority": "P0",
       "batch_id": "WEB04",
       "depends_on": [],
-      "status": "needs_verification",
-      "implementation_status": "Public school slice implemented and verified_local:9 source/join tests +14 privacy tests,28 actual local Chrome states,60internal links,47sitemap destinations. Current production remains7d; new delta awaits exact scoped production approval and live readback.",
-      "can_continue_without_operator": true,
-      "next_action": "Prepared public-only production pin approval, then provider/live source/render/link readback without repeat inquiry/send/archive.",
+      "status": "done",
+      "implementation_status": "Current school-only package, live owning clauses, Git/provider baseline, surface audit and before screenshots inspected; exact disjoint ownership retained. Audit evidence pushed with public application80575900.",
+      "can_continue_without_operator": false,
+      "next_action": "Audit complete; retain dated baseline as provenance.",
       "acceptance_criteria": [
         "Record current head/worktree, deployment route, original source receipt, route/component/API/store/test map and before screenshots; no other worker ownership displaced."
       ],
       "evidence": [
         "ops/bna-interest-launch/2026-11-08/PUBLIC-VERIFICATION.md",
         "ops/bna-interest-launch/2026-11-08/PUBLIC-VERIFICATION.json",
-        "ops/bna-interest-launch/2026-11-08/CURRENT-COPYBOOK-COMPARISON.json"
+        "ops/bna-interest-launch/2026-11-08/CURRENT-COPYBOOK-COMPARISON.json",
+        "ops/bna-interest-launch/2026-11-08/CURRENT-STATE.json",
+        "ops/bna-interest-launch/2026-11-08/SURFACE-MAP.json",
+        "ops/bna-interest-launch/2026-11-08/SOURCE-STATUS-READBACK.json"
       ],
       "verification": [
         "node --test tests/bna-school-pages.test.js tests/bna-interest-pages.test.js tests/bna-coop-join-page.test.js:9PASS",
         "node --test tests/bna-privacy-policy.test.js tests/public-homepage-privacy.test.js tests/public-route-privacy-contract.test.js tests/public-content-contamination-guard.test.js:14PASS",
-        "actual local server.js Chrome matrix:16 states; zero detected axe A/AA violations, overflow, missing images or page errors; functional actions pass"
+        "actual local server.js Chrome matrix:28 states; zero detected axe A/AA violations, overflow, missing images or page errors; functional actions pass"
       ],
       "implementation_files": [
         "src/lib/bna/interest-pages.js",
@@ -728,15 +753,15 @@
         "server.js"
       ],
       "deployment_required": false,
-      "implementation_commit": "",
-      "pushed_commit": "",
-      "pull_request": "",
+      "implementation_commit": "80575900cbd0376a1db24a3267ef68be49029f29",
+      "pushed_commit": "80575900cbd0376a1db24a3267ef68be49029f29",
+      "pull_request": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/196",
       "deployment_id": "",
       "deployed_commit": "",
       "live_smoke": "",
       "blocker": "",
       "superseded_by": "",
-      "updated_at": "2026-11-08T12:57:57.011Z",
+      "updated_at": "2026-11-08T13:44:26.157Z",
       "lane": "frontend",
       "scope_contract": "BNA-SCHOOL-SCOPE-LOCK-20261107-03"
     },
@@ -759,22 +784,25 @@
       "depends_on": [
         "REQ-20261108-001"
       ],
-      "status": "needs_verification",
-      "implementation_status": "Public school slice implemented and verified_local:9 source/join tests +14 privacy tests,28 actual local Chrome states,60internal links,47sitemap destinations. Current production remains7d; new delta awaits exact scoped production approval and live readback.",
-      "can_continue_without_operator": true,
-      "next_action": "Prepared public-only production pin approval, then provider/live source/render/link readback without repeat inquiry/send/archive.",
+      "status": "done",
+      "implementation_status": "Public80575900 deployed after explicit approval; provider SUCCESS and live identity agree.28 live Chrome states,60links,47sitemap destinations and12 original asset hashes passed; screenshots inspected. No new inquiry/email/archive effects.",
+      "can_continue_without_operator": false,
+      "next_action": "Public release verified; minimal owner notification is separately REQ-20261108-025.",
       "acceptance_criteria": [
         "New EN/HE copy exact; Our Vision and Our Mission each once; no third BNA Vision, no rejected vague pull quote; protected copy unchanged."
       ],
       "evidence": [
         "ops/bna-interest-launch/2026-11-08/PUBLIC-VERIFICATION.md",
         "ops/bna-interest-launch/2026-11-08/PUBLIC-VERIFICATION.json",
-        "ops/bna-interest-launch/2026-11-08/CURRENT-COPYBOOK-COMPARISON.json"
+        "ops/bna-interest-launch/2026-11-08/CURRENT-COPYBOOK-COMPARISON.json",
+        "ops/bna-interest-launch/2026-11-08/LIVE-PUBLIC-VERIFICATION.json",
+        "raw-input/RAW-20261108-003-public-deployment-approval.md"
       ],
       "verification": [
         "node --test tests/bna-school-pages.test.js tests/bna-interest-pages.test.js tests/bna-coop-join-page.test.js:9PASS",
         "node --test tests/bna-privacy-policy.test.js tests/public-homepage-privacy.test.js tests/public-route-privacy-contract.test.js tests/public-content-contamination-guard.test.js:14PASS",
-        "actual local server.js Chrome matrix:16 states; zero detected axe A/AA violations, overflow, missing images or page errors; functional actions pass"
+        "actual local server.js Chrome matrix:28 states; zero detected axe A/AA violations, overflow, missing images or page errors; functional actions pass",
+        "Provider SUCCESSd4e8810a and live /api/deploy-info80575900;28actual live Chrome states,60links,47sitemap,12asset hashes;0new submissions/emails/archive effects."
       ],
       "implementation_files": [
         "src/lib/bna/interest-pages.js",
@@ -786,17 +814,22 @@
         "server.js"
       ],
       "deployment_required": true,
-      "implementation_commit": "",
-      "pushed_commit": "",
-      "pull_request": "",
-      "deployment_id": "",
-      "deployed_commit": "",
-      "live_smoke": "",
+      "implementation_commit": "80575900cbd0376a1db24a3267ef68be49029f29",
+      "pushed_commit": "80575900cbd0376a1db24a3267ef68be49029f29",
+      "pull_request": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/196",
+      "deployment_id": "d4e8810a-5422-48e9-b516-b25c3cd48cb3",
+      "deployed_commit": "80575900cbd0376a1db24a3267ef68be49029f29",
+      "live_smoke": "ops/bna-interest-launch/2026-11-08/LIVE-PUBLIC-VERIFICATION.json",
       "blocker": "",
       "superseded_by": "",
-      "updated_at": "2026-11-08T12:57:57.011Z",
+      "updated_at": "2026-11-08T13:44:26.157Z",
       "lane": "frontend",
-      "scope_contract": "BNA-SCHOOL-SCOPE-LOCK-20261107-03"
+      "scope_contract": "BNA-SCHOOL-SCOPE-LOCK-20261107-03",
+      "deployment_evidence": [
+        "d4e8810a-5422-48e9-b516-b25c3cd48cb3 Railway deployment SUCCESS at application 80575900cbd0376a1db24a3267ef68be49029f29",
+        "ops/bna-interest-launch/2026-11-08/LIVE-PUBLIC-VERIFICATION.json",
+        "Live smoke passed: November8 public /api/deploy-info80575900,28 live browser states,60 links,47 sitemap destinations and12 source asset hashes"
+      ]
     },
     {
       "id": "REQ-20261108-003",
@@ -817,22 +850,25 @@
       "depends_on": [
         "REQ-20261108-001"
       ],
-      "status": "needs_verification",
-      "implementation_status": "Public school slice implemented and verified_local:9 source/join tests +14 privacy tests,28 actual local Chrome states,60internal links,47sitemap destinations. Current production remains7d; new delta awaits exact scoped production approval and live readback.",
-      "can_continue_without_operator": true,
-      "next_action": "Prepared public-only production pin approval, then provider/live source/render/link readback without repeat inquiry/send/archive.",
+      "status": "done",
+      "implementation_status": "Public80575900 deployed after explicit approval; provider SUCCESS and live identity agree.28 live Chrome states,60links,47sitemap destinations and12 original asset hashes passed; screenshots inspected. No new inquiry/email/archive effects.",
+      "can_continue_without_operator": false,
+      "next_action": "Public release verified; minimal owner notification is separately REQ-20261108-025.",
       "acceptance_criteria": [
         "Fixed order, two contextual program CTAs, exact protected hero masters, image pairings, desktop/mobile/RTL proof."
       ],
       "evidence": [
         "ops/bna-interest-launch/2026-11-08/PUBLIC-VERIFICATION.md",
         "ops/bna-interest-launch/2026-11-08/PUBLIC-VERIFICATION.json",
-        "ops/bna-interest-launch/2026-11-08/CURRENT-COPYBOOK-COMPARISON.json"
+        "ops/bna-interest-launch/2026-11-08/CURRENT-COPYBOOK-COMPARISON.json",
+        "ops/bna-interest-launch/2026-11-08/LIVE-PUBLIC-VERIFICATION.json",
+        "raw-input/RAW-20261108-003-public-deployment-approval.md"
       ],
       "verification": [
         "node --test tests/bna-school-pages.test.js tests/bna-interest-pages.test.js tests/bna-coop-join-page.test.js:9PASS",
         "node --test tests/bna-privacy-policy.test.js tests/public-homepage-privacy.test.js tests/public-route-privacy-contract.test.js tests/public-content-contamination-guard.test.js:14PASS",
-        "actual local server.js Chrome matrix:16 states; zero detected axe A/AA violations, overflow, missing images or page errors; functional actions pass"
+        "actual local server.js Chrome matrix:28 states; zero detected axe A/AA violations, overflow, missing images or page errors; functional actions pass",
+        "Provider SUCCESSd4e8810a and live /api/deploy-info80575900;28actual live Chrome states,60links,47sitemap,12asset hashes;0new submissions/emails/archive effects."
       ],
       "implementation_files": [
         "src/lib/bna/interest-pages.js",
@@ -844,17 +880,22 @@
         "server.js"
       ],
       "deployment_required": true,
-      "implementation_commit": "",
-      "pushed_commit": "",
-      "pull_request": "",
-      "deployment_id": "",
-      "deployed_commit": "",
-      "live_smoke": "",
+      "implementation_commit": "80575900cbd0376a1db24a3267ef68be49029f29",
+      "pushed_commit": "80575900cbd0376a1db24a3267ef68be49029f29",
+      "pull_request": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/196",
+      "deployment_id": "d4e8810a-5422-48e9-b516-b25c3cd48cb3",
+      "deployed_commit": "80575900cbd0376a1db24a3267ef68be49029f29",
+      "live_smoke": "ops/bna-interest-launch/2026-11-08/LIVE-PUBLIC-VERIFICATION.json",
       "blocker": "",
       "superseded_by": "",
-      "updated_at": "2026-11-08T12:57:57.011Z",
+      "updated_at": "2026-11-08T13:44:26.157Z",
       "lane": "frontend",
-      "scope_contract": "BNA-SCHOOL-SCOPE-LOCK-20261107-03"
+      "scope_contract": "BNA-SCHOOL-SCOPE-LOCK-20261107-03",
+      "deployment_evidence": [
+        "d4e8810a-5422-48e9-b516-b25c3cd48cb3 Railway deployment SUCCESS at application 80575900cbd0376a1db24a3267ef68be49029f29",
+        "ops/bna-interest-launch/2026-11-08/LIVE-PUBLIC-VERIFICATION.json",
+        "Live smoke passed: November8 public /api/deploy-info80575900,28 live browser states,60 links,47 sitemap destinations and12 source asset hashes"
+      ]
     },
     {
       "id": "REQ-20261108-004",
@@ -875,32 +916,36 @@
       "depends_on": [
         "REQ-20261108-001"
       ],
-      "status": "blocked",
-      "implementation_status": "Current school context/package admitted; actual app/provider/state audit precedes implementation.",
+      "status": "already_satisfied",
+      "implementation_status": "Unchanged November5 durable capture/approved parent receipt/ordinary-owner/fixed archive proof retained as expressly allowed. Current805 public form states and17 focused store/owner-alert SQL regressions pass. New owner notification is separately025.",
       "can_continue_without_operator": false,
-      "next_action": "Explicit operator resumption in backend chat; preserve current worktree and handback. No replacement worker or timer.",
+      "next_action": "Retain valid November5 proof; do not repeat inquiry, parent test or archive.",
       "acceptance_criteria": [
         "Existing .01 requirements: durable idempotent save, actual reference, truthful outbox states, verified recipient path and owner refresh. Reuse .01 reported proof for unchanged behavior; no re-archive or test-email resend. Only remaining .04 regressions require new proof."
       ],
       "evidence": [
-        "raw-input/RAW-20261108-001-bna-school-fullstack.md"
+        "raw-input/RAW-20261108-001-bna-school-fullstack.md",
+        "ops/bna-interest-launch/2026-11-05/RESULT.md"
       ],
       "verification": [],
       "implementation_files": [],
       "deployment_required": true,
-      "implementation_commit": "",
-      "pushed_commit": "",
-      "pull_request": "",
-      "deployment_id": "",
-      "deployed_commit": "",
-      "live_smoke": "",
-      "blocker": "Explicit operator instruction in backend chat: For now, pause the backend stuff.",
+      "implementation_commit": "7d0a02a43cdabc54d20749e1422f197f3e961ab1",
+      "pushed_commit": "7d0a02a43cdabc54d20749e1422f197f3e961ab1",
+      "pull_request": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/196",
+      "deployment_id": "3854b4ba-e2dc-4007-8781-6d837f229f82",
+      "deployed_commit": "7d0a02a43cdabc54d20749e1422f197f3e961ab1",
+      "live_smoke": "ops/bna-interest-launch/2026-11-05/RESULT.md",
+      "blocker": "",
       "superseded_by": "",
-      "updated_at": "2026-11-08T12:27:54.289Z",
+      "updated_at": "2026-11-08T13:44:26.157Z",
       "lane": "backend",
       "scope_contract": "BNA-SCHOOL-SCOPE-LOCK-20261107-03",
-      "blocker_owner": "operator",
-      "blocker_next_action": "Explicit operator resumption in backend chat; preserve current worktree and handback. No replacement worker or timer."
+      "deployment_evidence": [
+        "3854b4ba-e2dc-4007-8781-6d837f229f82 Railway deployment SUCCESS at application 7d0a02a43cdabc54d20749e1422f197f3e961ab1",
+        "ops/bna-interest-launch/2026-11-05/RESULT.md",
+        "Live smoke passed: November5 durable inquiry and ordinary-owner readback retained; see RESULT.md"
+      ]
     },
     {
       "id": "REQ-20261108-005",
@@ -921,32 +966,36 @@
       "depends_on": [
         "REQ-20261108-001"
       ],
-      "status": "blocked",
-      "implementation_status": "Current school context/package admitted; actual app/provider/state audit precedes implementation.",
+      "status": "already_satisfied",
+      "implementation_status": "Unchanged November5 durable capture/approved parent receipt/ordinary-owner/fixed archive proof retained as expressly allowed. Current805 public form states and17 focused store/owner-alert SQL regressions pass. New owner notification is separately025.",
       "can_continue_without_operator": false,
-      "next_action": "Explicit operator resumption in backend chat; preserve current worktree and handback. No replacement worker or timer.",
+      "next_action": "Retain valid November5 proof; do not repeat inquiry, parent test or archive.",
       "acceptance_criteria": [
         "Existing .01 fixed-cutoff archive, rollback/inventory, new arrivals intact, ordinary-owner filters and scoped access. Reuse .01 reported proof for unchanged behavior; no re-archive or test-email resend. Only remaining .04 regressions require new proof."
       ],
       "evidence": [
-        "raw-input/RAW-20261108-001-bna-school-fullstack.md"
+        "raw-input/RAW-20261108-001-bna-school-fullstack.md",
+        "ops/bna-interest-launch/2026-11-05/RESULT.md"
       ],
       "verification": [],
       "implementation_files": [],
       "deployment_required": true,
-      "implementation_commit": "",
-      "pushed_commit": "",
-      "pull_request": "",
-      "deployment_id": "",
-      "deployed_commit": "",
-      "live_smoke": "",
-      "blocker": "Explicit operator instruction in backend chat: For now, pause the backend stuff.",
+      "implementation_commit": "7d0a02a43cdabc54d20749e1422f197f3e961ab1",
+      "pushed_commit": "7d0a02a43cdabc54d20749e1422f197f3e961ab1",
+      "pull_request": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/196",
+      "deployment_id": "3854b4ba-e2dc-4007-8781-6d837f229f82",
+      "deployed_commit": "7d0a02a43cdabc54d20749e1422f197f3e961ab1",
+      "live_smoke": "ops/bna-interest-launch/2026-11-05/RESULT.md",
+      "blocker": "",
       "superseded_by": "",
-      "updated_at": "2026-11-08T12:27:54.289Z",
+      "updated_at": "2026-11-08T13:44:26.157Z",
       "lane": "backend",
       "scope_contract": "BNA-SCHOOL-SCOPE-LOCK-20261107-03",
-      "blocker_owner": "operator",
-      "blocker_next_action": "Explicit operator resumption in backend chat; preserve current worktree and handback. No replacement worker or timer."
+      "deployment_evidence": [
+        "3854b4ba-e2dc-4007-8781-6d837f229f82 Railway deployment SUCCESS at application 7d0a02a43cdabc54d20749e1422f197f3e961ab1",
+        "ops/bna-interest-launch/2026-11-05/RESULT.md",
+        "Live smoke passed: November5 durable inquiry and ordinary-owner readback retained; see RESULT.md"
+      ]
     },
     {
       "id": "REQ-20261108-006",
@@ -967,22 +1016,25 @@
       "depends_on": [
         "REQ-20261108-001"
       ],
-      "status": "needs_verification",
-      "implementation_status": "Public school slice implemented and verified_local:9 source/join tests +14 privacy tests,28 actual local Chrome states,60internal links,47sitemap destinations. Current production remains7d; new delta awaits exact scoped production approval and live readback.",
-      "can_continue_without_operator": true,
-      "next_action": "Prepared public-only production pin approval, then provider/live source/render/link readback without repeat inquiry/send/archive.",
+      "status": "done",
+      "implementation_status": "Public80575900 deployed after explicit approval; provider SUCCESS and live identity agree.28 live Chrome states,60links,47sitemap destinations and12 original asset hashes passed; screenshots inspected. No new inquiry/email/archive effects.",
+      "can_continue_without_operator": false,
+      "next_action": "Public release verified; minimal owner notification is separately REQ-20261108-025.",
       "acceptance_criteria": [
         "All 29 existing bodies accounted for; current routes, topic/search/reset states, correct language coverage, no duplicate philosophy hub."
       ],
       "evidence": [
         "ops/bna-interest-launch/2026-11-08/PUBLIC-VERIFICATION.md",
         "ops/bna-interest-launch/2026-11-08/PUBLIC-VERIFICATION.json",
-        "ops/bna-interest-launch/2026-11-08/CURRENT-COPYBOOK-COMPARISON.json"
+        "ops/bna-interest-launch/2026-11-08/CURRENT-COPYBOOK-COMPARISON.json",
+        "ops/bna-interest-launch/2026-11-08/LIVE-PUBLIC-VERIFICATION.json",
+        "raw-input/RAW-20261108-003-public-deployment-approval.md"
       ],
       "verification": [
         "node --test tests/bna-school-pages.test.js tests/bna-interest-pages.test.js tests/bna-coop-join-page.test.js:9PASS",
         "node --test tests/bna-privacy-policy.test.js tests/public-homepage-privacy.test.js tests/public-route-privacy-contract.test.js tests/public-content-contamination-guard.test.js:14PASS",
-        "actual local server.js Chrome matrix:16 states; zero detected axe A/AA violations, overflow, missing images or page errors; functional actions pass"
+        "actual local server.js Chrome matrix:28 states; zero detected axe A/AA violations, overflow, missing images or page errors; functional actions pass",
+        "Provider SUCCESSd4e8810a and live /api/deploy-info80575900;28actual live Chrome states,60links,47sitemap,12asset hashes;0new submissions/emails/archive effects."
       ],
       "implementation_files": [
         "src/lib/bna/interest-pages.js",
@@ -994,17 +1046,22 @@
         "server.js"
       ],
       "deployment_required": true,
-      "implementation_commit": "",
-      "pushed_commit": "",
-      "pull_request": "",
-      "deployment_id": "",
-      "deployed_commit": "",
-      "live_smoke": "",
+      "implementation_commit": "80575900cbd0376a1db24a3267ef68be49029f29",
+      "pushed_commit": "80575900cbd0376a1db24a3267ef68be49029f29",
+      "pull_request": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/196",
+      "deployment_id": "d4e8810a-5422-48e9-b516-b25c3cd48cb3",
+      "deployed_commit": "80575900cbd0376a1db24a3267ef68be49029f29",
+      "live_smoke": "ops/bna-interest-launch/2026-11-08/LIVE-PUBLIC-VERIFICATION.json",
       "blocker": "",
       "superseded_by": "",
-      "updated_at": "2026-11-08T12:57:57.011Z",
+      "updated_at": "2026-11-08T13:44:26.157Z",
       "lane": "frontend",
-      "scope_contract": "BNA-SCHOOL-SCOPE-LOCK-20261107-03"
+      "scope_contract": "BNA-SCHOOL-SCOPE-LOCK-20261107-03",
+      "deployment_evidence": [
+        "d4e8810a-5422-48e9-b516-b25c3cd48cb3 Railway deployment SUCCESS at application 80575900cbd0376a1db24a3267ef68be49029f29",
+        "ops/bna-interest-launch/2026-11-08/LIVE-PUBLIC-VERIFICATION.json",
+        "Live smoke passed: November8 public /api/deploy-info80575900,28 live browser states,60 links,47 sitemap destinations and12 source asset hashes"
+      ]
     },
     {
       "id": "REQ-20261108-007",
@@ -1025,22 +1082,25 @@
       "depends_on": [
         "REQ-20261108-001"
       ],
-      "status": "needs_verification",
-      "implementation_status": "Public school slice implemented and verified_local:9 source/join tests +14 privacy tests,28 actual local Chrome states,60internal links,47sitemap destinations. Current production remains7d; new delta awaits exact scoped production approval and live readback.",
-      "can_continue_without_operator": true,
-      "next_action": "Prepared public-only production pin approval, then provider/live source/render/link readback without repeat inquiry/send/archive.",
+      "status": "done",
+      "implementation_status": "Public80575900 deployed after explicit approval; provider SUCCESS and live identity agree.28 live Chrome states,60links,47sitemap destinations and12 original asset hashes passed; screenshots inspected. No new inquiry/email/archive effects.",
+      "can_continue_without_operator": false,
+      "next_action": "Public release verified; minimal owner notification is separately REQ-20261108-025.",
       "acceptance_criteria": [
         "Exact body/omission diff, source-substring emphasis, WhatsApp/share/copy fallback, canonical public links and metadata verified."
       ],
       "evidence": [
         "ops/bna-interest-launch/2026-11-08/PUBLIC-VERIFICATION.md",
         "ops/bna-interest-launch/2026-11-08/PUBLIC-VERIFICATION.json",
-        "ops/bna-interest-launch/2026-11-08/CURRENT-COPYBOOK-COMPARISON.json"
+        "ops/bna-interest-launch/2026-11-08/CURRENT-COPYBOOK-COMPARISON.json",
+        "ops/bna-interest-launch/2026-11-08/LIVE-PUBLIC-VERIFICATION.json",
+        "raw-input/RAW-20261108-003-public-deployment-approval.md"
       ],
       "verification": [
         "node --test tests/bna-school-pages.test.js tests/bna-interest-pages.test.js tests/bna-coop-join-page.test.js:9PASS",
         "node --test tests/bna-privacy-policy.test.js tests/public-homepage-privacy.test.js tests/public-route-privacy-contract.test.js tests/public-content-contamination-guard.test.js:14PASS",
-        "actual local server.js Chrome matrix:16 states; zero detected axe A/AA violations, overflow, missing images or page errors; functional actions pass"
+        "actual local server.js Chrome matrix:28 states; zero detected axe A/AA violations, overflow, missing images or page errors; functional actions pass",
+        "Provider SUCCESSd4e8810a and live /api/deploy-info80575900;28actual live Chrome states,60links,47sitemap,12asset hashes;0new submissions/emails/archive effects."
       ],
       "implementation_files": [
         "src/lib/bna/interest-pages.js",
@@ -1052,17 +1112,22 @@
         "server.js"
       ],
       "deployment_required": true,
-      "implementation_commit": "",
-      "pushed_commit": "",
-      "pull_request": "",
-      "deployment_id": "",
-      "deployed_commit": "",
-      "live_smoke": "",
+      "implementation_commit": "80575900cbd0376a1db24a3267ef68be49029f29",
+      "pushed_commit": "80575900cbd0376a1db24a3267ef68be49029f29",
+      "pull_request": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/196",
+      "deployment_id": "d4e8810a-5422-48e9-b516-b25c3cd48cb3",
+      "deployed_commit": "80575900cbd0376a1db24a3267ef68be49029f29",
+      "live_smoke": "ops/bna-interest-launch/2026-11-08/LIVE-PUBLIC-VERIFICATION.json",
       "blocker": "",
       "superseded_by": "",
-      "updated_at": "2026-11-08T12:57:57.011Z",
+      "updated_at": "2026-11-08T13:44:26.157Z",
       "lane": "frontend",
-      "scope_contract": "BNA-SCHOOL-SCOPE-LOCK-20261107-03"
+      "scope_contract": "BNA-SCHOOL-SCOPE-LOCK-20261107-03",
+      "deployment_evidence": [
+        "d4e8810a-5422-48e9-b516-b25c3cd48cb3 Railway deployment SUCCESS at application 80575900cbd0376a1db24a3267ef68be49029f29",
+        "ops/bna-interest-launch/2026-11-08/LIVE-PUBLIC-VERIFICATION.json",
+        "Live smoke passed: November8 public /api/deploy-info80575900,28 live browser states,60 links,47 sitemap destinations and12 source asset hashes"
+      ]
     },
     {
       "id": "REQ-20261108-008",
@@ -1083,22 +1148,25 @@
       "depends_on": [
         "REQ-20261108-001"
       ],
-      "status": "needs_verification",
-      "implementation_status": "Public school slice implemented and verified_local:9 source/join tests +14 privacy tests,28 actual local Chrome states,60internal links,47sitemap destinations. Current production remains7d; new delta awaits exact scoped production approval and live readback.",
-      "can_continue_without_operator": true,
-      "next_action": "Prepared public-only production pin approval, then provider/live source/render/link readback without repeat inquiry/send/archive.",
+      "status": "done",
+      "implementation_status": "Public80575900 deployed after explicit approval; provider SUCCESS and live identity agree.28 live Chrome states,60links,47sitemap destinations and12 original asset hashes passed; screenshots inspected. No new inquiry/email/archive effects.",
+      "can_continue_without_operator": false,
+      "next_action": "Public release verified; minimal owner notification is separately REQ-20261108-025.",
       "acceptance_criteria": [
         "80 source Q/A records accounted for, suppressed logistics not leaked, source categories preserved, one full page per language, home invitation only."
       ],
       "evidence": [
         "ops/bna-interest-launch/2026-11-08/PUBLIC-VERIFICATION.md",
         "ops/bna-interest-launch/2026-11-08/PUBLIC-VERIFICATION.json",
-        "ops/bna-interest-launch/2026-11-08/CURRENT-COPYBOOK-COMPARISON.json"
+        "ops/bna-interest-launch/2026-11-08/CURRENT-COPYBOOK-COMPARISON.json",
+        "ops/bna-interest-launch/2026-11-08/LIVE-PUBLIC-VERIFICATION.json",
+        "raw-input/RAW-20261108-003-public-deployment-approval.md"
       ],
       "verification": [
         "node --test tests/bna-school-pages.test.js tests/bna-interest-pages.test.js tests/bna-coop-join-page.test.js:9PASS",
         "node --test tests/bna-privacy-policy.test.js tests/public-homepage-privacy.test.js tests/public-route-privacy-contract.test.js tests/public-content-contamination-guard.test.js:14PASS",
-        "actual local server.js Chrome matrix:16 states; zero detected axe A/AA violations, overflow, missing images or page errors; functional actions pass"
+        "actual local server.js Chrome matrix:28 states; zero detected axe A/AA violations, overflow, missing images or page errors; functional actions pass",
+        "Provider SUCCESSd4e8810a and live /api/deploy-info80575900;28actual live Chrome states,60links,47sitemap,12asset hashes;0new submissions/emails/archive effects."
       ],
       "implementation_files": [
         "src/lib/bna/interest-pages.js",
@@ -1110,17 +1178,22 @@
         "server.js"
       ],
       "deployment_required": true,
-      "implementation_commit": "",
-      "pushed_commit": "",
-      "pull_request": "",
-      "deployment_id": "",
-      "deployed_commit": "",
-      "live_smoke": "",
+      "implementation_commit": "80575900cbd0376a1db24a3267ef68be49029f29",
+      "pushed_commit": "80575900cbd0376a1db24a3267ef68be49029f29",
+      "pull_request": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/196",
+      "deployment_id": "d4e8810a-5422-48e9-b516-b25c3cd48cb3",
+      "deployed_commit": "80575900cbd0376a1db24a3267ef68be49029f29",
+      "live_smoke": "ops/bna-interest-launch/2026-11-08/LIVE-PUBLIC-VERIFICATION.json",
       "blocker": "",
       "superseded_by": "",
-      "updated_at": "2026-11-08T12:57:57.011Z",
+      "updated_at": "2026-11-08T13:44:26.157Z",
       "lane": "frontend",
-      "scope_contract": "BNA-SCHOOL-SCOPE-LOCK-20261107-03"
+      "scope_contract": "BNA-SCHOOL-SCOPE-LOCK-20261107-03",
+      "deployment_evidence": [
+        "d4e8810a-5422-48e9-b516-b25c3cd48cb3 Railway deployment SUCCESS at application 80575900cbd0376a1db24a3267ef68be49029f29",
+        "ops/bna-interest-launch/2026-11-08/LIVE-PUBLIC-VERIFICATION.json",
+        "Live smoke passed: November8 public /api/deploy-info80575900,28 live browser states,60 links,47 sitemap destinations and12 source asset hashes"
+      ]
     },
     {
       "id": "REQ-20261108-009",
@@ -1141,22 +1214,25 @@
       "depends_on": [
         "REQ-20261108-001"
       ],
-      "status": "needs_verification",
-      "implementation_status": "Public school slice implemented and verified_local:9 source/join tests +14 privacy tests,28 actual local Chrome states,60internal links,47sitemap destinations. Current production remains7d; new delta awaits exact scoped production approval and live readback.",
-      "can_continue_without_operator": true,
-      "next_action": "Prepared public-only production pin approval, then provider/live source/render/link readback without repeat inquiry/send/archive.",
+      "status": "done",
+      "implementation_status": "Public80575900 deployed after explicit approval; provider SUCCESS and live identity agree.28 live Chrome states,60links,47sitemap destinations and12 original asset hashes passed; screenshots inspected. No new inquiry/email/archive effects.",
+      "can_continue_without_operator": false,
+      "next_action": "Public release verified; minimal owner notification is separately REQ-20261108-025.",
       "acceptance_criteria": [
         "No public Fishing/provider funnel; old equivalent paths redirect without losing relevant content; portal access preserved; full link/metadata audit."
       ],
       "evidence": [
         "ops/bna-interest-launch/2026-11-08/PUBLIC-VERIFICATION.md",
         "ops/bna-interest-launch/2026-11-08/PUBLIC-VERIFICATION.json",
-        "ops/bna-interest-launch/2026-11-08/CURRENT-COPYBOOK-COMPARISON.json"
+        "ops/bna-interest-launch/2026-11-08/CURRENT-COPYBOOK-COMPARISON.json",
+        "ops/bna-interest-launch/2026-11-08/LIVE-PUBLIC-VERIFICATION.json",
+        "raw-input/RAW-20261108-003-public-deployment-approval.md"
       ],
       "verification": [
         "node --test tests/bna-school-pages.test.js tests/bna-interest-pages.test.js tests/bna-coop-join-page.test.js:9PASS",
         "node --test tests/bna-privacy-policy.test.js tests/public-homepage-privacy.test.js tests/public-route-privacy-contract.test.js tests/public-content-contamination-guard.test.js:14PASS",
-        "actual local server.js Chrome matrix:16 states; zero detected axe A/AA violations, overflow, missing images or page errors; functional actions pass"
+        "actual local server.js Chrome matrix:28 states; zero detected axe A/AA violations, overflow, missing images or page errors; functional actions pass",
+        "Provider SUCCESSd4e8810a and live /api/deploy-info80575900;28actual live Chrome states,60links,47sitemap,12asset hashes;0new submissions/emails/archive effects."
       ],
       "implementation_files": [
         "src/lib/bna/interest-pages.js",
@@ -1168,17 +1244,22 @@
         "server.js"
       ],
       "deployment_required": true,
-      "implementation_commit": "",
-      "pushed_commit": "",
-      "pull_request": "",
-      "deployment_id": "",
-      "deployed_commit": "",
-      "live_smoke": "",
+      "implementation_commit": "80575900cbd0376a1db24a3267ef68be49029f29",
+      "pushed_commit": "80575900cbd0376a1db24a3267ef68be49029f29",
+      "pull_request": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/196",
+      "deployment_id": "d4e8810a-5422-48e9-b516-b25c3cd48cb3",
+      "deployed_commit": "80575900cbd0376a1db24a3267ef68be49029f29",
+      "live_smoke": "ops/bna-interest-launch/2026-11-08/LIVE-PUBLIC-VERIFICATION.json",
       "blocker": "",
       "superseded_by": "",
-      "updated_at": "2026-11-08T12:57:57.011Z",
+      "updated_at": "2026-11-08T13:44:26.157Z",
       "lane": "frontend",
-      "scope_contract": "BNA-SCHOOL-SCOPE-LOCK-20261107-03"
+      "scope_contract": "BNA-SCHOOL-SCOPE-LOCK-20261107-03",
+      "deployment_evidence": [
+        "d4e8810a-5422-48e9-b516-b25c3cd48cb3 Railway deployment SUCCESS at application 80575900cbd0376a1db24a3267ef68be49029f29",
+        "ops/bna-interest-launch/2026-11-08/LIVE-PUBLIC-VERIFICATION.json",
+        "Live smoke passed: November8 public /api/deploy-info80575900,28 live browser states,60 links,47 sitemap destinations and12 source asset hashes"
+      ]
     },
     {
       "id": "REQ-20261108-010",
@@ -1199,22 +1280,25 @@
       "depends_on": [
         "REQ-20261108-001"
       ],
-      "status": "needs_verification",
-      "implementation_status": "Public school slice implemented and verified_local:9 source/join tests +14 privacy tests,28 actual local Chrome states,60internal links,47sitemap destinations. Current production remains7d; new delta awaits exact scoped production approval and live readback.",
-      "can_continue_without_operator": true,
-      "next_action": "Prepared public-only production pin approval, then provider/live source/render/link readback without repeat inquiry/send/archive.",
+      "status": "done",
+      "implementation_status": "Public80575900 deployed after explicit approval; provider SUCCESS and live identity agree.28 live Chrome states,60links,47sitemap destinations and12 original asset hashes passed; screenshots inspected. No new inquiry/email/archive effects.",
+      "can_continue_without_operator": false,
+      "next_action": "Public release verified; minimal owner notification is separately REQ-20261108-025.",
       "acceptance_criteria": [
         "320/390/768/1440 screenshots EN/HE, real assets; keyboard/contrast/zoom/reduced-motion; no overflow or shifted hero; actual before/after comparison."
       ],
       "evidence": [
         "ops/bna-interest-launch/2026-11-08/PUBLIC-VERIFICATION.md",
         "ops/bna-interest-launch/2026-11-08/PUBLIC-VERIFICATION.json",
-        "ops/bna-interest-launch/2026-11-08/CURRENT-COPYBOOK-COMPARISON.json"
+        "ops/bna-interest-launch/2026-11-08/CURRENT-COPYBOOK-COMPARISON.json",
+        "ops/bna-interest-launch/2026-11-08/LIVE-PUBLIC-VERIFICATION.json",
+        "raw-input/RAW-20261108-003-public-deployment-approval.md"
       ],
       "verification": [
         "node --test tests/bna-school-pages.test.js tests/bna-interest-pages.test.js tests/bna-coop-join-page.test.js:9PASS",
         "node --test tests/bna-privacy-policy.test.js tests/public-homepage-privacy.test.js tests/public-route-privacy-contract.test.js tests/public-content-contamination-guard.test.js:14PASS",
-        "actual local server.js Chrome matrix:16 states; zero detected axe A/AA violations, overflow, missing images or page errors; functional actions pass"
+        "actual local server.js Chrome matrix:28 states; zero detected axe A/AA violations, overflow, missing images or page errors; functional actions pass",
+        "Provider SUCCESSd4e8810a and live /api/deploy-info80575900;28actual live Chrome states,60links,47sitemap,12asset hashes;0new submissions/emails/archive effects."
       ],
       "implementation_files": [
         "src/lib/bna/interest-pages.js",
@@ -1226,17 +1310,22 @@
         "server.js"
       ],
       "deployment_required": true,
-      "implementation_commit": "",
-      "pushed_commit": "",
-      "pull_request": "",
-      "deployment_id": "",
-      "deployed_commit": "",
-      "live_smoke": "",
+      "implementation_commit": "80575900cbd0376a1db24a3267ef68be49029f29",
+      "pushed_commit": "80575900cbd0376a1db24a3267ef68be49029f29",
+      "pull_request": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/196",
+      "deployment_id": "d4e8810a-5422-48e9-b516-b25c3cd48cb3",
+      "deployed_commit": "80575900cbd0376a1db24a3267ef68be49029f29",
+      "live_smoke": "ops/bna-interest-launch/2026-11-08/LIVE-PUBLIC-VERIFICATION.json",
       "blocker": "",
       "superseded_by": "",
-      "updated_at": "2026-11-08T12:57:57.011Z",
+      "updated_at": "2026-11-08T13:44:26.157Z",
       "lane": "frontend",
-      "scope_contract": "BNA-SCHOOL-SCOPE-LOCK-20261107-03"
+      "scope_contract": "BNA-SCHOOL-SCOPE-LOCK-20261107-03",
+      "deployment_evidence": [
+        "d4e8810a-5422-48e9-b516-b25c3cd48cb3 Railway deployment SUCCESS at application 80575900cbd0376a1db24a3267ef68be49029f29",
+        "ops/bna-interest-launch/2026-11-08/LIVE-PUBLIC-VERIFICATION.json",
+        "Live smoke passed: November8 public /api/deploy-info80575900,28 live browser states,60 links,47 sitemap destinations and12 source asset hashes"
+      ]
     },
     {
       "id": "REQ-20261108-011",
@@ -1257,32 +1346,39 @@
       "depends_on": [
         "REQ-20261108-001"
       ],
-      "status": "needs_operator_decision",
-      "implementation_status": "Current school context/package admitted; actual app/provider/state audit precedes implementation.",
+      "status": "done",
+      "implementation_status": "Public80575900 deployed after explicit approval; provider SUCCESS and live identity agree.28 live Chrome states,60links,47sitemap destinations and12 original asset hashes passed; screenshots inspected. No new inquiry/email/archive effects.",
       "can_continue_without_operator": false,
-      "next_action": "Review prepared public-only PR196 and approve the exact new BNA service pin if desired. This does not resume backend or authorize payment/send/configuration effects.",
+      "next_action": "Public release verified; minimal owner notification is separately REQ-20261108-025.",
       "acceptance_criteria": [
         "Current release gate; deployed commit and date evidence only if actually released, live smoke, known gaps; no package-only completion claim."
       ],
       "evidence": [
-        "ops/bna-interest-launch/2026-11-08/PUBLIC-VERIFICATION.md"
+        "ops/bna-interest-launch/2026-11-08/PUBLIC-VERIFICATION.md",
+        "ops/bna-interest-launch/2026-11-08/LIVE-PUBLIC-VERIFICATION.json",
+        "raw-input/RAW-20261108-003-public-deployment-approval.md"
       ],
-      "verification": [],
+      "verification": [
+        "Provider SUCCESSd4e8810a and live /api/deploy-info80575900;28actual live Chrome states,60links,47sitemap,12asset hashes;0new submissions/emails/archive effects."
+      ],
       "implementation_files": [],
       "deployment_required": true,
-      "implementation_commit": "",
-      "pushed_commit": "",
-      "pull_request": "",
-      "deployment_id": "",
-      "deployed_commit": "",
-      "live_smoke": "",
-      "blocker": "New public frontend application commit requires the existing production deployment confirmation; priorNov5 approval named the old pin. Broader fullstack acceptance also retains the explicit backend pause.",
+      "implementation_commit": "80575900cbd0376a1db24a3267ef68be49029f29",
+      "pushed_commit": "80575900cbd0376a1db24a3267ef68be49029f29",
+      "pull_request": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/196",
+      "deployment_id": "d4e8810a-5422-48e9-b516-b25c3cd48cb3",
+      "deployed_commit": "80575900cbd0376a1db24a3267ef68be49029f29",
+      "live_smoke": "ops/bna-interest-launch/2026-11-08/LIVE-PUBLIC-VERIFICATION.json",
+      "blocker": "",
       "superseded_by": "",
-      "updated_at": "2026-11-08T12:57:57.011Z",
+      "updated_at": "2026-11-08T13:44:26.157Z",
       "lane": "frontend",
       "scope_contract": "BNA-SCHOOL-SCOPE-LOCK-20261107-03",
-      "blocker_owner": "operator",
-      "blocker_next_action": "Review prepared public-only PR196 and approve the exact new BNA service pin if desired. This does not resume backend or authorize payment/send/configuration effects."
+      "deployment_evidence": [
+        "d4e8810a-5422-48e9-b516-b25c3cd48cb3 Railway deployment SUCCESS at application 80575900cbd0376a1db24a3267ef68be49029f29",
+        "ops/bna-interest-launch/2026-11-08/LIVE-PUBLIC-VERIFICATION.json",
+        "Live smoke passed: November8 public /api/deploy-info80575900,28 live browser states,60 links,47 sitemap destinations and12 source asset hashes"
+      ]
     },
     {
       "id": "REQ-20261108-012",
@@ -1301,16 +1397,19 @@
       "priority": "P0",
       "batch_id": "COORDINATION",
       "depends_on": [],
-      "status": "needs_verification",
-      "implementation_status": "Actual host/Git school frontend/backend identity and separate worktrees observed; backend SOURCE_READ received; versioned API contract proposal pending.",
-      "can_continue_without_operator": true,
-      "next_action": "Complete current source/surface/contract admission and exact disjoint file claims; continue safe assigned scope.",
+      "status": "archived",
+      "implementation_status": "Deferred by direct operator scope reduction RAW-20261108-004. Full backend/private/fullstack work is not implemented or certified; existing code, history and paused peer worktree remain.",
+      "can_continue_without_operator": false,
+      "next_action": "No execution now. Future full backend work requires a new explicit operator instruction; never recreate its removed checkpoint.",
       "acceptance_criteria": [
         "Both actual IDs/worktrees/claims recorded; no duplicate active workers; current contract acknowledged."
       ],
       "evidence": [
         "ops/execution-runs/2026-11-05-bna-interest-launch/FILE-CLAIMS.json",
-        "ops/bna-interest-launch/2026-11-08/CURRENT-STATE.json"
+        "ops/bna-interest-launch/2026-11-08/CURRENT-STATE.json",
+        "ops/execution-runs/2026-11-05-bna-interest-launch/CONTRACT_BINDINGS.json",
+        "raw-input/RAW-20261108-002-backend-pause.md",
+        "raw-input/RAW-20261108-004-narrow-frontend-flow.md"
       ],
       "verification": [],
       "implementation_files": [],
@@ -1323,7 +1422,7 @@
       "live_smoke": "",
       "blocker": "",
       "superseded_by": "",
-      "updated_at": "2026-11-08T12:26:13.466Z",
+      "updated_at": "2026-11-08T13:44:26.157Z",
       "lane": "frontend",
       "scope_contract": "BNA-SCHOOL-SCOPE-LOCK-20261107-03"
     },
@@ -1344,16 +1443,17 @@
       "priority": "P0",
       "batch_id": "COORDINATION",
       "depends_on": [],
-      "status": "blocked",
-      "implementation_status": "Two native same-thread900-second registrations installed ACTIVE and file/card readback checked; first true due events and busy/dedupe/restart/unknown/stop proof pending.",
+      "status": "archived",
+      "implementation_status": "Deferred by direct operator scope reduction RAW-20261108-004. Full backend/private/fullstack work is not implemented or certified; existing code, history and paused peer worktree remain.",
       "can_continue_without_operator": false,
-      "next_action": "Preserve backend pause. Observe frontend natural idle trigger when permitted; full two-lane acceptance awaits explicit backend resumption and real native receipts.",
+      "next_action": "No execution now. Future full backend work requires a new explicit operator instruction; never recreate its removed checkpoint.",
       "acceptance_criteria": [
         "Actual host scheduler/adapter verified for both lanes, busy dedupe/restart/stop tested; not merely a prompt."
       ],
       "evidence": [
         "ops/execution-runs/2026-11-05-bna-interest-launch/CHECKPOINTS.json",
-        "ops/bna-interest-launch/2026-11-08/PUBLIC-VERIFICATION.md"
+        "ops/bna-interest-launch/2026-11-08/PUBLIC-VERIFICATION.md",
+        "raw-input/RAW-20261108-004-narrow-frontend-flow.md"
       ],
       "verification": [],
       "implementation_files": [],
@@ -1364,13 +1464,11 @@
       "deployment_id": "",
       "deployed_commit": "",
       "live_smoke": "",
-      "blocker": "Backend heartbeat paused before first trigger by direct operator instruction; frontend current turn remains busy with native deferred scheduling and no completed idle trigger. No fully proved two-lane restart/unknown/stop acceptance.",
+      "blocker": "",
       "superseded_by": "",
-      "updated_at": "2026-11-08T12:57:57.011Z",
+      "updated_at": "2026-11-08T13:44:26.157Z",
       "lane": "frontend",
-      "scope_contract": "BNA-SCHOOL-SCOPE-LOCK-20261107-03",
-      "blocker_owner": "operator / native host runtime",
-      "blocker_next_action": "Preserve backend pause. Observe frontend natural idle trigger when permitted; full two-lane acceptance awaits explicit backend resumption and real native receipts."
+      "scope_contract": "BNA-SCHOOL-SCOPE-LOCK-20261107-03"
     },
     {
       "id": "REQ-20261108-014",
@@ -1389,15 +1487,16 @@
       "priority": "P0",
       "batch_id": "BACKEND",
       "depends_on": [],
-      "status": "blocked",
-      "implementation_status": "Current school context/package admitted; actual app/provider/state audit precedes implementation.",
+      "status": "archived",
+      "implementation_status": "Deferred by direct operator scope reduction RAW-20261108-004. Full backend/private/fullstack work is not implemented or certified; existing code, history and paused peer worktree remain.",
       "can_continue_without_operator": false,
-      "next_action": "Explicit operator resumption in backend chat; preserve current worktree and handback. No replacement worker or timer.",
+      "next_action": "No execution now. Future full backend work requires a new explicit operator instruction; never recreate its removed checkpoint.",
       "acceptance_criteria": [
         "Correct serving worktree/schema/worker/API map and source scope; `.01` retained; stale GitHub not reset."
       ],
       "evidence": [
-        "raw-input/RAW-20261108-001-bna-school-fullstack.md"
+        "raw-input/RAW-20261108-001-bna-school-fullstack.md",
+        "raw-input/RAW-20261108-004-narrow-frontend-flow.md"
       ],
       "verification": [],
       "implementation_files": [],
@@ -1408,13 +1507,11 @@
       "deployment_id": "",
       "deployed_commit": "",
       "live_smoke": "",
-      "blocker": "Explicit operator instruction in backend chat: For now, pause the backend stuff.",
+      "blocker": "",
       "superseded_by": "",
-      "updated_at": "2026-11-08T12:27:54.289Z",
+      "updated_at": "2026-11-08T13:44:26.157Z",
       "lane": "backend",
-      "scope_contract": "BNA-SCHOOL-SCOPE-LOCK-20261107-03",
-      "blocker_owner": "operator",
-      "blocker_next_action": "Explicit operator resumption in backend chat; preserve current worktree and handback. No replacement worker or timer."
+      "scope_contract": "BNA-SCHOOL-SCOPE-LOCK-20261107-03"
     },
     {
       "id": "REQ-20261108-015",
@@ -1433,15 +1530,16 @@
       "priority": "P0",
       "batch_id": "BACKEND",
       "depends_on": [],
-      "status": "blocked",
-      "implementation_status": "Current school context/package admitted; actual app/provider/state audit precedes implementation.",
+      "status": "archived",
+      "implementation_status": "Deferred by direct operator scope reduction RAW-20261108-004. Full backend/private/fullstack work is not implemented or certified; existing code, history and paused peer worktree remain.",
       "can_continue_without_operator": false,
-      "next_action": "Explicit operator resumption in backend chat; preserve current worktree and handback. No replacement worker or timer.",
+      "next_action": "No execution now. Future full backend work requires a new explicit operator instruction; never recreate its removed checkpoint.",
       "acceptance_criteria": [
         "E2E01–05 pass through actual mounted durable storage; separate notification truth."
       ],
       "evidence": [
-        "raw-input/RAW-20261108-001-bna-school-fullstack.md"
+        "raw-input/RAW-20261108-001-bna-school-fullstack.md",
+        "raw-input/RAW-20261108-004-narrow-frontend-flow.md"
       ],
       "verification": [],
       "implementation_files": [],
@@ -1452,13 +1550,11 @@
       "deployment_id": "",
       "deployed_commit": "",
       "live_smoke": "",
-      "blocker": "Explicit operator instruction in backend chat: For now, pause the backend stuff.",
+      "blocker": "",
       "superseded_by": "",
-      "updated_at": "2026-11-08T12:27:54.289Z",
+      "updated_at": "2026-11-08T13:44:26.157Z",
       "lane": "backend",
-      "scope_contract": "BNA-SCHOOL-SCOPE-LOCK-20261107-03",
-      "blocker_owner": "operator",
-      "blocker_next_action": "Explicit operator resumption in backend chat; preserve current worktree and handback. No replacement worker or timer."
+      "scope_contract": "BNA-SCHOOL-SCOPE-LOCK-20261107-03"
     },
     {
       "id": "REQ-20261108-016",
@@ -1477,15 +1573,16 @@
       "priority": "P0",
       "batch_id": "BACKEND",
       "depends_on": [],
-      "status": "blocked",
-      "implementation_status": "Current school context/package admitted; actual app/provider/state audit precedes implementation.",
+      "status": "archived",
+      "implementation_status": "Deferred by direct operator scope reduction RAW-20261108-004. Full backend/private/fullstack work is not implemented or certified; existing code, history and paused peer worktree remain.",
       "can_continue_without_operator": false,
-      "next_action": "Explicit operator resumption in backend chat; preserve current worktree and handback. No replacement worker or timer.",
+      "next_action": "No execution now. Future full backend work requires a new explicit operator instruction; never recreate its removed checkpoint.",
       "acceptance_criteria": [
         "E2E06,12,13; program/area/next-action/readback/revision/isolation; no legacy migration repetition."
       ],
       "evidence": [
-        "raw-input/RAW-20261108-001-bna-school-fullstack.md"
+        "raw-input/RAW-20261108-001-bna-school-fullstack.md",
+        "raw-input/RAW-20261108-004-narrow-frontend-flow.md"
       ],
       "verification": [],
       "implementation_files": [],
@@ -1496,13 +1593,11 @@
       "deployment_id": "",
       "deployed_commit": "",
       "live_smoke": "",
-      "blocker": "Explicit operator instruction in backend chat: For now, pause the backend stuff.",
+      "blocker": "",
       "superseded_by": "",
-      "updated_at": "2026-11-08T12:27:54.289Z",
+      "updated_at": "2026-11-08T13:44:26.157Z",
       "lane": "backend",
-      "scope_contract": "BNA-SCHOOL-SCOPE-LOCK-20261107-03",
-      "blocker_owner": "operator",
-      "blocker_next_action": "Explicit operator resumption in backend chat; preserve current worktree and handback. No replacement worker or timer."
+      "scope_contract": "BNA-SCHOOL-SCOPE-LOCK-20261107-03"
     },
     {
       "id": "REQ-20261108-017",
@@ -1521,15 +1616,16 @@
       "priority": "P0",
       "batch_id": "BACKEND",
       "depends_on": [],
-      "status": "blocked",
-      "implementation_status": "Current school context/package admitted; actual app/provider/state audit precedes implementation.",
+      "status": "archived",
+      "implementation_status": "Deferred by direct operator scope reduction RAW-20261108-004. Full backend/private/fullstack work is not implemented or certified; existing code, history and paused peer worktree remain.",
       "can_continue_without_operator": false,
-      "next_action": "Explicit operator resumption in backend chat; preserve current worktree and handback. No replacement worker or timer.",
+      "next_action": "No execution now. Future full backend work requires a new explicit operator instruction; never recreate its removed checkpoint.",
       "acceptance_criteria": [
         "E2E07; proposal/acceptance/enrollment distinct; no implicit charge/seat/account."
       ],
       "evidence": [
-        "raw-input/RAW-20261108-001-bna-school-fullstack.md"
+        "raw-input/RAW-20261108-001-bna-school-fullstack.md",
+        "raw-input/RAW-20261108-004-narrow-frontend-flow.md"
       ],
       "verification": [],
       "implementation_files": [],
@@ -1540,13 +1636,11 @@
       "deployment_id": "",
       "deployed_commit": "",
       "live_smoke": "",
-      "blocker": "Explicit operator instruction in backend chat: For now, pause the backend stuff.",
+      "blocker": "",
       "superseded_by": "",
-      "updated_at": "2026-11-08T12:27:54.289Z",
+      "updated_at": "2026-11-08T13:44:26.157Z",
       "lane": "backend",
-      "scope_contract": "BNA-SCHOOL-SCOPE-LOCK-20261107-03",
-      "blocker_owner": "operator",
-      "blocker_next_action": "Explicit operator resumption in backend chat; preserve current worktree and handback. No replacement worker or timer."
+      "scope_contract": "BNA-SCHOOL-SCOPE-LOCK-20261107-03"
     },
     {
       "id": "REQ-20261108-018",
@@ -1565,15 +1659,16 @@
       "priority": "P0",
       "batch_id": "BACKEND",
       "depends_on": [],
-      "status": "blocked",
-      "implementation_status": "Current school context/package admitted; actual app/provider/state audit precedes implementation.",
+      "status": "archived",
+      "implementation_status": "Deferred by direct operator scope reduction RAW-20261108-004. Full backend/private/fullstack work is not implemented or certified; existing code, history and paused peer worktree remain.",
       "can_continue_without_operator": false,
-      "next_action": "Explicit operator resumption in backend chat; preserve current worktree and handback. No replacement worker or timer.",
+      "next_action": "No execution now. Future full backend work requires a new explicit operator instruction; never recreate its removed checkpoint.",
       "acceptance_criteria": [
         "Integer currency, family/child/period allocation, partial/manual correction; E2E08,10,14."
       ],
       "evidence": [
-        "raw-input/RAW-20261108-001-bna-school-fullstack.md"
+        "raw-input/RAW-20261108-001-bna-school-fullstack.md",
+        "raw-input/RAW-20261108-004-narrow-frontend-flow.md"
       ],
       "verification": [],
       "implementation_files": [],
@@ -1584,13 +1679,11 @@
       "deployment_id": "",
       "deployed_commit": "",
       "live_smoke": "",
-      "blocker": "Explicit operator instruction in backend chat: For now, pause the backend stuff.",
+      "blocker": "",
       "superseded_by": "",
-      "updated_at": "2026-11-08T12:27:54.289Z",
+      "updated_at": "2026-11-08T13:44:26.157Z",
       "lane": "backend",
-      "scope_contract": "BNA-SCHOOL-SCOPE-LOCK-20261107-03",
-      "blocker_owner": "operator",
-      "blocker_next_action": "Explicit operator resumption in backend chat; preserve current worktree and handback. No replacement worker or timer."
+      "scope_contract": "BNA-SCHOOL-SCOPE-LOCK-20261107-03"
     },
     {
       "id": "REQ-20261108-019",
@@ -1609,15 +1702,16 @@
       "priority": "P0",
       "batch_id": "BACKEND",
       "depends_on": [],
-      "status": "blocked",
-      "implementation_status": "Current school context/package admitted; actual app/provider/state audit precedes implementation.",
+      "status": "archived",
+      "implementation_status": "Deferred by direct operator scope reduction RAW-20261108-004. Full backend/private/fullstack work is not implemented or certified; existing code, history and paused peer worktree remain.",
       "can_continue_without_operator": false,
-      "next_action": "Explicit operator resumption in backend chat; preserve current worktree and handback. No replacement worker or timer.",
+      "next_action": "No execution now. Future full backend work requires a new explicit operator instruction; never recreate its removed checkpoint.",
       "acceptance_criteria": [
         "E2E09,11,12 plus admitted real sandbox proof; unknown/duplicate/order/account/mode safe."
       ],
       "evidence": [
-        "raw-input/RAW-20261108-001-bna-school-fullstack.md"
+        "raw-input/RAW-20261108-001-bna-school-fullstack.md",
+        "raw-input/RAW-20261108-004-narrow-frontend-flow.md"
       ],
       "verification": [],
       "implementation_files": [],
@@ -1628,13 +1722,11 @@
       "deployment_id": "",
       "deployed_commit": "",
       "live_smoke": "",
-      "blocker": "Explicit operator instruction in backend chat: For now, pause the backend stuff.",
+      "blocker": "",
       "superseded_by": "",
-      "updated_at": "2026-11-08T12:27:54.289Z",
+      "updated_at": "2026-11-08T13:44:26.157Z",
       "lane": "backend",
-      "scope_contract": "BNA-SCHOOL-SCOPE-LOCK-20261107-03",
-      "blocker_owner": "operator",
-      "blocker_next_action": "Explicit operator resumption in backend chat; preserve current worktree and handback. No replacement worker or timer."
+      "scope_contract": "BNA-SCHOOL-SCOPE-LOCK-20261107-03"
     },
     {
       "id": "REQ-20261108-020",
@@ -1653,15 +1745,16 @@
       "priority": "P0",
       "batch_id": "BACKEND",
       "depends_on": [],
-      "status": "blocked",
-      "implementation_status": "Current school context/package admitted; actual app/provider/state audit precedes implementation.",
+      "status": "archived",
+      "implementation_status": "Deferred by direct operator scope reduction RAW-20261108-004. Full backend/private/fullstack work is not implemented or certified; existing code, history and paused peer worktree remain.",
       "can_continue_without_operator": false,
-      "next_action": "Explicit operator resumption in backend chat; preserve current worktree and handback. No replacement worker or timer.",
+      "next_action": "No execution now. Future full backend work requires a new explicit operator instruction; never recreate its removed checkpoint.",
       "acceptance_criteria": [
         "Source-reviewed templates, real due dates, suppression/dedupe, no automatic renewal or other-program policies."
       ],
       "evidence": [
-        "raw-input/RAW-20261108-001-bna-school-fullstack.md"
+        "raw-input/RAW-20261108-001-bna-school-fullstack.md",
+        "raw-input/RAW-20261108-004-narrow-frontend-flow.md"
       ],
       "verification": [],
       "implementation_files": [],
@@ -1672,13 +1765,11 @@
       "deployment_id": "",
       "deployed_commit": "",
       "live_smoke": "",
-      "blocker": "Explicit operator instruction in backend chat: For now, pause the backend stuff.",
+      "blocker": "",
       "superseded_by": "",
-      "updated_at": "2026-11-08T12:27:54.289Z",
+      "updated_at": "2026-11-08T13:44:26.157Z",
       "lane": "backend",
-      "scope_contract": "BNA-SCHOOL-SCOPE-LOCK-20261107-03",
-      "blocker_owner": "operator",
-      "blocker_next_action": "Explicit operator resumption in backend chat; preserve current worktree and handback. No replacement worker or timer."
+      "scope_contract": "BNA-SCHOOL-SCOPE-LOCK-20261107-03"
     },
     {
       "id": "REQ-20261108-021",
@@ -1697,16 +1788,17 @@
       "priority": "P0",
       "batch_id": "INTEGRATION",
       "depends_on": [],
-      "status": "blocked",
-      "implementation_status": "Current school context/package admitted; actual app/provider/state audit precedes implementation.",
+      "status": "archived",
+      "implementation_status": "Deferred by direct operator scope reduction RAW-20261108-004. Full backend/private/fullstack work is not implemented or certified; existing code, history and paused peer worktree remain.",
       "can_continue_without_operator": false,
-      "next_action": "Explicit operator backend resumption; then consume actual durable backend contract and perform combined owner/parent journeys under current effect gates.",
+      "next_action": "No execution now. Future full backend work requires a new explicit operator instruction; never recreate its removed checkpoint.",
       "acceptance_criteria": [
         "Real backend connected; E2E06–11; loading/error/unknown/stale/permission and refresh states."
       ],
       "evidence": [
         "raw-input/RAW-20261108-002-backend-pause.md",
-        "ops/bna-interest-launch/2026-11-08/PUBLIC-VERIFICATION.md"
+        "ops/bna-interest-launch/2026-11-08/PUBLIC-VERIFICATION.md",
+        "raw-input/RAW-20261108-004-narrow-frontend-flow.md"
       ],
       "verification": [],
       "implementation_files": [],
@@ -1717,13 +1809,11 @@
       "deployment_id": "",
       "deployed_commit": "",
       "live_smoke": "",
-      "blocker": "Backend-only operator pause: new private CRM/offer/billing/parent services have not been implemented. Do not substitute mock/optimistic UI or take over paused backend files.",
+      "blocker": "",
       "superseded_by": "",
-      "updated_at": "2026-11-08T12:57:57.011Z",
+      "updated_at": "2026-11-08T13:44:26.157Z",
       "lane": "frontend",
-      "scope_contract": "BNA-SCHOOL-SCOPE-LOCK-20261107-03",
-      "blocker_owner": "operator",
-      "blocker_next_action": "Explicit operator backend resumption; then consume actual durable backend contract and perform combined owner/parent journeys under current effect gates."
+      "scope_contract": "BNA-SCHOOL-SCOPE-LOCK-20261107-03"
     },
     {
       "id": "REQ-20261108-022",
@@ -1742,16 +1832,17 @@
       "priority": "P0",
       "batch_id": "INTEGRATION",
       "depends_on": [],
-      "status": "blocked",
-      "implementation_status": "Current school context/package admitted; actual app/provider/state audit precedes implementation.",
+      "status": "archived",
+      "implementation_status": "Deferred by direct operator scope reduction RAW-20261108-004. Full backend/private/fullstack work is not implemented or certified; existing code, history and paused peer worktree remain.",
       "can_continue_without_operator": false,
-      "next_action": "Explicit operator backend resumption; then consume actual durable backend contract and perform combined owner/parent journeys under current effect gates.",
+      "next_action": "No execution now. Future full backend work requires a new explicit operator instruction; never recreate its removed checkpoint.",
       "acceptance_criteria": [
         "Own-family-only status/actions; GET no effect; provider return not paid; E2E07–12,16."
       ],
       "evidence": [
         "raw-input/RAW-20261108-002-backend-pause.md",
-        "ops/bna-interest-launch/2026-11-08/PUBLIC-VERIFICATION.md"
+        "ops/bna-interest-launch/2026-11-08/PUBLIC-VERIFICATION.md",
+        "raw-input/RAW-20261108-004-narrow-frontend-flow.md"
       ],
       "verification": [],
       "implementation_files": [],
@@ -1762,13 +1853,11 @@
       "deployment_id": "",
       "deployed_commit": "",
       "live_smoke": "",
-      "blocker": "Backend-only operator pause: new private CRM/offer/billing/parent services have not been implemented. Do not substitute mock/optimistic UI or take over paused backend files.",
+      "blocker": "",
       "superseded_by": "",
-      "updated_at": "2026-11-08T12:57:57.011Z",
+      "updated_at": "2026-11-08T13:44:26.157Z",
       "lane": "frontend",
-      "scope_contract": "BNA-SCHOOL-SCOPE-LOCK-20261107-03",
-      "blocker_owner": "operator",
-      "blocker_next_action": "Explicit operator backend resumption; then consume actual durable backend contract and perform combined owner/parent journeys under current effect gates."
+      "scope_contract": "BNA-SCHOOL-SCOPE-LOCK-20261107-03"
     },
     {
       "id": "REQ-20261108-023",
@@ -1787,16 +1876,17 @@
       "priority": "P0",
       "batch_id": "INTEGRATION",
       "depends_on": [],
-      "status": "blocked",
-      "implementation_status": "Current school context/package admitted; actual app/provider/state audit precedes implementation.",
+      "status": "archived",
+      "implementation_status": "Deferred by direct operator scope reduction RAW-20261108-004. Full backend/private/fullstack work is not implemented or certified; existing code, history and paused peer worktree remain.",
       "can_continue_without_operator": false,
-      "next_action": "Explicit operator backend resumption; then consume actual durable backend contract and perform combined owner/parent journeys under current effect gates.",
+      "next_action": "No execution now. Future full backend work requires a new explicit operator instruction; never recreate its removed checkpoint.",
       "acceptance_criteria": [
         "All E2E cases evidenced, affected regression suite and exact source/asset comparison."
       ],
       "evidence": [
         "raw-input/RAW-20261108-002-backend-pause.md",
-        "ops/bna-interest-launch/2026-11-08/PUBLIC-VERIFICATION.md"
+        "ops/bna-interest-launch/2026-11-08/PUBLIC-VERIFICATION.md",
+        "raw-input/RAW-20261108-004-narrow-frontend-flow.md"
       ],
       "verification": [],
       "implementation_files": [],
@@ -1807,13 +1897,11 @@
       "deployment_id": "",
       "deployed_commit": "",
       "live_smoke": "",
-      "blocker": "Backend-only operator pause: new private CRM/offer/billing/parent services have not been implemented. Do not substitute mock/optimistic UI or take over paused backend files.",
+      "blocker": "",
       "superseded_by": "",
-      "updated_at": "2026-11-08T12:57:57.011Z",
+      "updated_at": "2026-11-08T13:44:26.157Z",
       "lane": "frontend",
-      "scope_contract": "BNA-SCHOOL-SCOPE-LOCK-20261107-03",
-      "blocker_owner": "operator",
-      "blocker_next_action": "Explicit operator backend resumption; then consume actual durable backend contract and perform combined owner/parent journeys under current effect gates."
+      "scope_contract": "BNA-SCHOOL-SCOPE-LOCK-20261107-03"
     },
     {
       "id": "REQ-20261108-024",
@@ -1832,18 +1920,76 @@
       "priority": "P0",
       "batch_id": "INTEGRATION",
       "depends_on": [],
-      "status": "needs_operator_decision",
-      "implementation_status": "Current school context/package admitted; actual app/provider/state audit precedes implementation.",
+      "status": "archived",
+      "implementation_status": "Deferred by direct operator scope reduction RAW-20261108-004. Full backend/private/fullstack work is not implemented or certified; existing code, history and paused peer worktree remain.",
       "can_continue_without_operator": false,
-      "next_action": "Review prepared public-only PR196 and approve the exact new BNA service pin if desired. This does not resume backend or authorize payment/send/configuration effects.",
+      "next_action": "No execution now. Future full backend work requires a new explicit operator instruction; never recreate its removed checkpoint.",
       "acceptance_criteria": [
         "Live serving identity and ordinary-owner readback; billing live gate explicit; timers stopped only at full verification/cancel, blocked not complete."
       ],
       "evidence": [
-        "ops/bna-interest-launch/2026-11-08/PUBLIC-VERIFICATION.md"
+        "ops/bna-interest-launch/2026-11-08/PUBLIC-VERIFICATION.md",
+        "raw-input/RAW-20261108-004-narrow-frontend-flow.md"
       ],
       "verification": [],
       "implementation_files": [],
+      "deployment_required": true,
+      "implementation_commit": "80575900cbd0376a1db24a3267ef68be49029f29",
+      "pushed_commit": "80575900cbd0376a1db24a3267ef68be49029f29",
+      "pull_request": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/196",
+      "deployment_id": "",
+      "deployed_commit": "",
+      "live_smoke": "",
+      "blocker": "",
+      "superseded_by": "",
+      "updated_at": "2026-11-08T13:44:26.157Z",
+      "lane": "frontend",
+      "scope_contract": "BNA-SCHOOL-SCOPE-LOCK-20261107-03"
+    },
+    {
+      "id": "REQ-20261108-025",
+      "package_requirement_id": "OPERATOR-PUBLIC-FLOW-025",
+      "title": "Durable new-inquiry alert to owner Gmail",
+      "expected_result": "New BNA inquiry persists before email transport; exactly one owner alert to the verified SDRATLER Gmail recipient, separate from existing approved parent receipt. Failure/unknown preserves lead and suppresses duplicate send. Preview exact draft; verify sender/recipient and current activation/release gates; no historical/backfill alerts.",
+      "source_id": "RAW-20261108-004",
+      "source_statement_ids": [
+        "SRC-20261108-025"
+      ],
+      "source_path": "raw-input/RAW-20261108-004-narrow-frontend-flow.md",
+      "workspace_key": "bna",
+      "project_key": "bnei_neviim_academy",
+      "owner": "one verified BNA backend peer (admission pending)",
+      "category": "implementation",
+      "priority": "P0",
+      "batch_id": "PUBLIC-INQUIRY-MINIMUM",
+      "depends_on": [],
+      "status": "needs_operator_decision",
+      "implementation_status": "Minimal owner alert implemented with existing outbox;17 focused real-SQL tests pass. Exact saved draft and labeled owner test rendered/inspected. Connected owner profile and production BNA sender verified; parent receipt remains active. New alert is not deployed, sent or active.",
+      "can_continue_without_operator": false,
+      "next_action": "Commit/push prepared minimal alert, stage exact source/recipient binding and present the concrete final review.",
+      "acceptance_criteria": [
+        "New BNA inquiry persists before email transport; exactly one owner alert to the verified SDRATLER Gmail recipient, separate from existing approved parent receipt. Failure/unknown preserves lead and suppresses duplicate send. Preview exact draft; verify sender/recipient and current activation/release gates; no historical/backfill alerts."
+      ],
+      "evidence": [
+        "raw-input/RAW-20261108-004-narrow-frontend-flow.md",
+        "ops/bna-interest-launch/2026-11-08/OWNER-ALERT-PREPARED.json",
+        "ops/bna-interest-launch/2026-11-08/NARROW-SCOPE-SOURCE-READBACK.json",
+        "ops/bna-interest-launch/2026-11-08/FORM-YEAR-VERIFICATION.json"
+      ],
+      "verification": [
+        "node --test tests/bna-interest-owner-alert.test.js tests/bna-interest-store.test.js:17PASS",
+        "BNA sender verifySender + read-only active parent release preflight:PASS",
+        "Connected Gmail profile matches requested owner account; saved draft rendered and inspected.",
+        "9focused public tests and2actual local Hebrew form states pass after a presentation-only year-direction correction."
+      ],
+      "implementation_files": [
+        "src/lib/bna/interest-owner-alert.js",
+        "src/lib/bna/interest-store.js",
+        "server.js",
+        "tests/bna-interest-owner-alert.test.js",
+        "src/lib/bna/interest-pages.js",
+        "tests/bna-interest-pages.test.js"
+      ],
       "deployment_required": true,
       "implementation_commit": "",
       "pushed_commit": "",
@@ -1851,13 +1997,62 @@
       "deployment_id": "",
       "deployed_commit": "",
       "live_smoke": "",
-      "blocker": "New public frontend application commit requires the existing production deployment confirmation; priorNov5 approval named the old pin. Broader fullstack acceptance also retains the explicit backend pause.",
+      "blocker": "DEC-20261108-003: exact new owner draft/test, recipient binding and new source pin require final review. Earlier public805 approval is already consumed.",
       "superseded_by": "",
-      "updated_at": "2026-11-08T12:57:57.011Z",
-      "lane": "frontend",
-      "scope_contract": "BNA-SCHOOL-SCOPE-LOCK-20261107-03",
+      "updated_at": "2026-11-08T13:44:26.157Z",
+      "lane": "backend",
+      "scope_contract": "BNA-PUBLIC-INQUIRY-SCOPE-20261108-01",
       "blocker_owner": "operator",
-      "blocker_next_action": "Review prepared public-only PR196 and approve the exact new BNA service pin if desired. This does not resume backend or authorize payment/send/configuration effects."
+      "blocker_next_action": "Review the saved owner alert/test and prepared exact BNA release; one combined approval covers deploy, one owner-only test and new-inquiry activation if recipient readback passes."
+    },
+    {
+      "id": "REQ-20261108-026",
+      "package_requirement_id": "OPERATOR-PUBLIC-FLOW-026",
+      "title": "Apply narrowed public scope and checkpoint changes",
+      "expected_result": "Backend15-minute checkpoint deleted; full backend/CRM/offer/billing/parent work deferred with original IDs preserved. Existing frontend15-minute checkpoint retained and bound to current public/form/receipt/owner-alert scope only. No new worker or other-program effect.",
+      "source_id": "RAW-20261108-004",
+      "source_statement_ids": [
+        "SRC-20261108-026"
+      ],
+      "source_path": "raw-input/RAW-20261108-004-narrow-frontend-flow.md",
+      "workspace_key": "bna",
+      "project_key": "bnei_neviim_academy",
+      "owner": "one verified BNA backend peer (admission pending)",
+      "category": "run_control",
+      "priority": "P0",
+      "batch_id": "PUBLIC-INQUIRY-MINIMUM",
+      "depends_on": [],
+      "status": "done",
+      "implementation_status": "Native backend checkpoint deleted; native database readback contains only the existing ACTIVE frontend checkpoint with narrowed public inquiry prompt. Original fullstack012–024 Archived/deferred, not implemented. Source guarded readback preserves all prior paragraphs and unchanged transition tab.",
+      "can_continue_without_operator": false,
+      "next_action": "Keep frontend checkpoint for current public inquiry scope; never recreate the backend timer or resume deferred backend without new instruction.",
+      "acceptance_criteria": [
+        "Backend15-minute checkpoint deleted; full backend/CRM/offer/billing/parent work deferred with original IDs preserved. Existing frontend15-minute checkpoint retained and bound to current public/form/receipt/owner-alert scope only. No new worker or other-program effect."
+      ],
+      "evidence": [
+        "raw-input/RAW-20261108-004-narrow-frontend-flow.md",
+        "ops/execution-runs/2026-11-05-bna-interest-launch/CHECKPOINTS.json",
+        "ops/bna-interest-launch/2026-11-08/NARROW-SCOPE-SOURCE-READBACK.json"
+      ],
+      "verification": [
+        "Native automation delete/update replies and independent read-only codex.db registration readback: backend absent, frontendACTIVE; no completed runtime trigger claimed."
+      ],
+      "implementation_files": [
+        "ops/execution-runs/2026-11-05-bna-interest-launch/CHECKPOINTS.json",
+        "ops/execution-runs/2026-11-05-bna-interest-launch/requirements.json"
+      ],
+      "deployment_required": false,
+      "implementation_commit": "",
+      "pushed_commit": "",
+      "pull_request": "",
+      "deployment_id": "",
+      "deployed_commit": "",
+      "live_smoke": "",
+      "blocker": "",
+      "superseded_by": "",
+      "updated_at": "2026-11-08T13:44:26.157Z",
+      "lane": "backend",
+      "scope_contract": "BNA-PUBLIC-INQUIRY-SCOPE-20261108-01"
     }
   ]
 }
