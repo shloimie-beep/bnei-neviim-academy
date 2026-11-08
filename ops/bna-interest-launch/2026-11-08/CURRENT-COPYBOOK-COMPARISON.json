@@ -1,0 +1,155 @@
+{
+  "checkedAt": "2026-11-08T12:53:27.723Z",
+  "copybookId": "1vC2S0GYmK0cw7sxG-i8D-2G_zUVKRxDA",
+  "copybookModifiedAt": "2026-11-05T19:59:31.347Z",
+  "exactSelectedArticleBodies": 29,
+  "matchedPackageAndImplementation": 29,
+  "boundaries": "Each article ends at next level1/2 source section; nested educational headings retained. Adjacent Hebrew/public-interface source boilerplate is excluded from article boundaries.",
+  "articles": [
+    {
+      "id": "A01",
+      "immutableSourceSha256": "066462c1eb73a05c5ad860638f513d1c56376a0af8038c5a488394cbde567faf",
+      "selectedTrimmedSha256": "d17176c8625cf232470b77472f1012513935aaef33e304db37e243683288f859"
+    },
+    {
+      "id": "A02",
+      "immutableSourceSha256": "a6c2dd28c47cf11b0b059bf6c6ab3bc1f4e0853983e0d60ae1931be0b6a705e5",
+      "selectedTrimmedSha256": "8f6e37d955ed25245f8d68975c36b91752d32fa1633fabda95c23e1dfd9e8756"
+    },
+    {
+      "id": "A03",
+      "immutableSourceSha256": "1491aea1b7a682bf62cb17ee53a7834179cfda8eeeb56ef0e5b73c13b8519718",
+      "selectedTrimmedSha256": "86981b67fc075c063e367edd031728201f314c023f07d83503c892d9b4f284fe"
+    },
+    {
+      "id": "A04",
+      "immutableSourceSha256": "de78bb6a3194292fb37145c27eff930c0f4b65145244cc01d36d8dc36ea7a50e",
+      "selectedTrimmedSha256": "56714388659c7973c7cbb5463aa975f5925202b321418a13b9f4658f71acd5f3"
+    },
+    {
+      "id": "A05",
+      "immutableSourceSha256": "1a4264f095b387354e2b60953d9ce3e4759de42f576589b5825cbd2fee64c601",
+      "selectedTrimmedSha256": "20fec4be19de99cee4a2e4425590bd17f67262a4f8e9c87da2953c060a4f4871"
+    },
+    {
+      "id": "A06",
+      "immutableSourceSha256": "1027783f8196e7791270c714ef9a6e163fffc1eb85833956fc22c77b68a0b032",
+      "selectedTrimmedSha256": "10a09ec526b70d67fefde7701e648aea134306aa546614eb53d6a83b8dd939ff"
+    },
+    {
+      "id": "A07",
+      "immutableSourceSha256": "51d1f20fdd00ada6f2c05b2c35b2a0f795dc6e40ae530315a0500989fcc0b569",
+      "selectedTrimmedSha256": "45a71f3a9c361d3084512b2c13642c7adffa92c0cfa26d933c280cb1a4f7bb86"
+    },
+    {
+      "id": "A08",
+      "immutableSourceSha256": "2c297f67f87f07ff0d4358306f8739d089c5fba523c38006a8ec4111863b7025",
+      "selectedTrimmedSha256": "bab72c1a36742d9fc18304effb1efda16066f5271a42eb3caf955b5d61419b3c"
+    },
+    {
+      "id": "A09",
+      "immutableSourceSha256": "fb82034d11bac89ca097a335fd9696d4818e3c3ce6ca3091d0548fa957f8990a",
+      "selectedTrimmedSha256": "6ccb71b429a6889c3901df1d2e5fc204ae0f6f1e96d5c8ddd4b8271c94a4fc3a"
+    },
+    {
+      "id": "A10",
+      "immutableSourceSha256": "fec1d93e904286de195a219215a8d3b4dacef0ab8d5d605c66ce2ab5b73ee5d3",
+      "selectedTrimmedSha256": "d8c6328fb63d9e4dbc356afd48fce98d5974120fabfaac01494aed969705faa4"
+    },
+    {
+      "id": "A11",
+      "immutableSourceSha256": "3994a252e24e43a0d690bacb32a1f6904bb42a946c32408ea1c245c13251afac",
+      "selectedTrimmedSha256": "58d6dc135f40bf14fe1b1cd64f5cba62d3424e6fbf11835d3d29939379026857"
+    },
+    {
+      "id": "A12",
+      "immutableSourceSha256": "fc4f98055aeaecae46ea559bdfbb5c36d029a491e23149ce2c515d8b086bc7ec",
+      "selectedTrimmedSha256": "32274c8ea4371be6b129ceaa8971dea2f2fa633efa0ced32f7a022f0e978f9b1"
+    },
+    {
+      "id": "A13",
+      "immutableSourceSha256": "6833b02f3525e74f8bd2b624f6c0a63a2a59d5e3b14bf7b8b2bc6eee37c910d3",
+      "selectedTrimmedSha256": "d49dfbfac2b894165d0853338056a5c04fb0eaf9c5a04635b2a5d1a69e522506"
+    },
+    {
+      "id": "A14",
+      "immutableSourceSha256": "7ffbdac589a2c93cc647fa45023e01026a9ac6a8683c659e8dcd5d6014f17f99",
+      "selectedTrimmedSha256": "1a6ec48018c7da2bf3c893eb20bc499b4923edb294cf6c8079f8009d600aaa80"
+    },
+    {
+      "id": "A15",
+      "immutableSourceSha256": "becc28687fb02fccba6b03b043e3c90c32593b0ecab0574c1779c90db6f8819b",
+      "selectedTrimmedSha256": "c06dbbc336ba8348b0c8a084146be583f7730aeb56116000c476852b591b66f0"
+    },
+    {
+      "id": "A16",
+      "immutableSourceSha256": "423156a2a8fbef57d397696d58081d3faf29702b5f99ee99f2dd923a2eda5c83",
+      "selectedTrimmedSha256": "c948479d3d221800a2eda52dceff61bd01ffac4edc82d17ca8ce530ae904d9e3"
+    },
+    {
+      "id": "A17",
+      "immutableSourceSha256": "5096957f01b35c8836801606b8dd35b37e4b603c4a958c3679174f68dd53ccb1",
+      "selectedTrimmedSha256": "530905266f3df02ad549ff02a1a56b6366a330a4c89b6d837cf281f555516785"
+    },
+    {
+      "id": "A18",
+      "immutableSourceSha256": "eeda3e8922305352234b78e1fe3bc415d31e464fe587ee4985579764063774f6",
+      "selectedTrimmedSha256": "1efb2d9f3471f44e46c96afc9d163d7f2e9fceb0e49f861cc18df32453a7c792"
+    },
+    {
+      "id": "A19",
+      "immutableSourceSha256": "2a1deb84e98eaae77954d24611ef581eae20a4bb04b1eccd59022299e4f416a2",
+      "selectedTrimmedSha256": "c60f245f86fe5b5bbb12d4d30336b28dd50e04dcdfef254e19c6fd2bb980c07a"
+    },
+    {
+      "id": "A20",
+      "immutableSourceSha256": "599030fd053af19a4025f4480531843cce94697458ea2397241677bb1ad98dbd",
+      "selectedTrimmedSha256": "a6e2a1f4c1b6b93f28bb15ff9c2d0e6dc8990bdc32442eabc61d46aacb0ee810"
+    },
+    {
+      "id": "A21",
+      "immutableSourceSha256": "8f9c7e20ab2c2fa398ece1d3ead3ef47e60b95c58c17e2f0fb58384ae2549a1f",
+      "selectedTrimmedSha256": "2610a798c0a932aab737a48dde986b79661ceee329deddeab55f5d7b76cc6093"
+    },
+    {
+      "id": "A22",
+      "immutableSourceSha256": "11260c22432e8a48e64f5312934f1b8151a96d68a83ac66f084e98cd0ab65237",
+      "selectedTrimmedSha256": "ddd259229961557491e7680ea64b795e10eba47b6f8c41c2ca69b7289f77d0c5"
+    },
+    {
+      "id": "A23",
+      "immutableSourceSha256": "d8f99d2adbeee53432e50da4a76f0c9c2c23fcbd6c8e7f0f45f9a9fd5a708d36",
+      "selectedTrimmedSha256": "5afcbcb5c9db667bed1983b71a942326e9d50e8051e495f881d2345203f10e60"
+    },
+    {
+      "id": "HA01",
+      "immutableSourceSha256": "a46153e37d7a9aee6fbfa2ae3e990223d81848bc68ab376fcce90978818db15a",
+      "selectedTrimmedSha256": "e087cd90a4b61c43d892d1b43157557cb5a50ae4a8611c12b6f1afaa3a51c432"
+    },
+    {
+      "id": "HA02",
+      "immutableSourceSha256": "08b42fb60399db370e4f84b0d3ef74908b02f5161d4fbb8672cdb2b5633bf385",
+      "selectedTrimmedSha256": "eae93053f6708f15ca5ad133a5004e829e5a4acb3cd2094550ad995b20a9606f"
+    },
+    {
+      "id": "HA03",
+      "immutableSourceSha256": "7df42f03f480bee568c999807bd3966ae320f3909dcb65444eb3cb8cc9344de7",
+      "selectedTrimmedSha256": "77089875f70dd9010fdfe3ba9b5a0b46966bc35b20c56d2b1e33bbfbb347406d"
+    },
+    {
+      "id": "HA04",
+      "immutableSourceSha256": "d704b6861289048652ea4ee1892be75f315e98d84d632b4459e2cb46c9827a42",
+      "selectedTrimmedSha256": "63bace3d1242d94a6e80b1e1ab4688835f2dd373927039c2330ec602ee47067e"
+    },
+    {
+      "id": "HA05",
+      "immutableSourceSha256": "b2e4a89f1eb28bbfe7957f01d190f244e961319ec5c37821641b3253c7aab7b9",
+      "selectedTrimmedSha256": "e392475539c202cc956c03d48634a610f2bbdeac9883c3a31d36f72dfc4354c8"
+    },
+    {
+      "id": "HA06",
+      "immutableSourceSha256": "4fd64994a4cea736e6e6bcd66ffda1dad531fefcbb2904bf90b86e622fe5b1f9",
+      "selectedTrimmedSha256": "155055c60ed07271f12210510a925e62a51f65c049d6670cc98bca822b7f902d"
+    }
+  ]
+}

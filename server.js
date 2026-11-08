@@ -4807,6 +4807,9 @@ async function sendGmailMessage({ to, subject, text, html, workspace = null }) {
 }
 
 async function sendEmail({ workspace = null, to, subject, text, html }) {
+  if (!isOneTimeSingleTenantRuntime() && !isOneTimeEmailScope(workspace)) {
+    for (const recipient of Array.isArray(to) ? to : [to]) await require('./src/lib/bna/interest-archive').assertBnaEmailRecipientActive(pool, normalizeEmail(recipient));
+  }
   const identity = academySenderIdentity(workspace);
   if ((identity?.oneTime || EMAIL_PROVIDER === 'resend') && RESEND_API_KEY && (identity?.oneTime || RESEND_FROM_EMAIL)) {
     return sendResendMessage({ workspace, to, subject, text, html });
@@ -11064,7 +11067,27 @@ app.post('/api/webhooks/stripe/rabbi', express.raw({ type: 'application/json', l
 // Exact public Academy gateway, before body parsing; off until its reviewed release.
 app.use(require('./src/lib/bna/fishing-academy-gateway').createFishingAcademyGateway({ enabled: () => process.env.BNA_ACADEMY_GATEWAY_ENABLED === 'true' }));
 app.use(require('./src/lib/bna/torah-interest-gateway').createTorahInterestGateway({ enabled: () => process.env.BNA_TORAH_INTEREST_GATEWAY_ENABLED === 'true' }));
-app.use(require('./src/lib/bna/torah-interest-gateway').createCoopInterestGateway({ enabled: () => process.env.BNA_COOP_INTEREST_GATEWAY_ENABLED === 'true' }));
+// The current BNA interest launch writes to this app's existing BNA CRM.
+// Legacy upstream inquiry records remain historical; no Fishing record is touched.
+function bnaLegacyActiveSql(table, alias) { return isOneTimeSingleTenantRuntime() ? 'TRUE' : require('./src/lib/bna/interest-archive').legacyActiveSql(table, alias); }
+const bnaInterestStore = require('./src/lib/bna/interest-store').createInterestStore({ pool });
+const bnaInterestMailTransport = require('./src/lib/bna/interest-mail-runtime').createBnaGmailTransport({ createAuth: createGoogleClientFromRefreshToken });
+const bnaInterestMailWorker = require('./src/lib/bna/interest-mail-runtime').createBnaAcknowledgementWorker({ pool, transport: bnaInterestMailTransport });
+const bnaInterestOwnerAlertWorker = require('./src/lib/bna/interest-owner-alert').createOwnerAlertWorker({ pool, transport: bnaInterestMailTransport, to: process.env.BNA_INTEREST_OWNER_ALERT_TO });
+if (DATABASE_URL && !isOneTimeSingleTenantRuntime() && process.env.BNA_COOP_FORM_ENABLED === 'true') {
+  const bnaInterestMailTimer = setInterval(() => bnaInterestMailWorker.tick().catch(() => console.warn('BNA receipt worker unavailable; saved inquiries retained.')), 30000);
+  bnaInterestMailTimer.unref();
+  const bnaInterestOwnerAlertTimer = setInterval(() => bnaInterestOwnerAlertWorker.tick().catch(() => console.warn('BNA owner notification unavailable; saved inquiries retained.')), 30000);
+  bnaInterestOwnerAlertTimer.unref();
+}
+app.use(require('./src/lib/bna/interest-http').createInterestRouter({
+  store: bnaInterestStore,
+  enabled: () => !isOneTimeSingleTenantRuntime() && process.env.BNA_COOP_FORM_ENABLED === 'true' &&
+    process.env.BNA_COOP_INTEREST_GATEWAY_ENABLED === 'true' && Boolean(require('./src/lib/bna/privacy-policy').renderPrivacyPolicy('en', {
+      approved: process.env.BNA_PRIVACY_RELEASE_APPROVED === 'true', operator: process.env.BNA_PRIVACY_OPERATOR_LEGAL_NAME,
+      effectiveDate: process.env.BNA_PRIVACY_EFFECTIVE_DATE,
+    })),
+}));
 app.use(require('./src/lib/bna/torah-interest-gateway').createSupportInterestGateway({ enabled: () => process.env.BNA_SUPPORT_INTEREST_GATEWAY_ENABLED === 'true' }));
 app.use(require('./src/lib/bna/torah-interest-gateway').createBnaPreferencesGateway({ enabled: () => process.env.BNA_EMAIL_PREFERENCES_GATEWAY_ENABLED === 'true' }));
 app.use(express.json({
@@ -11077,6 +11100,7 @@ app.use(express.json({
   },
 }));
 app.use(express.urlencoded({ extended: true, limit: '25mb' }));
+require('./src/lib/bna/interest-owner').registerBnaInterestOwnerRoutes({ app, pool, requireAdmin, enabled: () => !isOneTimeSingleTenantRuntime() });
 app.use(compression({ threshold: 1024 }));
 
 function sanitizePerformanceRoutePath(value = '') {
@@ -11406,14 +11430,50 @@ function sendOneTimeStudentShell(req, res) {
 app.get(['/', '/index.html', '/public', '/public/'], (req, res, next) => {
   if (isOneTimeSingleTenantRuntime()) return sendOneTimePublicLanding(req, res);
   res.setHeader('Cache-Control', 'no-store');
-  return res.sendFile(path.join(__dirname, 'public', 'bna-current-home.html'));
+  return res.type('html').send(require('./src/lib/bna/interest-pages').renderInterestHome('en'));
 });
 
 app.get('/he', (req, res) => {
   if (isOneTimeSingleTenantRuntime()) return res.status(404).end();
   res.setHeader('Cache-Control', 'no-store');
-  return res.sendFile(path.join(__dirname, 'public', 'bna-current-home.html'));
+  return res.type('html').send(require('./src/lib/bna/interest-pages').renderInterestHome('he'));
 });
+
+app.get('/sitemap.xml',(req,res,next)=>{if(isOneTimeSingleTenantRuntime())return next();res.type('application/xml').sendFile(path.join(__dirname,'public','bna-school-sitemap.xml'));});
+const bnaLaunchInfoRoutes = { '/learning-pods': 'P02', '/academy-2027-28': 'P03', '/faq': 'P16', '/parents/guide': 'P17' };
+for (const alias of ['/vision','/he/vision','/philosophy','/he/philosophy','/teaching-philosophy','/he/teaching-philosophy']) {
+  app.get(alias,(req,res,next)=>{ if(isOneTimeSingleTenantRuntime()) return next(); const pre=req.path.startsWith('/he/')?'/he':''; return res.redirect(301,alias.endsWith('/vision')?(pre||'/')+'#vision':pre+'/blog#foundations'); });
+}
+app.get(['/blog', '/he/blog'], (req, res, next) => {
+  if (isOneTimeSingleTenantRuntime()) return next();
+  res.set('Cache-Control', 'no-store');
+  res.type('html').send(require('./src/lib/bna/interest-pages').renderArticleLibrary(req.path.startsWith('/he/') ? 'he' : 'en', req.query));
+});
+app.get(['/blog/:slug', '/he/blog/:slug'], (req, res, next) => {
+  if (isOneTimeSingleTenantRuntime()) return next();
+  const articlePages = require('./src/lib/bna/interest-pages');
+  const legacyArticleAliases = {'alternative-school-beit-shemesh':'alternative-torah-learning-south-florida','adhd-friendly-school-beit-shemesh':'torah-learning-attention-challenges-south-florida','homeschool-support-beit-shemesh':'homeschool-support-south-florida'};
+  const canonicalSlug=legacyArticleAliases[req.params.slug]||req.params.slug;
+  const article = articlePages.resolveArticle(canonicalSlug,req.path.startsWith('/he/')?'he':'en');
+  if (article && req.path !== article.route) return res.redirect(301,article.route);
+  const html = articlePages.renderArticle(req.params.slug,req.path.startsWith('/he/')?'he':'en');
+  if (!html) return res.status(404).end();
+  res.set('Cache-Control', 'no-store'); res.type('html').send(html);
+});
+app.get(['/support/vision', '/he/support/vision'], (req, res) => {
+  if (isOneTimeSingleTenantRuntime()) return res.status(404).end();
+  res.set('Cache-Control', 'no-store');
+  res.type('html').send(require('./src/lib/bna/interest-pages').renderInterestSupport(process.env, req.path.startsWith('/he/') ? 'he' : 'en'));
+});
+const bnaLaunchAliases = { '/bna-current-home.html': '/', '/bna-coop-join.html': '/join', '/torah-mornings.html': '/learning-pods', '/school.html': '/academy-2027-28', '/faq.html': '/faq', '/blog.html': '/blog', '/blog-post.html': '/blog', '/support.html': '/support/vision' };
+for (const [alias, target] of Object.entries(bnaLaunchAliases)) app.get(alias, (req, res, next) => isOneTimeSingleTenantRuntime() ? next() : res.redirect(302, target));
+for (const [route, copyId] of Object.entries(bnaLaunchInfoRoutes)) {
+  app.get([route, '/he' + route], (req, res) => {
+    if (isOneTimeSingleTenantRuntime()) return res.status(404).end();
+    res.set('Cache-Control', 'no-store');
+    return res.type('html').send(require('./src/lib/bna/interest-pages').renderInfoPage(copyId, req.path.startsWith('/he/') ? 'he' : 'en'));
+  });
+}
 
 app.get(['/rabbi.html'], sendOneTimePublicLanding);
 
@@ -21573,7 +21633,7 @@ async function fetchAutomationRows(req, db = pool) {
     FROM bna_automations a
     LEFT JOIN bna_projects p ON p.id = a.project_id
     LEFT JOIN latest_runs ON latest_runs.automation_id = a.id
-    WHERE ${scope.sql}
+    WHERE ${scope.sql} AND ${bnaLegacyActiveSql("bna_automations", "a")}
       AND COALESCE(a.status, 'draft') <> 'archived'
     ORDER BY
       CASE COALESCE(a.status, 'draft') WHEN 'active' THEN 1 WHEN 'guarded' THEN 2 WHEN 'draft' THEN 3 WHEN 'blocked' THEN 4 ELSE 5 END,
@@ -30309,7 +30369,7 @@ async function operationsCrmContactRows(scope = {}, db = pool, options = {}) {
   const rows = [];
 
   const contactParams = [];
-  const contactConditions = [`COALESCE(c.status, '') <> 'archived'`];
+  const contactConditions = [`COALESCE(c.status, '') <> 'archived'`, bnaLegacyActiveSql('bna_contacts', 'c')];
   if (workspaceKey && !['platform', 'super_admin'].includes(workspaceKey)) {
     contactParams.push(workspaceKey);
     contactConditions.push(`ws.workspace_key = $${contactParams.length}`);
@@ -30345,7 +30405,7 @@ async function operationsCrmContactRows(scope = {}, db = pool, options = {}) {
            AND s.project_id = cp.id
            AND COALESCE(c.primary_email, '') <> ''
            AND lower(COALESCE(s.parent_email, '')) = lower(c.primary_email)
-           AND COALESCE(s.status, 'active') NOT IN ('inactive', 'archived')
+           AND COALESCE(s.status, 'active') NOT IN ('inactive', 'archived') AND ${bnaLegacyActiveSql('bna_students','s')}
          ORDER BY s.updated_at DESC NULLS LAST, s.id DESC
          LIMIT 1
        ) AS student_id,
@@ -30356,7 +30416,7 @@ async function operationsCrmContactRows(scope = {}, db = pool, options = {}) {
            AND s.project_id = cp.id
            AND COALESCE(c.primary_email, '') <> ''
            AND lower(COALESCE(s.parent_email, '')) = lower(c.primary_email)
-           AND COALESCE(s.status, 'active') NOT IN ('inactive', 'archived')
+           AND COALESCE(s.status, 'active') NOT IN ('inactive', 'archived') AND ${bnaLegacyActiveSql('bna_students','s')}
          ORDER BY s.updated_at DESC NULLS LAST, s.id DESC
          LIMIT 1
        ) AS student_name,
@@ -30386,7 +30446,7 @@ async function operationsCrmContactRows(scope = {}, db = pool, options = {}) {
            'latest_at', MAX(cm.occurred_at)
          )
          FROM bna_communications cm
-         WHERE cm.contact_id = c.id
+         WHERE ${bnaLegacyActiveSql("bna_communications","cm")} AND cm.contact_id = c.id
             OR (
               cp.id IS NOT NULL
               AND cm.project_id = cp.id
@@ -30408,7 +30468,7 @@ async function operationsCrmContactRows(scope = {}, db = pool, options = {}) {
            'latest_ticket_title', (ARRAY_AGG(st.title ORDER BY st.updated_at DESC NULLS LAST, st.id DESC))[1]
          )
          FROM bna_support_tickets st
-         WHERE cp.id IS NOT NULL
+         WHERE ${bnaLegacyActiveSql("bna_support_tickets","st")} AND cp.id IS NOT NULL
            AND st.project_id = cp.id
            AND COALESCE(c.primary_email, '') <> ''
            AND lower(st.requester_email) = lower(c.primary_email)
@@ -30422,7 +30482,7 @@ async function operationsCrmContactRows(scope = {}, db = pool, options = {}) {
            'status', (ARRAY_AGG(t.stage ORDER BY t.due_date ASC NULLS LAST, t.updated_at DESC NULLS LAST, t.id DESC))[1]
          )
          FROM bna_tasks t
-         WHERE cp.id IS NOT NULL
+         WHERE ${bnaLegacyActiveSql("bna_tasks","t")} AND cp.id IS NOT NULL
            AND t.project_id = cp.id
            AND COALESCE(c.primary_email, '') <> ''
            AND lower(t.related_contact_email) = lower(c.primary_email)
@@ -30568,7 +30628,7 @@ async function operationsCrmContactRows(scope = {}, db = pool, options = {}) {
   })));
 
   const leadParams = [];
-  const leadConditions = [`COALESCE(l.status, '') <> 'archived'`];
+  const leadConditions = [`COALESCE(l.status, '') <> 'archived'`, bnaLegacyActiveSql('bna_parent_leads', 'l')];
   if (projectKey && !['platform', 'super_admin'].includes(projectKey)) {
     leadParams.push(projectKey);
     leadConditions.push(`p.project_key = $${leadParams.length}`);
@@ -30628,7 +30688,7 @@ async function operationsCrmContactRows(scope = {}, db = pool, options = {}) {
          WHERE s.project_id = l.project_id
            AND COALESCE(l.parent_email, '') <> ''
            AND lower(COALESCE(s.parent_email, '')) = lower(l.parent_email)
-           AND COALESCE(s.status, 'active') NOT IN ('inactive', 'archived')
+           AND COALESCE(s.status, 'active') NOT IN ('inactive', 'archived') AND ${bnaLegacyActiveSql('bna_students','s')}
          ORDER BY s.updated_at DESC NULLS LAST, s.id DESC
          LIMIT 1
        ) AS student_id,
@@ -30640,7 +30700,7 @@ async function operationsCrmContactRows(scope = {}, db = pool, options = {}) {
            'latest_at', MAX(cm.occurred_at)
          )
          FROM bna_communications cm
-         WHERE cm.project_id = l.project_id
+         WHERE ${bnaLegacyActiveSql("bna_communications","cm")} AND cm.project_id = l.project_id
            AND (
              (
                COALESCE(l.parent_email, '') <> ''
@@ -30660,7 +30720,7 @@ async function operationsCrmContactRows(scope = {}, db = pool, options = {}) {
            'latest_ticket_title', (ARRAY_AGG(st.title ORDER BY st.updated_at DESC NULLS LAST, st.id DESC))[1]
          )
          FROM bna_support_tickets st
-         WHERE st.project_id = l.project_id
+         WHERE ${bnaLegacyActiveSql("bna_support_tickets","st")} AND st.project_id = l.project_id
            AND COALESCE(l.parent_email, '') <> ''
            AND lower(st.requester_email) = lower(l.parent_email)
        ) AS support,
@@ -30673,7 +30733,7 @@ async function operationsCrmContactRows(scope = {}, db = pool, options = {}) {
            'status', (ARRAY_AGG(t.stage ORDER BY t.due_date ASC NULLS LAST, t.updated_at DESC NULLS LAST, t.id DESC))[1]
          )
          FROM bna_tasks t
-         WHERE t.project_id = l.project_id
+         WHERE ${bnaLegacyActiveSql("bna_tasks","t")} AND t.project_id = l.project_id
            AND COALESCE(l.parent_email, '') <> ''
            AND lower(t.related_contact_email) = lower(l.parent_email)
            AND t.stage <> 'archive'
@@ -47431,7 +47491,7 @@ app.get('/api/bna/communications', requireAdmin, async (req, res) => {
     const result = await pool.query(
       `SELECT *
        FROM bna_communications
-       ${where}
+       ${where || 'WHERE TRUE'} AND ${bnaLegacyActiveSql('bna_communications','bna_communications')}
        ORDER BY occurred_at DESC, id DESC
        LIMIT $${params.length}`,
       params
@@ -50340,7 +50400,7 @@ app.post('/api/submit', async (req, res) => {
 app.get('/api/signups', requireAdmin, async (req, res) => {
   try {
     const result = await pool.query(
-      'SELECT * FROM signups ORDER BY created_at DESC'
+      `SELECT * FROM signups${isOneTimeSingleTenantRuntime() ? '' : ' WHERE ' + require('./src/lib/bna/interest-archive').legacyActiveSql('signups', 'signups')} ORDER BY created_at DESC`
     );
     res.json({ signups: result.rows });
   } catch (err) {
@@ -50401,6 +50461,7 @@ app.get('/api/bna/signups', requireAdmin, async (req, res) => {
   const conditions = [];
   const params = [];
   appendScopeCondition(req, conditions, params, 's.project_id');
+  if (!isOneTimeSingleTenantRuntime() && status !== 'archived') conditions.push(require('./src/lib/bna/interest-archive').legacyActiveSql('signups', 's'));
 
   if (status) {
     params.push(status);
@@ -50523,6 +50584,20 @@ app.get('/api/bna/parent-leads', requireAdmin, async (req, res) => {
   const conditions = [];
   const params = [];
   appendRequestedProjectScopeCondition(req, conditions, params, 'l.project_id');
+  if (!isOneTimeSingleTenantRuntime() && status !== 'archived') conditions.push(require('./src/lib/bna/interest-archive').legacyActiveSql('bna_parent_leads', 'l'));
+  if (req.query.program) {
+    if (!['pod', 'academy', 'both'].includes(req.query.program)) return res.status(400).json({ error: 'INVALID_PROGRAM' });
+    params.push(req.query.program); conditions.push(`(l.metadata->>'program_interest'=$${params.length}${req.query.program === 'both' ? '' : " OR l.metadata->>'program_interest'='both'"})`);
+  }
+  if (req.query.area) {
+    if (typeof req.query.area !== 'string' || req.query.area.length > 180) return res.status(400).json({ error: 'INVALID_AREA' });
+    params.push('%' + req.query.area + '%'); conditions.push(`(l.metadata->>'area' ILIKE $${params.length} OR l.metadata->>'preferred_area' ILIKE $${params.length})`);
+  }
+  if (req.query.follow_up) {
+    if (!['new', 'follow_up', 'due', 'not_now'].includes(req.query.follow_up)) return res.status(400).json({ error: 'INVALID_FOLLOW_UP' });
+    if (req.query.follow_up === 'due') conditions.push('l.next_follow_up_date<=CURRENT_DATE');
+    else { params.push(req.query.follow_up); conditions.push(`l.status=$${params.length}`); }
+  }
 
   if (lead_type) {
     params.push(lead_type);
@@ -50543,7 +50618,8 @@ app.get('/api/bna/parent-leads', requireAdmin, async (req, res) => {
 
   try {
     const result = await pool.query(
-      `SELECT l.*, p.project_key, p.name AS project_name
+      `SELECT l.*, p.project_key, p.name AS project_name,
+              ${isOneTimeSingleTenantRuntime() ? 'NULL::text' : "(SELECT o.payload->>'delivery_state' FROM bna_interest_inquiries i JOIN assistant_delivery_outbox o ON o.id=i.outbox_id WHERE i.parent_lead_id=l.id ORDER BY i.created_at DESC LIMIT 1)"} AS interest_ack_state
        FROM bna_parent_leads l
        LEFT JOIN bna_projects p ON p.id = l.project_id
        ${whereClause}
@@ -54097,7 +54173,7 @@ app.patch('/api/provider-portal/one-time/class-media/:jobId', requireProviderSes
 
 app.get('/api/bna/contact-communications', requireAdmin, async (req, res) => {
   const { lead_id, signup_id, student_id, contact_type } = req.query;
-  const conditions = [];
+  const conditions = [(!req.query.lead_id && !req.query.signup_id && !req.query.student_id) ? bnaLegacyActiveSql('bna_contact_communications','c') : 'TRUE'];
   const params = [];
   const requestedProjectKey = requestedProjectKeyForScopedList(req);
   if (requestedProjectKey) {
@@ -55168,6 +55244,7 @@ app.get('/api/bna/students', requireAdmin, async (req, res) => {
   try {
     await ensureStudentsFromSignups();
     const conditions = ["COALESCE(s.status, 'active') NOT IN ('archived', 'inactive')"];
+    if (!isOneTimeSingleTenantRuntime()) conditions.push(require('./src/lib/bna/interest-archive').legacyActiveSql('bna_students', 's'));
     const params = [];
     appendRequestedProjectScopeCondition(req, conditions, params, 's.project_id');
     if (req.query.student_id) {
@@ -61967,7 +62044,7 @@ app.delete('/api/bna/accountability/:id', requireAdmin, async (req, res) => {
 app.get('/api/bna/group-goals', requireAdmin, async (req, res) => {
   try {
     await ensureDefaultGroupGoal(pool, requestedProjectKeyForScopedList(req) || DEFAULT_PROJECT_KEY);
-    const conditions = [`g.status <> 'archived'`];
+    const conditions = [`g.status <> 'archived'`, bnaLegacyActiveSql('bna_group_goals','g')];
     const params = [];
     appendRequestedProjectScopeCondition(req, conditions, params, 'g.project_id');
     const result = await pool.query(
@@ -62086,7 +62163,7 @@ app.post('/api/bna/group-goals/:id/entries', requireAdmin, async (req, res) => {
 app.get('/api/bna/payment-intake', requireAdmin, async (req, res) => {
   const { status } = req.query;
   const params = [];
-  const conditions = [];
+  const conditions = [bnaLegacyActiveSql('bna_payment_intake','i')];
   const scopedProjectKey = opsScopeProjectKey(req);
   if (scopedProjectKey) {
     params.push(scopedProjectKey);
@@ -63640,7 +63717,7 @@ app.post('/api/bna/studio/projects/:id/handoff', requireAdmin, async (req, res) 
 app.get('/api/bna/content-jobs', requireAdmin, async (req, res) => {
   const { status } = req.query;
   const params = [];
-  const conditions = [];
+  const conditions = [bnaLegacyActiveSql('bna_content_jobs','j')];
   appendScopeCondition(req, conditions, params, 'j.project_id');
 
   const requestedProjectKey = normalizeProjectKey(req.query.project_key || req.query.project || '');
@@ -63893,7 +63970,7 @@ app.post('/api/bna/content-prompts/:platform/examples', requireAdmin, async (req
 
 app.get('/api/bna/content-bundles', requireAdmin, async (req, res) => {
   const params = [];
-  const conditions = [`b.status <> 'archived'`];
+  const conditions = [`b.status <> 'archived'`, bnaLegacyActiveSql('bna_content_bundles','b')];
   appendScopeCondition(req, conditions, params, 'b.project_id');
   try {
     const result = await pool.query(
@@ -66201,7 +66278,7 @@ app.post('/api/bna/content-jobs/:id/actions', requireAdmin, async (req, res) => 
 app.get('/api/bna/payments', requireAdmin, async (req, res) => {
   const { signup_id } = req.query;
   const params = [];
-  const conditions = [];
+  const conditions = [signup_id ? 'TRUE' : bnaLegacyActiveSql('bna_payment_log','p')];
   const scopedProjectKey = opsScopeProjectKey(req);
   if (scopedProjectKey) {
     params.push(scopedProjectKey);
@@ -72931,7 +73008,7 @@ app.post('/api/bna/agent-runs/:runKey/reopen', requireAdmin, async (req, res) =>
 
 app.get('/api/bna/tickets', requireAdmin, async (req, res) => {
   const params = [];
-  const conditions = [];
+  const conditions = [bnaLegacyActiveSql('bna_tickets','bt')];
   appendScopeCondition(req, conditions, params, 'bt.project_id');
   if (req.query.status && req.query.status !== 'all') {
     params.push(String(req.query.status));
@@ -74343,7 +74420,7 @@ app.get('/api/bna/learning-communities', requireAdmin, async (req, res) => {
          ON t.community_id = c.id
          AND t.status <> 'archived'
        WHERE c.workspace_key = $1
-         AND c.status <> 'archived'
+         AND c.status <> 'archived' AND ${bnaLegacyActiveSql('bna_learning_communities','c')}
        GROUP BY c.id
        ORDER BY c.updated_at DESC, c.id DESC`,
       [workspaceKey]
@@ -80523,7 +80600,7 @@ app.get('/api/bna/assistant/threads', async (req, res) => {
     const result = await pool.query(
       `SELECT *
        FROM bna_assistant_threads
-       ${whereClause}
+       ${whereClause || 'WHERE TRUE'} AND ${actor.canUseCodex ? bnaLegacyActiveSql('bna_assistant_threads','bna_assistant_threads') : 'TRUE'}
        ORDER BY updated_at DESC, id DESC
        LIMIT 30`,
       params
@@ -81525,7 +81602,7 @@ app.get('/api/assistant/threads', async (req, res) => {
     const result = await pool.query(
       `SELECT *
        FROM bna_assistant_threads
-       ${whereClause}
+       ${whereClause || 'WHERE TRUE'} AND ${actor.canUseCodex ? bnaLegacyActiveSql('bna_assistant_threads','bna_assistant_threads') : 'TRUE'}
        ORDER BY updated_at DESC, id DESC
        LIMIT 30`,
       params
@@ -81659,7 +81736,7 @@ app.get('/api/tickets', async (req, res) => {
   try {
     const actor = await resolveAssistantActor(req);
     const params = [];
-    let where = `WHERE t.status <> 'closed'`;
+    let where = `WHERE t.status <> 'closed' AND ${actor.canUseCodex ? bnaLegacyActiveSql('bna_support_tickets','t') : 'TRUE'}`;
     if (!actor.canUseCodex) {
       params.push(actor.email || '');
       params.push(actor.id || '');
@@ -90909,7 +90986,7 @@ app.post('/api/bna/bot-actions/execute', requireAdmin, async (req, res) => {
 });
 
 app.get('/api/bna/notifications', requireAdmin, async (req, res) => {
-  const conditions = [];
+  const conditions = [bnaLegacyActiveSql('bna_in_app_notifications','n')];
   const params = [];
   appendScopeCondition(req, conditions, params, 'n.project_id');
   const status = String(req.query.status || '').trim();
@@ -91625,7 +91702,7 @@ async function maybeCreateSupportTicketProcessedNotification({ ticket, previousT
 
 app.get('/api/bna/support-tickets', requireAdmin, async (req, res) => {
   const { status, severity, category } = req.query;
-  const conditions = [];
+  const conditions = [bnaLegacyActiveSql('bna_support_tickets','st')];
   const params = [];
   appendScopeCondition(req, conditions, params, 'st.project_id');
   if (status && status !== 'all') {
@@ -92211,7 +92288,7 @@ app.post('/api/bna/support-tickets/:id/comments', requireAdmin, async (req, res)
 
 app.get('/api/bna/tickets', requireAdmin, async (req, res) => {
   const { status, severity, category } = req.query;
-  const conditions = [];
+  const conditions = [bnaLegacyActiveSql('bna_support_tickets','st')];
   const params = [];
   appendScopeCondition(req, conditions, params, 'st.project_id');
   if (status && status !== 'all') {
@@ -92775,7 +92852,7 @@ app.get('/api/bna/tasks', requireAdmin, async (req, res) => {
 
   const params = [];
   let paramIdx = 1;
-  const where = ['1=1'];
+  const where = ['1=1', bnaLegacyActiveSql('bna_tasks','t')];
   const outerWhere = ['1=1'];
   const addParam = (value) => {
     params.push(value);
@@ -94812,13 +94889,13 @@ app.get(['/email-preferences', '/he/email-preferences'], (req, res) => {
 app.get(['/join', '/he/join'], (req, res) => {
   if (isOneTimeSingleTenantRuntime()) return res.status(404).end();
   res.set('Cache-Control', 'no-store');
-  res.type('html').send(require('./src/lib/bna/coop-join-page').renderCoopJoinPage());
+  res.type('html').send(require('./src/lib/bna/coop-join-page').renderCoopJoinPage(process.env, req.path.startsWith('/he/') ? 'he' : 'en'));
 });
 
 app.get(['/torah-mornings', '/he/torah-mornings'], (req, res) => {
   if (isOneTimeSingleTenantRuntime()) return res.status(404).end();
   res.setHeader('Cache-Control', 'no-store');
-  res.sendFile(path.join(__dirname, 'public', 'torah-mornings.html'));
+  res.redirect(302, req.path.startsWith('/he/') ? '/he/learning-pods' : '/learning-pods');
 });
 
 app.get(['/privacy', '/he/privacy'], (req, res) => {
@@ -94829,7 +94906,7 @@ app.get(['/privacy', '/he/privacy'], (req, res) => {
 app.get(['/support', '/he/support'], (req, res) => {
   if (isOneTimeSingleTenantRuntime()) return res.status(404).end();
   res.setHeader('Cache-Control', 'no-store');
-  res.type('html').send(require('./src/lib/bna/support-page').renderSupportPage(process.env, req.path === '/he/support' ? 'he' : 'en'));
+  res.redirect(302, req.path.startsWith('/he/') ? '/he/support/vision' : '/support/vision');
 });
 
 app.get(['/blog', '/he/blog'], (req, res) => {
@@ -94844,7 +94921,7 @@ app.get(['/faq', '/he/faq'], (req, res) => {
 
 app.get(['/school', '/school.html', '/he/school'], (req, res) => {
   res.setHeader('Cache-Control', 'no-store');
-  res.sendFile(path.join(__dirname, 'public', 'school.html'));
+  res.redirect(302, req.path.startsWith('/he/') ? '/he/academy-2027-28' : '/academy-2027-28');
 });
 
 app.get(['/parents', '/parents.html', '/families', '/parent-app', '/he/parents', '/he/families', '/he/parent-app'], (req, res) => {

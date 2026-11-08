@@ -1,0 +1,76 @@
+{
+  "scope": "bna-school-coop",
+  "surface_id": "bna-school-fullstack-20261108",
+  "source": "docs/REPO-SURFACE-MAP.md",
+  "frontend": {
+    "home": {
+      "routes": [
+        "/",
+        "/he"
+      ],
+      "renderer": "src/lib/bna/interest-pages.js#renderInterestHome"
+    },
+    "library": {
+      "routes": [
+        "/blog",
+        "/he/blog"
+      ],
+      "renderer": "src/lib/bna/interest-pages.js#renderArticleLibrary"
+    },
+    "articles": {
+      "routes": [
+        "/blog/:slug",
+        "/he/blog/:slug"
+      ],
+      "renderer": "src/lib/bna/interest-pages.js#renderArticle"
+    },
+    "faq": {
+      "routes": [
+        "/faq",
+        "/he/faq"
+      ],
+      "renderer": "src/lib/bna/interest-pages.js#renderInfoPage"
+    },
+    "form": {
+      "routes": [
+        "/join",
+        "/he/join"
+      ],
+      "renderer": "src/lib/bna/interest-pages.js#renderInterestForm",
+      "client": "public/js/bna-coop-join.js"
+    },
+    "owner": {
+      "route": "/operations",
+      "canonical": "public/operations.html",
+      "generated": "public/operations-bootstrap.html + operations-shell.js",
+      "current_extension": "public/js/bna-interest-owner.js"
+    },
+    "parent": {
+      "state": "Contract proposal pending; no invented mounted route"
+    }
+  },
+  "backend": {
+    "current_submit": "/api/bna/coop-interest",
+    "current_status": "Existing native interest-* transaction/outbox/owner/archive modules preserved; backend audits remaining states.",
+    "new_contract": "Pending peer versioned proposal and exact acceptance"
+  },
+  "integration_files": [
+    "server.js",
+    "ops/action-registry.json",
+    "ops/route-registry.json",
+    "package.json",
+    "package-lock.json",
+    "migrations/",
+    "ops/execution-runs/2026-11-05-bna-interest-launch/",
+    "tasks-pending/2026-11-05-bna-interest-launch.md",
+    "ops/agent-task-ledger.jsonl",
+    "ops/agent-changelog.md"
+  ],
+  "tests": [
+    "tests/bna-interest-pages.test.js",
+    "tests/bna-school-pages.test.js",
+    "actual isolated Chrome desktop/mobile/RTL/320/768 review",
+    "backend durable SQL + mounted HTTP suite; integrated18journeys"
+  ],
+  "effects": "No live submission/send/archive/provider/payment effects from current audit"
+}

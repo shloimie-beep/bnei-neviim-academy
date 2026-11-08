@@ -1,0 +1,113 @@
+{
+  "checked_at": "2026-11-08T12:26:13.466Z",
+  "scope": "original protected BNA assets",
+  "all_match": true,
+  "assets": [
+    {
+      "file": "public/images/bna-launch/bna-logo.png",
+      "source_id": "1WxOcCM-qTEwJRJl9Y-ay4xuUERSYo925",
+      "expected_sha256": "32dbdcbe557c79b6d6cf717764209f8632264644e6745e14160185de8f50daa5",
+      "actual_sha256": "32dbdcbe557c79b6d6cf717764209f8632264644e6745e14160185de8f50daa5",
+      "width": 311,
+      "height": 310,
+      "restriction": "Transparent original is 311×310 pixels; do not upscale as a full-screen graphic, recolor or redraw. Larger/vector master is not established."
+    },
+    {
+      "file": "public/images/bna-launch/founder.jpg",
+      "source_id": "18g32vLkcmVg-RsFt_c5wgj9KCVWicyDW",
+      "expected_sha256": "bd8e9c63f15ea8b389bfe3506f23afe4762dd7cb4ca53ebd839598ba5fc59601",
+      "actual_sha256": "bd8e9c63f15ea8b389bfe3506f23afe4762dd7cb4ca53ebd839598ba5fc59601",
+      "width": 720,
+      "height": 720,
+      "restriction": "JPEG already contains black corners outside the circular portrait. Keep a circle mask; do not reconstruct a missing rectangular original."
+    },
+    {
+      "file": "public/images/bna-launch/bunny.png",
+      "source_id": "1_rMaGAXv31fHLU8FoqkOTvaRCKn4W4Pc",
+      "expected_sha256": "0db4d49e26187b96a13e1755bdf3a5831d50827edf8e390228785d391d807214",
+      "actual_sha256": "0db4d49e26187b96a13e1755bdf3a5831d50827edf8e390228785d391d807214",
+      "width": 1920,
+      "height": 1080,
+      "restriction": "Original pixels remain unchanged. This historical photograph does not establish a current Florida venue or promise animal activities."
+    },
+    {
+      "file": "public/images/bna-launch/huddle.png",
+      "source_id": "1fYxsiHvh5rq3lHwAil5Rd7XcHZWYLukI",
+      "expected_sha256": "7b285131396cdfecc6558312a66ab90c227379a85c95c2ad606a54af696cb4cc",
+      "actual_sha256": "7b285131396cdfecc6558312a66ab90c227379a85c95c2ad606a54af696cb4cc",
+      "width": 1366,
+      "height": 768,
+      "restriction": "Do not label the exact experiment or imply current facilities/curriculum based on the image."
+    },
+    {
+      "file": "public/images/bna-launch/boys-with-sticks.jpg",
+      "source_id": "1-jz2FnsFL87bk6hDo7217ZZl336_FcAR",
+      "expected_sha256": "e9d736cd4fb653a7f291b27b185a5a557ce5860637bf74abf9e25f1cc1b00008",
+      "actual_sha256": "e9d736cd4fb653a7f291b27b185a5a557ce5860637bf74abf9e25f1cc1b00008",
+      "width": 1600,
+      "height": 1600,
+      "restriction": "Do not infer which boy is the parent's son or rewrite the quotation. No clinical/outcome claim added."
+    },
+    {
+      "file": "public/images/bna-launch/forest-learning-01.jpg",
+      "source_id": "1gLPIQKieOr95T502Yyn-WWfFa_dvq4vt",
+      "expected_sha256": "8ce99b0c6e0c9b18151557d38b8386494db71510c9869baadb0aba0155198f81",
+      "actual_sha256": "8ce99b0c6e0c9b18151557d38b8386494db71510c9869baadb0aba0155198f81",
+      "width": 4000,
+      "height": 3000,
+      "restriction": "Keep prior-learning context. This photo is not a verified current South Florida venue or current participant group."
+    },
+    {
+      "file": "public/images/bna-launch/forest-learning-02.jpg",
+      "source_id": "1HA97wQpvX4sW31w6NS6NG2ECG7LjiEIU",
+      "expected_sha256": "40c794f885b60c98d4f2148dee852cd7c111eb8850e3d553da673d43bf40f287",
+      "actual_sha256": "40c794f885b60c98d4f2148dee852cd7c111eb8850e3d553da673d43bf40f287",
+      "width": 4000,
+      "height": 3000,
+      "restriction": "Historical context only; do not name the venue or promise this activity without an approved source."
+    },
+    {
+      "file": "public/images/bna-launch/article-mentor.jpg",
+      "source_id": "1AbsEvfSrxNTLJ1K6wOD7lzqvU7fwjZ4j",
+      "expected_sha256": "f88c3c179d2cc67f87b3bf65bcd087811b08db238b1bc965d8c330c6d7618c34",
+      "actual_sha256": "f88c3c179d2cc67f87b3bf65bcd087811b08db238b1bc965d8c330c6d7618c34",
+      "width": 1200,
+      "height": 800,
+      "restriction": "Existing 1200×800 web image has baked blur padding. Do not treat as a full-screen master or invent who is pictured."
+    },
+    {
+      "file": "public/images/bna-launch/article-planting.jpg",
+      "source_id": "1mEXhsYS-D93U6i0kCTVwff0MytKr3BSn",
+      "expected_sha256": "5b9f4b854297c255878db41d69b032406cee5913790d202a39f70ab987078096",
+      "actual_sha256": "5b9f4b854297c255878db41d69b032406cee5913790d202a39f70ab987078096",
+      "width": 1200,
+      "height": 800,
+      "restriction": "Existing blur padding is part of original bytes; no reconstruction or clinical/curriculum promises."
+    },
+    {
+      "file": "public/images/bna-launch/article-leadership.jpg",
+      "source_id": "1vG6rnYbporTO84EvZRMf_zjKv6enYaSQ",
+      "expected_sha256": "d7ac968459b2eb39eb3c9430c672657a77f4f214f383fd2c41e0e02be10e510e",
+      "actual_sha256": "d7ac968459b2eb39eb3c9430c672657a77f4f214f383fd2c41e0e02be10e510e",
+      "width": 1200,
+      "height": 800,
+      "restriction": "Do not describe an activity's exact safety procedures, current curriculum, or age suitability from the photo alone."
+    },
+    {
+      "file": "public/images/bna-launch/BNA_Hero_Desktop_APPROVED_SouthFlorida_Gray.png",
+      "source_id": "127Z8HQTxMymUVKO-ha8rOCrOrNLqM3ft",
+      "expected_sha256": "cec2fe9408a5dd86a2714eae811abc50906dfb596e6aaae7085faeb09589df0d",
+      "actual_sha256": "cec2fe9408a5dd86a2714eae811abc50906dfb596e6aaae7085faeb09589df0d",
+      "width": 1672,
+      "height": 941
+    },
+    {
+      "file": "public/images/bna-launch/BNA_Hero_Mobile_APPROVED_SouthFlorida_Gray.png",
+      "source_id": "1_nAEtDud-lb5NIKOoEsQpFDIB8-r-02N",
+      "expected_sha256": "420fcf315b7ab5844e3722a5c57913e8b661bf3a063eb6ccb893397b31768eb7",
+      "actual_sha256": "420fcf315b7ab5844e3722a5c57913e8b661bf3a063eb6ccb893397b31768eb7",
+      "width": 941,
+      "height": 1672
+    }
+  ]
+}

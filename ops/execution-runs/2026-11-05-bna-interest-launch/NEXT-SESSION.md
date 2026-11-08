@@ -1,0 +1,9 @@
+# Preserve the verified public inquiry flow
+
+Current public work is complete: exact6c1e4261c78896e0273a4c553880343d9ecd6f25, Railway SUCCESSb28f5f0c-d94b-4edd-9af2-8aca98469517, matching serving identity. One labeled owner Gmail test arrived and matched its saved preview; owner alert activation and unchanged active parent EN/HE releases were read back. Existing November5 durable inquiry/ordinary-owner/fixed archive proof remains retained. No new inquiry or parent test was created. RESULT.md and structured live/recipient/source receipts are in ops/bna-interest-launch/2026-11-08/.
+
+Do not repeat deployment, test send, activation, archive or old-contact/backfill. RAW-20261108-005 resolved the approval blocker; there is no pending owner-alert approval. Provider may replace a supplied RFC Message-ID; actual recipient subject/sender/body/time and Inbox evidence are authoritative. Test journal is one claimed row/one attempt; never replay an uncertain or accepted send.
+
+Full backend/private/fullstack012–024 remains explicitly deferred by RAW-20261108-004, not built. Existing backend chat/worktree stay paused, its timer deleted. Existing frontend checkpoint registration is retained/PAUSED on verified current completion. No new worker, generic last-session resume or automatic fullstack restart. A future explicit backend request must reconcile its existing worktree with the verified6c1public/store/owner-alert release first. Preserve all original24package IDs/18journeys, new leads, history/admin access, global July pointer and unrelated work.
+
+For exact GitHub-source deploys, use explicit serviceInstanceDeployV2 commitSha and verify runtime: a source-config commitSha alone selected a later docs-only branch head during this release. Do not assume metadata pins prove serving identity.

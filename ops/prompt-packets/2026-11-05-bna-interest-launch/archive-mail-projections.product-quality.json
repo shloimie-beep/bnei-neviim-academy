@@ -1,0 +1,592 @@
+{
+  "schema_version": "pqc.v2",
+  "packet_id": "PKT-20261105-010",
+  "parent_raw_id": "RAW-20261105-001",
+  "source_statement_ids": [
+    "SRC-20261105-001"
+  ],
+  "packet_dag": {
+    "parent_packet_id": "PKT-20261105-004",
+    "child_packet_ids": [],
+    "depends_on_packet_ids": [
+      "PKT-20261105-004"
+    ],
+    "blocks_packet_ids": [],
+    "consumes": [
+      "raw-input/RAW-20261105-001-bna-interest-launch.md",
+      "ops/surface-maps/2026-11-05-bna-interest-launch.json"
+    ],
+    "produces": [
+      "ops/prompt-packets/2026-11-05-bna-interest-launch/archive-mail-projections.product-quality.json"
+    ],
+    "validation_command": "npm run pqc:validate -- ops/prompt-packets/2026-11-05-bna-interest-launch/archive-mail-projections.product-quality.json",
+    "terminal_condition": "Evidence-backed scope status and next packet recorded.",
+    "handoff_target": "ops/prompt-packets/2026-11-05-bna-interest-launch/05-verifier-closeout.md"
+  },
+  "stage": "STAGE_3_CODEX_IMPLEMENTATION",
+  "packet_role": "IMPLEMENTATION_PACKET",
+  "status": "verified",
+  "title": "BNA archive-mail-projections",
+  "created_at": "2026-11-05T11:00:00+02:00",
+  "workspace_key": "bna",
+  "project_key": "bnei_neviim_academy",
+  "view_classes": [
+    "SHLOIMIE_PLATFORM_SUPPORT"
+  ],
+  "ramble_router": {
+    "raw_id": "RAW-20261105-001",
+    "classification": [
+      "PRODUCT_QUALITY",
+      "UI_IMPLEMENTATION",
+      "SECURITY_PRIVACY"
+    ],
+    "confidence": 1,
+    "reasons": [
+      "Exact authorized November 5 launch implementation."
+    ],
+    "affected_workspace_project": "bna / bnei_neviim_academy",
+    "affected_view_classes": [
+      "SHLOIMIE_PLATFORM_SUPPORT"
+    ],
+    "affected_product_surfaces": [
+      "BNA legacy business read projection"
+    ],
+    "likely_external_provider_blockers": [
+      "Email activation review; existing release guard."
+    ],
+    "product_quality_compiler_required": true,
+    "super_ramble_packet_splitter_required": false,
+    "visual_audit_before_implementation": true,
+    "implementation_forbidden_until_dor": true,
+    "recommended_packet_sequence": [
+      "00-control-tower",
+      "01-current-state-visual-audit",
+      "04-owner-archive"
+    ],
+    "next_exact_packet": "archive-mail-projections"
+  },
+  "operator_intent_summary": "Exclude fixed inventoried BNA legacy business records from this existing active read projection while retaining direct linked history and other workspaces. No new business records, payment changes or external sends.",
+  "raw_source": "Private original raw-input/RAW-20261105-001-bna-interest-launch.md",
+  "raw_quotes": [
+    "Apply BNA-INTEREST-LAUNCH-20261105-01.",
+    "Keep the existing worktree and unrelated work intact."
+  ],
+  "operator_quotes": [
+    "Preview the saved email draft, preserve leads if sending fails, and prevent duplicates."
+  ],
+  "decisions_captured": [
+    {
+      "id": "DEC-20261105-001",
+      "decision": "New exact transactional email draft/sender requires final activation review after preview.",
+      "status": "pending"
+    }
+  ],
+  "out_of_scope": [
+    "Fishing, other providers, Buffer PR195, donation checkout, parent accounts, deletion, legacy sends and marketing activation.",
+    "Do not solve the whole parent ramble. Complete only this packet scope and record the next packet or blocker."
+  ],
+  "affected_surfaces": [
+    "BNA legacy business read projection"
+  ],
+  "affected_routes": [
+    "/api/bna/communications",
+    "/api/bna/contact-communications"
+  ],
+  "affected_files": [
+    "public/js/operations-shell.js",
+    "src/lib/bna/interest-store.js",
+    "src/lib/bna/interest-archive.js",
+    "server.js"
+  ],
+  "current_state": {
+    "inspection_targets": [
+      "ops/surface-maps/2026-11-05-bna-interest-launch.json",
+      "ops/prompt-packets/2026-11-05-bna-interest-launch/01-current-state-visual-audit.md",
+      "public/js/operations-shell.js",
+      "src/lib/bna/interest-store.js",
+      "src/lib/bna/interest-archive.js",
+      "server.js"
+    ],
+    "known_blockers": []
+  },
+  "product_quality_expansion": {
+    "trigger_phrases": [
+      "get it working"
+    ],
+    "expanded_phrases": {
+      "working": "A saved inquiry survives refresh and retries, appears through the ordinary BNA owner view, and has truthful independent email state.",
+      "CRM": "Reuse first-party scoped bna_parent_leads, history and ordinary owner contacts; do not create another CRM.",
+      "clean": "Readable aligned BNA typography and spacing, complete hero framing and measured responsive layouts.",
+      "configured": "Actual provider/readback evidence, not an enabled UI label."
+    },
+    "first_party_pattern_interpretation": "Existing first-party BNA data and owner controls only."
+  },
+  "design_pattern_references": [
+    "docs/PRODUCT-QUALITY-COMPILER.md",
+    "docs/DESIGN-REFERENCE-CAPTURE.md",
+    "docs/VISUAL-QUALITY-HARNESS.md",
+    "ops/prompt-packets/2026-11-05-bna-interest-launch/01-current-state-visual-audit.md"
+  ],
+  "requirements": [
+    {
+      "id": "REQ-20261105-005",
+      "statement": "Extend the existing BNA owner contacts view with program, area and follow-up filters, exact reference and email state, durable notes, a separate legacy archive, fixed-inventory reversible migration and preservation of administrator access and new arrivals.",
+      "expected_result": "Extend the existing BNA owner contacts view with program, area and follow-up filters, exact reference and email state, durable notes, a separate legacy archive, fixed-inventory reversible migration and preservation of administrator access and new arrivals.",
+      "acceptance_criteria": [
+        "Approved copy is compared exactly with current selected source after authorized omissions.",
+        "Durable retry/reload, scope denial, error states and rendered evidence are linked to the register."
+      ]
+    }
+  ],
+  "definition_of_ready": {
+    "required": true,
+    "criteria": [
+      "Current November 5 source owners and refreshed packet consumed.",
+      "Private raw, dated register, surface map, control tower and public before screenshots exist.",
+      "This packet validates; owner/archive UI requires additional signed-in inspection before editing its layout."
+    ]
+  },
+  "state_matrix": {
+    "loading": {
+      "route": "/api/bna/communications",
+      "viewport": "390",
+      "auth_role": "BNA_OWNER",
+      "workspace_project": "bna / bnei_neviim_academy",
+      "how_to_enter_state": "Exercise loading through scoped HTTP/browser fixtures.",
+      "expected_visible_title": "BNA inquiries",
+      "expected_visible_message": "Render loading explicitly without hidden recovery or unrelated records.",
+      "expected_primary_action": "Continue selected BNA action",
+      "expected_secondary_actions": [
+        "Return to BNA home"
+      ],
+      "forbidden_content": [
+        "raw credentials",
+        "Fishing records",
+        "old public schedule or venue"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Labeled controls, status/error announcements and meaningful headings.",
+      "accessibility_expectation": "Keyboard/focus, AA contrast, 44px touch targets and no horizontal overflow.",
+      "test_smoke_assertion": "Real state is visible, scoped and persists where applicable.",
+      "requirement_id": "REQ-20261105-006"
+    },
+    "empty": {
+      "route": "/api/bna/communications",
+      "viewport": "390",
+      "auth_role": "BNA_OWNER",
+      "workspace_project": "bna / bnei_neviim_academy",
+      "how_to_enter_state": "Exercise empty through scoped HTTP/browser fixtures.",
+      "expected_visible_title": "BNA inquiries",
+      "expected_visible_message": "Render empty explicitly without hidden recovery or unrelated records.",
+      "expected_primary_action": "Continue selected BNA action",
+      "expected_secondary_actions": [
+        "Return to BNA home"
+      ],
+      "forbidden_content": [
+        "raw credentials",
+        "Fishing records",
+        "old public schedule or venue"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Labeled controls, status/error announcements and meaningful headings.",
+      "accessibility_expectation": "Keyboard/focus, AA contrast, 44px touch targets and no horizontal overflow.",
+      "test_smoke_assertion": "Real state is visible, scoped and persists where applicable.",
+      "requirement_id": "REQ-20261105-006"
+    },
+    "populated": {
+      "route": "/api/bna/communications",
+      "viewport": "390",
+      "auth_role": "BNA_OWNER",
+      "workspace_project": "bna / bnei_neviim_academy",
+      "how_to_enter_state": "Exercise populated through scoped HTTP/browser fixtures.",
+      "expected_visible_title": "BNA inquiries",
+      "expected_visible_message": "Render populated explicitly without hidden recovery or unrelated records.",
+      "expected_primary_action": "Continue selected BNA action",
+      "expected_secondary_actions": [
+        "Return to BNA home"
+      ],
+      "forbidden_content": [
+        "raw credentials",
+        "Fishing records",
+        "old public schedule or venue"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Labeled controls, status/error announcements and meaningful headings.",
+      "accessibility_expectation": "Keyboard/focus, AA contrast, 44px touch targets and no horizontal overflow.",
+      "test_smoke_assertion": "Real state is visible, scoped and persists where applicable.",
+      "requirement_id": "REQ-20261105-006"
+    },
+    "filtered_empty": {
+      "route": "/api/bna/communications",
+      "viewport": "390",
+      "auth_role": "BNA_OWNER",
+      "workspace_project": "bna / bnei_neviim_academy",
+      "how_to_enter_state": "Exercise filtered_empty through scoped HTTP/browser fixtures.",
+      "expected_visible_title": "BNA inquiries",
+      "expected_visible_message": "No inquiries match the selected filters.",
+      "expected_primary_action": "Clear filters",
+      "expected_secondary_actions": [
+        "Return to BNA home"
+      ],
+      "forbidden_content": [
+        "raw credentials",
+        "Fishing records",
+        "old public schedule or venue"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Labeled controls, status/error announcements and meaningful headings.",
+      "accessibility_expectation": "Keyboard/focus, AA contrast, 44px touch targets and no horizontal overflow.",
+      "test_smoke_assertion": "Real state is visible, scoped and persists where applicable.",
+      "requirement_id": "REQ-20261105-006"
+    },
+    "error": {
+      "route": "/api/bna/communications",
+      "viewport": "390",
+      "auth_role": "BNA_OWNER",
+      "workspace_project": "bna / bnei_neviim_academy",
+      "how_to_enter_state": "Exercise error through scoped HTTP/browser fixtures.",
+      "expected_visible_title": "BNA inquiries",
+      "expected_visible_message": "Show actual save/load error without empty/saved claim.",
+      "expected_primary_action": "Retry same operation",
+      "expected_secondary_actions": [
+        "Return to BNA home"
+      ],
+      "forbidden_content": [
+        "raw credentials",
+        "Fishing records",
+        "old public schedule or venue"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Labeled controls, status/error announcements and meaningful headings.",
+      "accessibility_expectation": "Keyboard/focus, AA contrast, 44px touch targets and no horizontal overflow.",
+      "test_smoke_assertion": "Real state is visible, scoped and persists where applicable.",
+      "requirement_id": "REQ-20261105-006"
+    },
+    "blocked_setup": {
+      "route": "/api/bna/communications",
+      "viewport": "390",
+      "auth_role": "BNA_OWNER",
+      "workspace_project": "bna / bnei_neviim_academy",
+      "how_to_enter_state": "Exercise blocked_setup through scoped HTTP/browser fixtures.",
+      "expected_visible_title": "BNA inquiries",
+      "expected_visible_message": "Render blocked_setup explicitly without hidden recovery or unrelated records.",
+      "expected_primary_action": "Continue selected BNA action",
+      "expected_secondary_actions": [
+        "Return to BNA home"
+      ],
+      "forbidden_content": [
+        "raw credentials",
+        "Fishing records",
+        "old public schedule or venue"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Labeled controls, status/error announcements and meaningful headings.",
+      "accessibility_expectation": "Keyboard/focus, AA contrast, 44px touch targets and no horizontal overflow.",
+      "test_smoke_assertion": "Real state is visible, scoped and persists where applicable.",
+      "requirement_id": "REQ-20261105-006"
+    },
+    "preview_only": {
+      "route": "/api/bna/communications",
+      "viewport": "390",
+      "auth_role": "BNA_OWNER",
+      "workspace_project": "bna / bnei_neviim_academy",
+      "how_to_enter_state": "Exercise preview_only through scoped HTTP/browser fixtures.",
+      "expected_visible_title": "BNA inquiries",
+      "expected_visible_message": "Render preview_only explicitly without hidden recovery or unrelated records.",
+      "expected_primary_action": "Continue selected BNA action",
+      "expected_secondary_actions": [
+        "Return to BNA home"
+      ],
+      "forbidden_content": [
+        "raw credentials",
+        "Fishing records",
+        "old public schedule or venue"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Labeled controls, status/error announcements and meaningful headings.",
+      "accessibility_expectation": "Keyboard/focus, AA contrast, 44px touch targets and no horizontal overflow.",
+      "test_smoke_assertion": "Real state is visible, scoped and persists where applicable.",
+      "requirement_id": "REQ-20261105-006"
+    },
+    "success_readback": {
+      "route": "/api/bna/communications",
+      "viewport": "390",
+      "auth_role": "BNA_OWNER",
+      "workspace_project": "bna / bnei_neviim_academy",
+      "how_to_enter_state": "Exercise success_readback through scoped HTTP/browser fixtures.",
+      "expected_visible_title": "Your Interest Has Been Saved",
+      "expected_visible_message": "Show durable reference and independent email state.",
+      "expected_primary_action": "Continue selected BNA action",
+      "expected_secondary_actions": [
+        "Return to BNA home"
+      ],
+      "forbidden_content": [
+        "raw credentials",
+        "Fishing records",
+        "old public schedule or venue"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Labeled controls, status/error announcements and meaningful headings.",
+      "accessibility_expectation": "Keyboard/focus, AA contrast, 44px touch targets and no horizontal overflow.",
+      "test_smoke_assertion": "Real state is visible, scoped and persists where applicable.",
+      "requirement_id": "REQ-20261105-006"
+    },
+    "permission_denied": {
+      "route": "/api/bna/communications",
+      "viewport": "390",
+      "auth_role": "BNA_OWNER",
+      "workspace_project": "bna / bnei_neviim_academy",
+      "how_to_enter_state": "Open private API without BNA owner scope.",
+      "expected_visible_title": "BNA inquiries",
+      "expected_visible_message": "Render permission_denied explicitly without hidden recovery or unrelated records.",
+      "expected_primary_action": "Continue selected BNA action",
+      "expected_secondary_actions": [
+        "Return to BNA home"
+      ],
+      "forbidden_content": [
+        "raw credentials",
+        "Fishing records",
+        "old public schedule or venue"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Labeled controls, status/error announcements and meaningful headings.",
+      "accessibility_expectation": "Keyboard/focus, AA contrast, 44px touch targets and no horizontal overflow.",
+      "test_smoke_assertion": "Real state is visible, scoped and persists where applicable.",
+      "requirement_id": "REQ-20261105-006"
+    },
+    "mobile_drawer_or_detail_state": {
+      "route": "/api/bna/communications",
+      "viewport": "390",
+      "auth_role": "BNA_OWNER",
+      "workspace_project": "bna / bnei_neviim_academy",
+      "how_to_enter_state": "Exercise mobile_drawer_or_detail_state through scoped HTTP/browser fixtures.",
+      "expected_visible_title": "BNA inquiries",
+      "expected_visible_message": "Render mobile_drawer_or_detail_state explicitly without hidden recovery or unrelated records.",
+      "expected_primary_action": "Continue selected BNA action",
+      "expected_secondary_actions": [
+        "Return to BNA home"
+      ],
+      "forbidden_content": [
+        "raw credentials",
+        "Fishing records",
+        "old public schedule or venue"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Labeled controls, status/error announcements and meaningful headings.",
+      "accessibility_expectation": "Keyboard/focus, AA contrast, 44px touch targets and no horizontal overflow.",
+      "test_smoke_assertion": "Real state is visible, scoped and persists where applicable.",
+      "requirement_id": "REQ-20261105-006"
+    }
+  },
+  "visual_quality": {
+    "screenshot_requirements": [
+      {
+        "route": "/api/bna/communications",
+        "viewport": 1440,
+        "auth_role": "BNA_OWNER",
+        "workspace_project": "bna / bnei_neviim_academy",
+        "required": true,
+        "requirement_id": "REQ-20261105-006"
+      },
+      {
+        "route": "/api/bna/communications",
+        "viewport": 1024,
+        "auth_role": "BNA_OWNER",
+        "workspace_project": "bna / bnei_neviim_academy",
+        "required": true,
+        "requirement_id": "REQ-20261105-006"
+      },
+      {
+        "route": "/api/bna/communications",
+        "viewport": 768,
+        "auth_role": "BNA_OWNER",
+        "workspace_project": "bna / bnei_neviim_academy",
+        "required": true,
+        "requirement_id": "REQ-20261105-006"
+      },
+      {
+        "route": "/api/bna/communications",
+        "viewport": 430,
+        "auth_role": "BNA_OWNER",
+        "workspace_project": "bna / bnei_neviim_academy",
+        "required": true,
+        "requirement_id": "REQ-20261105-006"
+      },
+      {
+        "route": "/api/bna/communications",
+        "viewport": 390,
+        "auth_role": "BNA_OWNER",
+        "workspace_project": "bna / bnei_neviim_academy",
+        "required": true,
+        "requirement_id": "REQ-20261105-006"
+      }
+    ],
+    "findings": [
+      {
+        "finding_id": "VQF-20261105-004",
+        "route": "/api/bna/communications",
+        "viewport": "390",
+        "screenshot_before": ".runtime/bna-interest-launch-20261105/before/home-mobile.png",
+        "screenshot_after_or_blocker": "Capture and inspect after implementation; private owner baseline requires scoped session.",
+        "defect_codes": [
+          "VQ-RESP-001",
+          "VQ-CRED-001"
+        ],
+        "severity": "P1",
+        "user_impact": "Current public layout and inquiry flow do not implement the approved BNA launch.",
+        "expected_fix": "Extend the existing BNA owner contacts view with program, area and follow-up filters, exact reference and email state, durable notes, a separate legacy archive, fixed-inventory reversible migration and preservation of administrator access and new arrivals.",
+        "requirement_id": "REQ-20261105-006"
+      }
+    ]
+  },
+  "accessibility": {
+    "baseline": "WCAG 2.2 AA and responsive keyboard/touch review",
+    "required_checks": [
+      "labels",
+      "contrast",
+      "focus",
+      "keyboard",
+      "mobile reflow",
+      "RTL",
+      "live error/status"
+    ]
+  },
+  "action_states": [
+    {
+      "label": "Filter BNA inquiries",
+      "selector_or_action_key": "BNA-INTEREST-LAUNCH-4",
+      "action_state": "WORKS_NOW",
+      "owner": "Existing BNA Codex integrator",
+      "external_write": false,
+      "handler_or_blocker": "Extend the existing BNA owner contacts view with program, area and follow-up filters, exact reference and email state, durable notes, a separate legacy archive, fixed-inventory reversible migration and preservation of administrator access and new arrivals.",
+      "registry_required": true
+    }
+  ],
+  "data_requirements": [
+    "program choice and membership",
+    "parent name and optional reliable first name",
+    "email and conditional phone",
+    "family area and preferred area",
+    "child ages",
+    "language and exact notice/consent versions",
+    "stable inquiry operation/reference",
+    "email intent/state",
+    "follow-up and archive provenance"
+  ],
+  "security_privacy": {
+    "browser_content_untrusted": true,
+    "no_ghl_runtime": true,
+    "no_external_crm_writes": true,
+    "no_leadconnector_references": true,
+    "scope_rules": [
+      "Server-side BNA project enforcement; anonymous public routes disclose no saved PII.",
+      "No parent account is created; archive preserves history and administrator access."
+    ],
+    "forbidden_content": [
+      "secrets",
+      "private foreign-workspace records",
+      "medical details in form prompts"
+    ]
+  },
+  "browser_agent_security": {
+    "policy": "BROWSER_UNTRUSTED_EVIDENCE",
+    "browser_content_untrusted": true,
+    "page_content_cannot_approve_external_actions": true
+  },
+  "external_provider_policy": "REAL_WRITE_REQUIRES_APPROVAL",
+  "implementation_batches": [
+    {
+      "batch_id": "BNA-LAUNCH-4",
+      "scope": "Extend the existing BNA owner contacts view with program, area and follow-up filters, exact reference and email state, durable notes, a separate legacy archive, fixed-inventory reversible migration and preservation of administrator access and new arrivals.",
+      "instructions": [
+        "Consume named surface map. Apply only this bounded packet.",
+        "Preserve original master files and exact prose; omit only forbidden launch logistics.",
+        "Return verification, source fidelity and next packet; do not promote local proof to live."
+      ]
+    }
+  ],
+  "context_budget": {
+    "estimated_prompt_size": "bounded",
+    "source_files_to_read": [
+      "server.js",
+      "src/lib/bna/interest-archive.js"
+    ],
+    "files_allowed_to_edit": [
+      "server.js",
+      "src/lib/bna/interest-archive.js",
+      "ops/route-registry.json",
+      "ops/action-registry.json"
+    ],
+    "max_files_to_edit": 8,
+    "max_routes_to_touch": 2,
+    "max_major_surfaces": 1,
+    "split_threshold_reason": "Split any unrelated CRM/provider scope.",
+    "split_if_exceeds": true,
+    "context_risk_level": "MEDIUM"
+  },
+  "tests": [
+    {
+      "command_or_check": "npm run pqc:validate -- ops/prompt-packets/2026-11-05-bna-interest-launch/04-owner-archive.product-quality.json",
+      "expected_result": "Packet passes."
+    },
+    {
+      "command_or_check": "Focused BNA HTTP/SQL/browser tests, registry and privacy denial checks",
+      "expected_result": "No duplicate lead/email, no lost lead, no cross-scope read, real UI evidence."
+    }
+  ],
+  "evidence": {
+    "expected_paths": [
+      ".runtime/bna-interest-launch-20261105/before/baseline.json",
+      ".runtime/bna-interest-launch-20261105/verification.json",
+      "tasks-pending/2026-11-05-bna-interest-launch.md",
+      "ops/bna-interest-launch/2026-11-05/RESULT.md"
+    ]
+  },
+  "app_visible": true,
+  "deployment_gate": "LIVE_SMOKE_REQUIRED_BEFORE_DONE",
+  "definition_of_done": {
+    "required": true,
+    "criteria": [
+      "Relevant focused tests and exact copy/asset comparison pass.",
+      "Screenshots opened, material defects repaired and relevant controls exercised.",
+      "Ordinary owner reload/readback and reversible archive proof recorded.",
+      "Scoped push, deployment and live journey evidence recorded or precise blocker retained."
+    ]
+  },
+  "trace": {
+    "raw_input_path": "raw-input/RAW-20261105-001-bna-interest-launch.md",
+    "compiled_packet_path": "ops/prompt-packets/2026-11-05-bna-interest-launch/archive-mail-projections.product-quality.json",
+    "validator_result_path": "ops/product-quality-compiler/validation/latest-product-quality-validation.json",
+    "tool_actions_expected": [
+      "source reads",
+      "SQL verification",
+      "isolated browser review",
+      "scoped release"
+    ],
+    "skipped_actions_policy": "No sends before exact draft/sender activation review; no donation checkout or foreign-workspace mutation.",
+    "blocker_decisions": [
+      "DEC-20261105-001"
+    ],
+    "evidence_paths": [
+      ".runtime/bna-interest-launch-20261105/before/baseline.json",
+      ".runtime/bna-interest-launch-20261105/verification.json",
+      "tasks-pending/2026-11-05-bna-interest-launch.md",
+      "ops/bna-interest-launch/2026-11-05/RESULT.md"
+    ],
+    "final_status_path": "tasks-pending/2026-11-05-bna-interest-launch.md",
+    "next_packet_path": "ops/prompt-packets/2026-11-05-bna-interest-launch/05-verifier-closeout.md"
+  },
+  "drift_watchdog": {
+    "required": true,
+    "command": "npm run watchdog:protocol-drift",
+    "expected_result": "No unsupported implementation or UI done claim."
+  },
+  "next_packet": {
+    "type": "VERIFIER_PACKET",
+    "description": "Continue 05-verifier-closeout",
+    "path": "ops/prompt-packets/2026-11-05-bna-interest-launch/05-verifier-closeout.md"
+  },
+  "related_requirement_ids": [
+    "REQ-20261105-006"
+  ]
+}

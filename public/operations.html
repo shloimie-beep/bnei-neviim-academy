@@ -8576,6 +8576,8 @@
     <script src="/js/crm/contact-workspace.js"></script>
     <script src="/js/crm/crm-actions.js"></script>
     <script src="/js/crm/crm-inbox.js"></script>
+    <link rel="stylesheet" href="/css/bna-interest-owner.css">
+    <script src="/js/bna-interest-owner.js"></script>
     <script>
         // API Client
         const api = {
@@ -9512,6 +9514,7 @@ let agentRunDetail = null;
         let contentGenerationStates = {};
         let newsletterGenerationStates = {};
         let parentLeads = [];
+        let bnaInterestLeadsLoadError = "";
         let serviceProviders = [];
         let providerCategories = [];
         let providerLeads = [];
@@ -19308,7 +19311,8 @@ function closeAgentRunPortal() {
 
         function leadMatchesFilters(lead) {
             const tags = leadTags(lead);
-            return (contactLeadTypeFilter === 'all' || leadTypeKey(lead) === contactLeadTypeFilter)
+            return (currentWorkspaceId !== 'bna' || !window.BNAInterestOwner || window.BNAInterestOwner.matches(lead))
+                && (contactLeadTypeFilter === 'all' || leadTypeKey(lead) === contactLeadTypeFilter)
                 && (contactLeadStatusFilter === 'all' || leadStatusKey(lead) === contactLeadStatusFilter)
                 && (contactInterestFilter === 'all' || leadInterestKey(lead) === contactInterestFilter)
                 && contactTagMatches(tags)
@@ -19316,6 +19320,9 @@ function closeAgentRunPortal() {
         }
 
         function renderInterestedParentLeads() {
+            if (currentWorkspaceId === 'bna' && bnaInterestLeadsLoadError) {
+                return `<div class="contact-empty-card" role="alert">BNA inquiries could not be loaded. Your saved records are retained. <button type="button" class="task-action" onclick="loadData().then(() => render())" data-action-id="ACTION-BNA-INTEREST-OWNER-RETRY">Retry</button></div>`;
+            }
             const sectionLeads = parentLeads.filter(lead => leadMatchesSection(lead, 'interested_parents'));
             const visibleLeads = sectionLeads.filter(leadMatchesFilters);
             if (!visibleLeads.some(lead => Number(lead.id) === Number(selectedLeadId))) {
@@ -19324,6 +19331,7 @@ function closeAgentRunPortal() {
             }
 
             return `
+                ${currentWorkspaceId === 'bna' && window.BNAInterestOwner ? window.BNAInterestOwner.renderFilters(sectionLeads) : ''}
                 ${renderLeadFilterPanel(sectionLeads, visibleLeads)}
                 ${sectionLeads.length === 0 ? `
                     <div class="contact-empty-card">
@@ -19564,7 +19572,7 @@ function closeAgentRunPortal() {
         function renderLeadPipeline(visibleLeads) {
             const statuses = leadPipelineStatuses(visibleLeads);
             return `
-                <div class="lead-pipeline-board" aria-label="Interested parent pipeline">
+                <div class="lead-pipeline-board ${currentWorkspaceId === 'bna' ? 'bna-interest-board' : ''}" aria-label="Interested parent pipeline">
                     ${statuses.map(status => {
                         const leads = visibleLeads.filter(lead => leadStatusKey(lead) === status);
                         return `
@@ -19722,7 +19730,8 @@ function closeAgentRunPortal() {
                         </div>
                         <span class="page-status-pill">${escapeHtml(nextFollowUp)}</span>
                     </div>
-                    <div class="person-detail-shell">
+                    ${currentWorkspaceId === 'bna' && window.BNAInterestOwner ? window.BNAInterestOwner.renderEvidence(lead) : ''}
+                <div class="person-detail-shell">
                         <aside class="student-picker person-detail-sidebar">
                             <div class="event-type">Selected Lead</div>
                             <div class="event-title">${escapeHtml(lead.parent_name || 'Unknown parent')}</div>
@@ -39751,6 +39760,7 @@ function closeAgentRunPortal() {
                         payment_amount: signup.payment_amount || 1000
                     }));
                 }
+                bnaInterestLeadsLoadError = parentLeadsRes.status === 'fulfilled' && Array.isArray(parentLeadsRes.value?.leads) ? '' : 'BNA inquiries unavailable';
                 if (parentLeadsRes.status === 'fulfilled' && parentLeadsRes.value?.leads) parentLeads = parentLeadsRes.value.leads;
                 if (serviceProvidersRes.status === 'fulfilled' && serviceProvidersRes.value?.providers) serviceProviders = serviceProvidersRes.value.providers;
                 if (needsProviderData && !isProviderWorkspace()) {
@@ -41001,6 +41011,9 @@ function closeAgentRunPortal() {
             syncOperationsUrl();
             render();
         }
+
+        function setBnaInterestFilter(kind, value) { window.BNAInterestOwner.setFilter(kind, value); selectedLeadId = null; render(); }
+        function clearBnaInterestFilters() { window.BNAInterestOwner.clear(); render(); }
 
         function setContactFilter(kind, value) {
             if (kind === 'date') contactDateFilter = value;

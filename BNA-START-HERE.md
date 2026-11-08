@@ -2,9 +2,43 @@
 
 Every new GitHub-connected ChatGPT or Codex session for this repo starts here.
 
-## Current Handoff
+## Current public inquiry scope — 8 November 2026
 
-As of 2026-06-25, the latest execution run is closed:
+Current requested public scope is verified live at6c1e4261 / Railway SUCCESSb28f5f0c: webpage/shared form, durable stored inquiries, unchanged active parent confirmations and new-inquiry owner Gmail alert. One labeled owner test reached the verified Inbox; exact approval RAW-20261108-005 and separate activation/readback are recorded. Read `ops/bna-interest-launch/2026-11-08/RESULT.md` and the existing November5 run NEXT-SESSION.md. Full backend/private/fullstack remains explicitly deferred, not implemented. Backend timer deleted; frontend checkpoint registration retained/PAUSED on current completion. No pending owner-alert approval or repeat effects.
+
+## BNA interest launch execution — 5 November 2026
+
+The operator separately authorized BNA-INTEREST-LAUNCH-20261105-01 in goal mode, superseding the earlier preparation-only stop for this launch. REQ-20261105-001 through008 are Done: exact bilingual website and durable shared form, approved transactional receipt, existing-owner controls and reversible legacy archive. Production is pinned to verified application7d0a02a4 (Railway SUCCESS3854b4ba); PR196 contains the scoped implementation. Read `ops/bna-interest-launch/2026-11-05/RESULT.md` and `tasks-pending/2026-11-05-bna-interest-launch.md` for separate implementation/live evidence and limitations. BNA-only Delivery/Continuation receipts have exact native readback. Donation checkout follows separately. The November3 preparation rule below remains historical setup guidance; it does not reopen this completed launch or authorize unrelated work.
+
+## Current BNA Florida source routing
+
+Setup receipt: BNA-REPOSITORY-SKILLS-SETUP-20261102-01.
+Current scope correction (3 November 2026): reuse this completed setup. Repository preparation checks instructions, source pointers, skill metadata and Git diff only. No demos, browser/screenshots, servers, builds/tests, dependency changes or extra agents. Visual QA and demonstrations belong to a later separately authorized website task. Wait for a separate explicit instruction before BNA website coding; do not resume Fishing, Buffer or historical queues. Local documentation commit only, then stop. Prior setup observations below remain dated evidence, not instructions to repeat them.
+
+Start with the [current BNA route](https://docs.google.com/document/d/1AwB6My_ZrXf09j5ZFXvu42UKW30kCnlWU7_sLDpFHIA/edit?tab=t.7vzmudr7zlyq), then read the relevant live owning clauses:
+
+- [BNA decisions](https://docs.google.com/document/d/1PExKb2PwAFAHlBtgmQ9RU-JdfTfQ-jTk41SpWetn7w8/edit?tab=t.t9isykp3kvlt) and [transition history](https://docs.google.com/document/d/1PExKb2PwAFAHlBtgmQ9RU-JdfTfQ-jTk41SpWetn7w8/edit?tab=t.okoz0o58voe1).
+- [School operating model](https://docs.google.com/document/d/1PExKb2PwAFAHlBtgmQ9RU-JdfTfQ-jTk41SpWetn7w8/edit?tab=t.eazsk2ki6crr).
+- [Website/publication scope](https://docs.google.com/document/d/1jw0shI2DSfUH9RpJc2WdeIqXwO1OYOUEiwuv3mdNngU/edit) and [selected bilingual copybook](https://drive.google.com/file/d/1vC2S0GYmK0cw7sxG-i8D-2G_zUVKRxDA/view). [November 2 homepage/badges candidate](https://drive.google.com/file/d/1F32tAIZKaaH5kwwTREpgtBVklmIJgHLV/view) is review input, not final approved wording.
+- [BNA Brand and image catalog](https://docs.google.com/document/d/1Ru0oxW_2OFU7IN_aGDpuzIayOrpvB7wCi-HhK5VFyUQ/edit?tab=t.cgjbt0l3wr1y) and its [current hero owner](https://docs.google.com/document/d/1Ru0oxW_2OFU7IN_aGDpuzIayOrpvB7wCi-HhK5VFyUQ/edit?tab=t.0). When a later authorized task consumes assets, fetch current bytes even when IDs are unchanged; preparation-only pointer checks do not repeat downloads.
+- [Shared voice](https://drive.google.com/file/d/174-EqMG0QIH5rCuRgn2xYYPMX-XWJZNn/view), applying current BNA channel-specific amendments.
+- [Shared Ramble procedure](https://drive.google.com/file/d/1g9-8LNBF2LMKhRq6WWHlcdXnaZWzqYWN/view): original private intake, correct owning-source update, guarded write, verified readback and implementation-pending receipt.
+- Shared design-quality rules: `docs/PRODUCT-QUALITY-COMPILER.md`, `docs/DESIGN-REFERENCE-CAPTURE.md`, `docs/VISUAL-QUALITY-HARNESS.md` and `ops/visual-quality-rubric.md`. Their visual/browser requirements apply to later authorized website work, not a preparation-only demonstration.
+- [Existing implementation handoff](https://docs.google.com/document/d/1q-GDEaL9JmmVfy1meQrGvu3V4H2XNJ4jp2b17ZrP6bE/edit?tab=t.5ucllbuab4bn) and [Delivery receipts](https://docs.google.com/document/d/19Bm3Fw9toL1yaoATi3XtbITGK8GhxS6e64h6twEtEi4/edit). Shared documents retain separate BNA/Fishing sections and writers.
+- [Product](https://docs.google.com/document/d/1kJug8ojFwdGgZoPUx8BJt9fLKBjGYvX0wwbtarGTIIg/edit), [Architecture](https://docs.google.com/document/d/1h-bnQ94uxuTrs8BPeDg-1uwZFcQEONdmYccd9Inacgw/edit) and [UI](https://docs.google.com/document/d/1KokAca2V-UhCPj1czP28TQ4i5E2Wd1JKJFbuXfmAPu4/edit) for their scoped contracts.
+
+These are routing pointers, not a second master. Latest explicit scoped decisions supersede dated ZIPs and repo snapshots. Keep approved copy/assets separate from review proposals. Public BNA website direction does not automatically restyle internal Operations or another provider.
+
+Repo workflows: `.agents/skills/bna-source-updates/SKILL.md`,
+`.agents/skills/bna-frontend-design/SKILL.md`,
+`.agents/skills/bna-browser-visual-qa/SKILL.md`.
+Load the relevant workflow explicitly if discovery is unavailable.
+
+This setup was authorized for instructions/skills/receipts only: no Fishing, Buffer resumption, website implementation, push, merge or deploy. Future work needs its own scoped request. The old execution pointer below is historical continuity, not permission to resume unrelated work. Recheck actual branch, owners and current sources before selecting work.
+
+## Historical handoff (June 2026 snapshot)
+
+Historical claim as of 2026-06-25 (not the current run pointer):
 `ops/execution-runs/2026-06-24-issue-20-parent-run/`.
 
 Verified baseline:

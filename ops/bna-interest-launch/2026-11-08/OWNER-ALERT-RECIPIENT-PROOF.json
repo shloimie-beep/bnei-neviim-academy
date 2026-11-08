@@ -1,0 +1,19 @@
+{
+  "checked_at": "2026-11-08T15:44:04.870Z",
+  "approval_source": "RAW-20261108-005",
+  "recipient_account_verified": true,
+  "recipient_sha256": "fab156df2719852de2dafb24f3e29548d4a2c5e8ef2374f7d3db47a0cef645e8",
+  "gmail_recipient_message_id": "1a1bbd13521e21a9",
+  "gmail_sender_provider_id": "1a1bbd1304182cb9",
+  "in_inbox": true,
+  "subject_exact": true,
+  "body_exact_after_CRLF_normalization": true,
+  "body_sha256": "a812914b706a9670e8d946eb24d9efd38224e1b4583f4a88179b39891a6367c1",
+  "sender_exact": true,
+  "reply_to_exact": true,
+  "test_labeled": true,
+  "new_inquiries": 0,
+  "parent_test_emails": 0,
+  "owner_test_emails": 1,
+  "provider_replaced_rfc_message_id": true
+}

@@ -1,0 +1,237 @@
+{
+  "checked_at": "2026-11-08T12:26:13.466Z",
+  "frontend_thread": "01a1aab6-671c-7881-8aa3-f6d77a04af88",
+  "backend_thread": "01a1bb1a-79d2-7c01-ae0c-be2c3b99263e",
+  "local_base": "7eacc29248c2c5afa613c9993f089283788c2bef",
+  "actual_serving": {
+    "status": "ok",
+    "commit_sha": "7d0a02a43cdabc54d20749e1422f197f3e961ab1",
+    "source_branch": "codex/bna-interest-launch-20261105",
+    "generated_at": "",
+    "deployment_source": "runtime",
+    "target_app": "",
+    "target_project": "",
+    "target_service": ""
+  },
+  "prior_launch_report": "ops/bna-interest-launch/2026-11-05/RESULT.md",
+  "package_baseline_discrepancy": "Package inherited a ce2b123/a5feec36 .01 claim. Current actual repo and live /api/deploy-info establish preserved7d0a02a4 with Nov5 receipts; no reset or invented ce2b state.",
+  "before_screenshots": [
+    {
+      "route": "/",
+      "width": 1440,
+      "height": 900,
+      "status": 200,
+      "errors": [],
+      "title": "Bnei Neviim Academy | South Florida Torah Learning",
+      "h1": [
+        "כי מלאה הארץ דעה את ה׳ כמים לים מכסים · Bnei Neviim Academy · South Florida · Raising the generation of the Geulah."
+      ],
+      "h2": [
+        "The Educational Community",
+        "An Educational Community",
+        "Kodesh Learning Pods",
+        "Academy 2027–28",
+        "The BNA Vision",
+        "Shloimie Dratler",
+        "A Parent's Experience",
+        "Teaching Philosophy",
+        "Articles",
+        "Frequently Asked Questions",
+        "Join a Learning Pod"
+      ],
+      "overflow": false,
+      "faqDetails": 2,
+      "articleLinks": [
+        "/blog/self-governance-in-jewish-education",
+        "/blog/does-your-son-connect-to-his-rebbe",
+        "/blog/ratzon-and-intrinsic-motivation",
+        "/blog/torah-that-answers-real-life",
+        "/blog/responsibility-through-meaningful-contribution",
+        "/blog/ratzon-and-intrinsic-motivation",
+        "/blog/self-governance-in-jewish-education",
+        "/blog/role-models-or-pnimi-or-makif",
+        "/blog/designing-the-learning-environment"
+      ],
+      "missing": [],
+      "screenshot": "home-1440.png",
+      "evidence": ".runtime/bna-school-fullstack-20261108/before/home-1440.png"
+    },
+    {
+      "route": "/",
+      "width": 390,
+      "height": 844,
+      "status": 200,
+      "errors": [],
+      "title": "Bnei Neviim Academy | South Florida Torah Learning",
+      "h1": [
+        "כי מלאה הארץ דעה את ה׳ כמים לים מכסים · Bnei Neviim Academy · South Florida · Raising the generation of the Geulah."
+      ],
+      "h2": [
+        "The Educational Community",
+        "An Educational Community",
+        "Kodesh Learning Pods",
+        "Academy 2027–28",
+        "The BNA Vision",
+        "Shloimie Dratler",
+        "A Parent's Experience",
+        "Teaching Philosophy",
+        "Articles",
+        "Frequently Asked Questions",
+        "Join a Learning Pod"
+      ],
+      "overflow": false,
+      "faqDetails": 2,
+      "articleLinks": [
+        "/blog/self-governance-in-jewish-education",
+        "/blog/does-your-son-connect-to-his-rebbe",
+        "/blog/ratzon-and-intrinsic-motivation",
+        "/blog/torah-that-answers-real-life",
+        "/blog/responsibility-through-meaningful-contribution",
+        "/blog/ratzon-and-intrinsic-motivation",
+        "/blog/self-governance-in-jewish-education",
+        "/blog/role-models-or-pnimi-or-makif",
+        "/blog/designing-the-learning-environment"
+      ],
+      "missing": [],
+      "screenshot": "home-390.png",
+      "evidence": ".runtime/bna-school-fullstack-20261108/before/home-390.png"
+    },
+    {
+      "route": "/he",
+      "width": 390,
+      "height": 844,
+      "status": 200,
+      "errors": [],
+      "title": "אקדמיית בני נביאים | לימוד תורה בדרום פלורידה",
+      "h1": [
+        "כי מלאה הארץ דעה את ה׳ כמים לים מכסים · Bnei Neviim Academy · South Florida · Raising the generation of the Geulah."
+      ],
+      "h2": [
+        "הקהילה החינוכית",
+        "קהילה חינוכית",
+        "קבוצות לימודי קודש",
+        "האקדמיה לשנת הלימודים 2027–28",
+        "החזון של BNA",
+        "שלומי דרטלר",
+        "מניסיונו של הורה",
+        "הגישה החינוכית",
+        "מאמרים",
+        "שאלות נפוצות",
+        "הצטרפו לקבוצת לימוד"
+      ],
+      "overflow": false,
+      "faqDetails": 2,
+      "articleLinks": [
+        "/he/blog/self-governance-in-jewish-education",
+        "/blog/does-your-son-connect-to-his-rebbe",
+        "/blog/ratzon-and-intrinsic-motivation",
+        "/blog/torah-that-answers-real-life",
+        "/blog/responsibility-through-meaningful-contribution",
+        "/blog/ratzon-and-intrinsic-motivation",
+        "/he/blog/self-governance-in-jewish-education",
+        "/blog/role-models-or-pnimi-or-makif",
+        "/blog/designing-the-learning-environment"
+      ],
+      "missing": [],
+      "screenshot": "he-390.png",
+      "evidence": ".runtime/bna-school-fullstack-20261108/before/he-390.png"
+    },
+    {
+      "route": "/blog",
+      "width": 390,
+      "height": 844,
+      "status": 200,
+      "errors": [],
+      "title": "Articles | Torah Learning and Self-Governance | BNA",
+      "h1": [
+        "Articles"
+      ],
+      "h2": [],
+      "overflow": false,
+      "faqDetails": 0,
+      "articleLinks": [
+        "/blog/alternative-torah-learning-south-florida",
+        "/blog/torah-learning-attention-challenges-south-florida",
+        "/blog/jewish-unschooling-torah",
+        "/blog/homeschool-support-south-florida",
+        "/blog/torah-learning-without-bribes",
+        "/blog/private-mentorship-for-boys",
+        "/blog/school-not-working-for-my-son",
+        "/blog/parents-role-autonomous-learning",
+        "/blog/self-governance-in-jewish-education",
+        "/blog/torah-that-answers-real-life",
+        "/blog/healthy-technology-use-jewish-children",
+        "/blog/mixed-age-learning-boys",
+        "/blog/does-your-son-connect-to-his-rebbe",
+        "/blog/kids-own-their-spirituality",
+        "/blog/turning-spaced-out-moments-into-torah",
+        "/blog/why-kids-are-addicted-to-junk-food",
+        "/blog/future-of-jewish-education",
+        "/blog/real-life-secular-learning-future-vision",
+        "/blog/ratzon-and-intrinsic-motivation",
+        "/blog/responsibility-through-meaningful-contribution",
+        "/blog/designing-the-learning-environment",
+        "/blog/role-models-or-pnimi-or-makif",
+        "/blog/torah-daas-and-inner-development"
+      ],
+      "missing": [],
+      "screenshot": "blog-390.png",
+      "evidence": ".runtime/bna-school-fullstack-20261108/before/blog-390.png"
+    },
+    {
+      "route": "/faq",
+      "width": 390,
+      "height": 844,
+      "status": 200,
+      "errors": [],
+      "title": "Frequently Asked Questions | Bnei Neviim Academy",
+      "h1": [
+        "Frequently Asked Questions"
+      ],
+      "h2": [],
+      "overflow": false,
+      "faqDetails": 37,
+      "articleLinks": [
+        "/blog/healthy-technology-use-jewish-children"
+      ],
+      "missing": [],
+      "screenshot": "faq-390.png",
+      "evidence": ".runtime/bna-school-fullstack-20261108/before/faq-390.png"
+    }
+  ],
+  "screenshots_opened": true,
+  "findings": [
+    {
+      "id": "VQF-20261108-001",
+      "requirement": "REQ-20261108-002",
+      "finding": "Live home has old Educational Community and separate The BNA Vision; current exact Vision/Mission pair absent.",
+      "state": "active"
+    },
+    {
+      "id": "VQF-20261108-002",
+      "requirement": "REQ-20261108-003",
+      "finding": "Homepage repeats full philosophy/article prose and FAQ answers; header links competing philosophy route.",
+      "state": "active"
+    },
+    {
+      "id": "VQF-20261108-003",
+      "requirement": "REQ-20261108-006",
+      "finding": "Live blog is a plain article list without one philosophy hub, topics, search, empty/reset or editorial cards.",
+      "state": "active"
+    },
+    {
+      "id": "VQF-20261108-004",
+      "requirement": "REQ-20261108-008",
+      "finding": "Live FAQ is one uncategorized list and exposes conditional parent directory question before route/service verification.",
+      "state": "active"
+    },
+    {
+      "id": "VQF-20261108-005",
+      "requirement": "REQ-20261108-007",
+      "finding": "Live article template uses repeated interest CTA and lacks share-first actions and complete social metadata.",
+      "state": "active"
+    }
+  ],
+  "app_effects": [],
+  "source_scope": "Only BNA route/tab and bounded .03/.02/.04/.01 sections; mixed history/archive not executable."
+}

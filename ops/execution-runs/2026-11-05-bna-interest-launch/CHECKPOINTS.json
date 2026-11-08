@@ -1,0 +1,88 @@
+{
+  "scope_contract": "BNA-SCHOOL-SCOPE-LOCK-20261107-03",
+  "updated_at": "2026-11-08T16:00:20.997Z",
+  "registrations": [
+    {
+      "lane": "frontend",
+      "id": "bna-school-frontend-checkpoint-15-minutes",
+      "kind": "native heartbeat",
+      "cadence_seconds": 900,
+      "status": "PAUSED",
+      "target_thread_id": "01a1aab6-671c-7881-8aa3-f6d77a04af88",
+      "created_at": 1794140512201,
+      "configuration_sha256": "5048d43cef42c57965244fff8c41a33a998976f0941dab5f5344d230e82694ee",
+      "first_observed_trigger": null,
+      "scope_verification": "Same existing BNA frontend chat; prompt now public/form/storage/parent-receipt/owner-alert only. No full backend.",
+      "native_scheduler_readback": {
+        "id": "bna-school-frontend-checkpoint-15-minutes",
+        "status": "PAUSED",
+        "next_run_at": null,
+        "last_run_at": null,
+        "rrule": "FREQ=MINUTELY;INTERVAL=15",
+        "created_at": 1794140512201,
+        "updated_at": 1794153030658,
+        "kind": "heartbeat",
+        "target_thread_id": "01a1aab6-671c-7881-8aa3-f6d77a04af88",
+        "next_run_nominal_at": null
+      },
+      "last_active_scheduler_readback": {
+        "id": "bna-school-frontend-checkpoint-15-minutes",
+        "status": "ACTIVE",
+        "next_run_at": 1794141893203,
+        "last_run_at": null,
+        "rrule": "FREQ=MINUTELY;INTERVAL=15",
+        "created_at": 1794140512201,
+        "updated_at": 1794140906094,
+        "kind": "heartbeat",
+        "target_thread_id": "01a1aab6-671c-7881-8aa3-f6d77a04af88",
+        "next_run_nominal_at": 1794141412201
+      },
+      "pause_reason": "Current narrowed public inquiry flow verified complete; existing prompt stops repeated runs on completion. Registration retained for future frontend work. Approval blocker resolved.",
+      "native_registration_present": true
+    },
+    {
+      "lane": "backend",
+      "id": "bna-school-backend-checkpoint-15-minutes",
+      "kind": "native heartbeat",
+      "cadence_seconds": 900,
+      "status": "DELETED",
+      "target_thread_id": "01a1bb1a-79d2-7c01-ae0c-be2c3b99263e",
+      "created_at": 1794140512483,
+      "configuration_sha256": "d5d05ce38b620d6cc1fc488a178195ba11153a491c2c9b07bf02fdb47eb125e2",
+      "first_observed_trigger": null,
+      "scope_verification": "Actual host identity/root/origin read; bound native same-thread scheduler. Per-turn identity/claims gates required; first busy/dedupe/restart/unknown/stop proof pending.",
+      "pause_reason": "Deleted by direct operator instruction RAW-20261108-004; full backend deferred. Do not recreate.",
+      "last_active_scheduler_readback": {
+        "id": "bna-school-backend-checkpoint-15-minutes",
+        "status": "PAUSED",
+        "next_run_at": null,
+        "last_run_at": null,
+        "rrule": "FREQ=MINUTELY;INTERVAL=15",
+        "created_at": 1794140512483,
+        "updated_at": 1794140823547,
+        "kind": "heartbeat",
+        "target_thread_id": "01a1bb1a-79d2-7c01-ae0c-be2c3b99263e",
+        "next_run_nominal_at": null
+      },
+      "native_registration_present": false,
+      "historical_scheduler_readback": {
+        "id": "bna-school-backend-checkpoint-15-minutes",
+        "status": "PAUSED",
+        "next_run_at": null,
+        "last_run_at": null,
+        "rrule": "FREQ=MINUTELY;INTERVAL=15",
+        "created_at": 1794140512483,
+        "updated_at": 1794140823547,
+        "kind": "heartbeat",
+        "target_thread_id": "01a1bb1a-79d2-7c01-ae0c-be2c3b99263e",
+        "next_run_nominal_at": null
+      }
+    }
+  ],
+  "duplicate_scheduler_created": false,
+  "old_fleet": "Fresh control tower: none; no matching existing school automation found before registration.",
+  "completion": "Backend remains deleted by operator. Frontend registration retained/PAUSED on verified current public completion. Broad original fullstack goal remains deferred, not complete.",
+  "proof_status": "Native delete/update and independent registration readback proved. No completed model trigger or full two-lane runtime acceptance is claimed or required for the deferred fullstack scope.",
+  "completed_native_runs": 0,
+  "current_scope": "RAW-20261108-004 public inquiry flow only"
+}

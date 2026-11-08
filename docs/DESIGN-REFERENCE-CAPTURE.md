@@ -51,6 +51,7 @@ Rules:
 - If references conflict with memory/config, create a contradiction finding and
   prefer the most recent explicit operator correction unless it conflicts with a
   safety/privacy/source-of-truth rule.
-- For current known brand split, Rabbi / One Time is black + yellow, while BNA
-  is cream + navy + teal/cyan.
+- Rabbi / One Time is black + yellow. Current BNA public website Brand is
+  reached through BNA-START-HERE.md; earlier cream/navy/teal-cyan guidance is
+  historical. Internal Operations remains separately scoped.
 

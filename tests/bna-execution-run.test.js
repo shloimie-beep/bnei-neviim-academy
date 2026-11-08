@@ -425,6 +425,16 @@ test('multiple active runs fail', () => {
   assert.match(result.stderr, /Multiple active execution runs/i);
 });
 
+test('explicit scoped run selection preserves a different global active run', () => {
+  const root = makeRoot({ runOverrides: { active: false }, extraActiveRuns: [{ run_id: '2026-06-18-other-owner' }] });
+  const latestPath = path.join(root, 'ops/execution-runs/latest.json');
+  const before = fs.readFileSync(latestPath, 'utf8');
+  const result = spawnSync(process.execPath, [scriptPath, 'next', '--root', root, '--run', 'ops/execution-runs/2026-06-18-validator-fixture'], { encoding: 'utf8' });
+  assert.equal(result.status, 0, result.stderr);
+  assert.match(result.stdout, /Next unblocked executable batch/);
+  assert.equal(fs.readFileSync(latestPath, 'utf8'), before);
+});
+
 test('stale git refs fail when declared refs disagree', () => {
   const root = makeRoot({
     docOverrides: {

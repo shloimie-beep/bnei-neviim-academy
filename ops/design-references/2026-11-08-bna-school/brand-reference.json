@@ -1,0 +1,15 @@
+{
+  "source_type": "current BNA owners and protected package",
+  "workspace": "bna-school-coop",
+  "captured_at": "2026-11-08T12:26:13.466Z",
+  "authoritative_for": "current .04 public layout with exact .03 boundaries; original assets protected",
+  "palette": {
+    "navy": "#1E3A5F",
+    "cream": "#FBFAF6",
+    "gold": "#C9A227"
+  },
+  "tokens": "DESIGN-TOKENS.md",
+  "screenshots": "SCREENSHOTS.md",
+  "implementation_target": "src/lib/bna/interest-pages.js + scoped CSS/client controls",
+  "asset_manifest": "ops/bna-interest-launch/2026-11-08/ASSET-CHECK.json"
+}

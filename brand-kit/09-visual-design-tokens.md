@@ -1,5 +1,7 @@
 # Visual Design Tokens
 
+Historical source snapshot: read BNA-START-HERE.md for current Florida school/website owners. Older model, palette, illustration-only, provider and styling statements below are provenance where later scoped decisions supersede them. Internal Operations requires its own design scope.
+
 These tokens define BNA's public UI/control palette. They do not replace the
 locked illustration direction: hand-drawn pencil sketches, graphite/sepia,
 parchment and Torah-scroll warmth, and no generic stock/corporate visuals.

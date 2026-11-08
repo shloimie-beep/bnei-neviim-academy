@@ -1,0 +1,76 @@
+{
+  "scope": "bna-school-coop",
+  "decision": "BNA-SCHOOL-SCOPE-LOCK-20261107-03",
+  "package_sha256": "eeb7b353f3d91b2bb91cdc2982cbce38675801b4908a628216ecd3b11f1f7a95",
+  "sources": [
+    {
+      "name": "route",
+      "document_id": "1AwB6My_ZrXf09j5ZFXvu42UKW30kCnlWU7_sLDpFHIA",
+      "tab_id": "t.7vzmudr7zlyq",
+      "revision_id": "AHj4eMTp_oCsFZuJYNH5ZNHBxDzPc6tfEXB3Nb42NgG_aM8P-RTQ5o8mJ3RrEJXMTwXp51U-tVkONrZqkNuBZzcHxwKUm3noSgkZ8cU3jBg",
+      "selection": "Exact BNA current .03/.02/.04/.01 bounded source sections only",
+      "private_snapshot": ".runtime/bna-school-fullstack-20261108/current-sources/route.txt"
+    },
+    {
+      "name": "log",
+      "document_id": "1PExKb2PwAFAHlBtgmQ9RU-JdfTfQ-jTk41SpWetn7w8",
+      "tab_id": "t.t9isykp3kvlt",
+      "revision_id": "AHj4eMQXIgBXPNqnITMdhV_Mu3GQvJkuX0K0R3QRTxWjl1gmpyIqPd-EG85_2rrBeOYn7kmPvb7hlReIHpiR5fx0xbl7ttYVgx55MoWOgiY",
+      "selection": "Exact BNA current .03/.02/.04/.01 bounded source sections only",
+      "private_snapshot": ".runtime/bna-school-fullstack-20261108/current-sources/log.txt"
+    },
+    {
+      "name": "continuation",
+      "document_id": "1q-GDEaL9JmmVfy1meQrGvu3V4H2XNJ4jp2b17ZrP6bE",
+      "tab_id": "t.5ucllbuab4bn",
+      "revision_id": "AHj4eMR2a-vt-5FFoOvLwlh4VBHSe07yP2VoTNDbLZJgSaLe6FGFmIYGBaesPhUQOqxgiVsMYomnwQ75NUf_wjQf0-CwQ5NETnq5xu3Hxv0",
+      "selection": "Exact BNA current .03/.02/.04/.01 bounded source sections only",
+      "private_snapshot": ".runtime/bna-school-fullstack-20261108/current-sources/continuation.txt"
+    },
+    {
+      "name": "website",
+      "document_id": "1jw0shI2DSfUH9RpJc2WdeIqXwO1OYOUEiwuv3mdNngU",
+      "tab_id": "t.0",
+      "revision_id": "AHj4eMRq3OyQwG6Ugf680CFfyFDeLzbTiD1CJgaTmkP-AcwhsA6EbNBC7Mb2OZ75Sc-80cp95fvZ-A4kOUTB7HsSzTbOmkMjLtDJMmG7CZo",
+      "selection": "Exact BNA current .03/.02/.04/.01 bounded source sections only",
+      "private_snapshot": ".runtime/bna-school-fullstack-20261108/current-sources/website.txt"
+    },
+    {
+      "name": "architecture",
+      "document_id": "1h-bnQ94uxuTrs8BPeDg-1uwZFcQEONdmYccd9Inacgw",
+      "tab_id": "t.0",
+      "revision_id": "AHj4eMT2AhIyJux1ABI1hYeQCOFismxmup-3QH_zeTiPiXpQ-qgBMw_P1FqAOCYvWu3y02w5P226MZMXRBxsDt689IEAYuM0WBdi-AXkn8M",
+      "selection": "Exact BNA current .03/.02/.04/.01 bounded source sections only",
+      "private_snapshot": ".runtime/bna-school-fullstack-20261108/current-sources/architecture.txt"
+    },
+    {
+      "name": "product",
+      "document_id": "1kJug8ojFwdGgZoPUx8BJt9fLKBjGYvX0wwbtarGTIIg",
+      "tab_id": "t.0",
+      "revision_id": "AHj4eMQoBKii59BdHhJkImtpYEhe0mnCDxoOUA9byqQeI35lYQtWAn1mylmK2zctD2B71YAySxe-ZmxMjcZXgiB4PPMCDB3_5nhIWcBcjhw",
+      "selection": "Exact BNA current .03/.02/.04/.01 bounded source sections only",
+      "private_snapshot": ".runtime/bna-school-fullstack-20261108/current-sources/product.txt"
+    },
+    {
+      "name": "brand",
+      "document_id": "1Ru0oxW_2OFU7IN_aGDpuzIayOrpvB7wCi-HhK5VFyUQ",
+      "tab_id": "t.cgjbt0l3wr1y",
+      "revision_id": "AHj4eMSRmoZo62742WqR74hey2KI3-koVfDK5VGBhBuhDBc1B8lSxDcXvhmvo0rJlBwYy4eycD7kPmro7mnNr6p9x1AKF6jyBd_goAKjNis",
+      "selection": "BNA Brand kit and current hero authority pointer, palette/original image restrictions"
+    }
+  ],
+  "copybook": {
+    "id": "1vC2S0GYmK0cw7sxG-i8D-2G_zUVKRxDA",
+    "modified_time": "2026-11-05T19:59:31.347Z",
+    "exact_selected_article_matches": 29,
+    "guide_selection": [
+      "P17",
+      "HP17"
+    ]
+  },
+  "ramble": {
+    "id": "1g9-8LNBF2LMKhRq6WWHlcdXnaZWzqYWN",
+    "current_protocol_read": true
+  },
+  "effects": "Read-only source evidence; application/deployment/live results remain separate."
+}

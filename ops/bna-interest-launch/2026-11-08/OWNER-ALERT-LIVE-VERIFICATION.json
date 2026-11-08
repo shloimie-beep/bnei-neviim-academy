@@ -1,0 +1,53 @@
+{
+  "approval_source": "RAW-20261108-005",
+  "deployed_commit": "6c1e4261c78896e0273a4c553880343d9ecd6f25",
+  "deployment_id": "b28f5f0c-d94b-4edd-9af2-8aca98469517",
+  "provider_status": "SUCCESS",
+  "serving_identity_verified": true,
+  "readback": {
+    "checkedAt": "2026-11-08T15:46:25.342Z",
+    "application": "6c1e4261c78896e0273a4c553880343d9ecd6f25",
+    "recipientMatches": true,
+    "recipientHash": "fab156df2719852de2dafb24f3e29548d4a2c5e8ef2374f7d3db47a0cef645e8",
+    "parentReceiptsActive": true,
+    "parentTemplateHashesUnchanged": true,
+    "ownerAlertsActive": true,
+    "ownerTemplateHash": "22aa3575300c3c2872cea8fe8194b85fad77723133796ec041ea66a9e6abdeee",
+    "ownerApprovalAndRecipientProofBound": true,
+    "ownerTestRows": 1,
+    "ownerTestAttempts": 1,
+    "ownerTestState": "provider_accepted",
+    "ownerTestProviderId": "1a1bbd1304182cb9",
+    "ownerInquiryAlertCounts": [],
+    "newInquiriesCreatedByVerification": 0,
+    "parentTestEmails": 0,
+    "databaseReadOnly": true,
+    "fullBackendActivated": false
+  },
+  "activation": {
+    "active": true,
+    "version": "BNA-INTEREST-OWNER-ALERT-20261108-v1",
+    "templateHash": "22aa3575300c3c2872cea8fe8194b85fad77723133796ec041ea66a9e6abdeee",
+    "activationScope": "newly saved BNA inquiries only",
+    "recipientMatches": true,
+    "emailsSent": 0
+  },
+  "recipient_proof": "ops/bna-interest-launch/2026-11-08/OWNER-ALERT-RECIPIENT-PROOF.json",
+  "form_presentation_proof": "ops/bna-interest-launch/2026-11-08/FORM-YEAR-LIVE-VERIFICATION.json",
+  "local_store_and_owner_tests": 17,
+  "local_operator_guard_checks": 8,
+  "prior_public_browser_states": 28,
+  "affected_live_form_states": 2,
+  "live_new_inquiry_test": false,
+  "limit": "No new inquiry or parent test email was created; existing November5 durable form/owner proof retained. New enqueue/retention/dedupe tested with real disposable SQL; live sender-to-owner delivery and activation read back.",
+  "full_backend": "deferred by operator; not implemented",
+  "database_schema_migration": false,
+  "archive_reapply": false,
+  "payment_activation": false,
+  "staging_cleanup": {
+    "onlyApprovedFields": true,
+    "skipDeploys": true,
+    "final_staged_changes": 0,
+    "effect": "already-applied source/recipient patch finalized without redeploy"
+  }
+}

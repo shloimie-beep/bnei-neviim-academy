@@ -40601,3 +40601,35 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
 - 56 gateway/no-DB-boot checks pass; existing independent source reviewer passed corrected source. Protocol drift report has zero findings.
 - Not pushed, merged, deployed or live. Browser-through-gateway, current application acceptance, protected CI/schema and actual mail delivery remain open. No provider settings, real sends, credentials or database changes.
 - Requirement: REQ-20261024-ACADEMY-PARENT-LAUNCH; scope129 Control1550/Change1578.
+
+## 2026-11-02 — BNA repository and project skills setup
+
+- BNA-REPOSITORY-SKILLS-SETUP-20261102-01 / RAW-20261102-001 / REQ-20261102-001 through REQ-20261102-006: current source pointers reconciled; three repo-only workflows discovered, validated and exercised. Thirteen source assets verified; exact heroes match Brand. Desktop/mobile source-asset screenshots inspected.
+- Existing BNA log and Delivery saved with required revisions and verified readback; Fishing/unrelated sections preserved. Register: tasks-pending/2026-11-02-bna-repository-skills-setup.md. Private raw/assets/screenshots remain ignored.
+- Separate setup branch preserves Buffer HEAD/PR195 and four untracked audits. Local setup commit only; no push, merge, deploy, runtime/site/database/provider changes or Buffer/Fishing resumption. Next separate BNA task is bounded homepage/form audit and design readiness.
+
+## 2026-11-03 — BNA preparation-only scope correction
+
+- RAW-20261103-001 / REQ-20261103-001: existing source/start/Ramble and three BNA skill instructions now distinguish documentation preparation from later visual QA, demonstrations and website implementation. Evidence-based lessons use the existing records.
+- Checks confined to edited instructions, source pointers, skill metadata and Git diff. No code/assets/dependencies/tests, browser, demo, server, build or agent work. Source access was not revalidated; prior receipts retained as dated evidence.
+- Existing setup branch, Buffer work, Fishing and four untracked watchdog files preserved. One local documentation commit only, no push/merge/deploy. Stop; await separate explicit instruction before BNA website coding.
+
+## 2026-11-05 — BNA interest launch local implementation
+
+REQ-20261105-001 through REQ-20261105-008: implemented exact-source bilingual public pages, shared native durable capture/recovery and receipt draft, existing-owner filters/history, and fixed-inventory reversible BNA business archive. Exact email scope approved in RAW-20261105-002. Focused SQL/HTTP/source/scope checks, 85 related regressions, canonical Operations generation, 28 scoped execution-run checks, action watchdog and protocol-drift checks pass. Actual private desktop/mobile/RTL/browser artifacts are linked from tasks-pending/2026-11-05-bna-interest-launch.md. Controlled BNA release and live persistence/recipient/archive proof remain open; no live completion claim.
+
+## 2026-11-05 — BNA interest launch implemented and live verified
+
+REQ-20261105-001 through008 Done, superseding the earlier local-only checkpoint. Approved production service now runs7d0a02a4 in Railway SUCCESS3854b4ba; PR196 is pushed. One live synthetic inquiry recovered and read through ordinary owner reload; filters/note/follow-up and post-archive admin login work. One exact approved English owner receipt was delivered and read in the recipient mailbox; approved EN/HE templates active for new inquiries only. Fixed9988-row BNA archive retains all originals/history and excludes new/auth/foreign scope;87 linked entries read. Positive restore is real disposable SQL evidence. Eight actual browser states/12 original asset hashes/53 links pass. Source Delivery/Continuation exact readback and full local/live/test limits: `ops/bna-interest-launch/2026-11-05/RESULT.md`. Donation checkout later; unrelated work preserved.
+
+##2026-11-08 — BNA school public frontend verified locally; backend paused
+
+Same24-requirement run extended under .03/.02, preserving .01. Exact Vision/Mission/home hierarchy, one29article philosophy library/search/share,80-record canonical FAQ(70published), current Parent Guides and equivalent redirects/BNA-only sitemap implemented.23source/privacy checks and28actual local browser states pass;47sitemap destinations and60links resolve. Original assets/current29article source bodies match. New frontend not deployed; exact release confirmation/live proof pending. Operator paused backend and its timer; no application/backend effects there. Both checkpoint registrations installed, backend PAUSED and frontend busy scheduling observed, no false completed trigger/idle/restart/stop proof. Full result:ops/bna-interest-launch/2026-11-08/PUBLIC-VERIFICATION.md.
+
+- 2026-11-08T13:14:29.922Z — BNA public application80575900 pushed to PR196;23 focused tests and28 actual Chrome states verified locally. Native guarded BNA Delivery/Continuation/log receipts read back exactly with every old paragraph preserved. Public production pin remains pending confirmation; backend/operator pause retained. Existing source-only audit001 Done; whole24-requirement continuation remains open.
+
+- 2026-11-08T13:44:26.157Z — Public80575900 live verified:28states/60links/47sitemap/12assets, no new inquiry/send/archive effect. Operator narrowed scope; backend checkpoint deleted and frontend retained. Minimal durable owner alert prepared,17 SQL tests passed, saved exact preview inspected; activation/release pending. Guarded BNA source readbacks preserved prior sections and transition.
+
+- 2026-11-08T14:08:42.677Z — REQ-20261108-025 remains gated by the same existing exact approval across3goal turns. Live805/unchanged staged6c read back; scoped CLI has no executable batch. Frontend registration retained and paused under its existing guard; backend stays deleted. Goal blocked audit recorded; no completion or external send/deploy claimed.
+
+- 2026-11-08T16:00:20.997Z — Current public inquiry flow verified at6c1e4261 / SUCCESSb28f5f0c. One owner-only test delivered/read in actual Inbox; owner activation and unchanged active EN/HE parent templates read back.1test row/1attempt,0new inquiries/parent tests. Guarded source receipts preserve prior sections. Full backend remains deferred; current public scope complete and checkpoint retained/paused.

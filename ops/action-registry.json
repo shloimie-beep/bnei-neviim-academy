@@ -1,6 +1,6 @@
 {
   "registry_version": "bna-action-registry-v1",
-  "updated_at": "2026-07-13T10:35:00+03:00",
+  "updated_at": "2026-11-08T16:00:20.997Z",
   "policy": {
     "visible_action_rule": "Every visible enabled action must have a working handler, working route, registered helper command, or an explicit disabled/coming-soon reason.",
     "external_write_rule": "External sends, publishes, charges, syncs, DNS writes, uploads, credential copies, and access grants require explicit approval and audit evidence.",
@@ -3448,6 +3448,710 @@
         "GOAL-CORE-002",
         "GOAL-CORE-006",
         "GOAL-CORE-015"
+      ]
+    },
+    {
+      "action_id": "ACTION-BNA-INTEREST-NAV",
+      "label": "Public navigation",
+      "surface": "bna_interest_launch",
+      "route": "/",
+      "selector_hint": "header a, footer a, .article-page a, .text-link",
+      "expected_behavior": "Open the selected current bilingual BNA route or approved external source.",
+      "permission": "anonymous public visitor",
+      "status": "verified_local_current_delta_pending_release",
+      "handler": "SSR href routes",
+      "mobile_expectation": "Keyboard and touch usable at 390px; no overflow; actual Chrome inspection required.",
+      "test": {
+        "type": "HTTP, real SQL and isolated browser",
+        "expected_result": "Open the selected current bilingual BNA route or approved external source."
+      },
+      "evidence": [
+        "tests/bna-coop-form.test.js; tests/bna-interest-owner.test.js; tests/bna-interest-store.test.js; tasks-pending/2026-11-05-bna-interest-launch.md",
+        "ops/bna-interest-launch/2026-11-05/RESULT.md",
+        "ops/bna-interest-launch/2026-11-08/PUBLIC-VERIFICATION.md"
+      ],
+      "related_requirement_ids": [
+        "REQ-20261105-007"
+      ]
+    },
+    {
+      "action_id": "ACTION-BNA-INTEREST-MENU",
+      "label": "Mobile menu",
+      "surface": "bna_interest_launch",
+      "route": "/",
+      "selector_hint": ".mobile-menu summary",
+      "expected_behavior": "Expand and collapse current BNA links using native details keyboard/touch behavior.",
+      "permission": "anonymous public visitor",
+      "status": "verified_local_current_delta_pending_release",
+      "handler": "HTML details",
+      "mobile_expectation": "Keyboard and touch usable at 390px; no overflow; actual Chrome inspection required.",
+      "test": {
+        "type": "HTTP, real SQL and isolated browser",
+        "expected_result": "Expand and collapse current BNA links using native details keyboard/touch behavior."
+      },
+      "evidence": [
+        "tests/bna-coop-form.test.js; tests/bna-interest-owner.test.js; tests/bna-interest-store.test.js; tasks-pending/2026-11-05-bna-interest-launch.md",
+        "ops/bna-interest-launch/2026-11-05/RESULT.md",
+        "ops/bna-interest-launch/2026-11-08/PUBLIC-VERIFICATION.md"
+      ],
+      "related_requirement_ids": [
+        "REQ-20261105-007"
+      ]
+    },
+    {
+      "action_id": "ACTION-BNA-INTEREST-FAQ",
+      "label": "FAQ disclosure",
+      "surface": "bna_interest_launch",
+      "route": "/faq",
+      "selector_hint": ".faq-item summary",
+      "expected_behavior": "Expand and collapse the exact approved answer with logistics omissions.",
+      "permission": "anonymous public visitor",
+      "status": "verified_local_current_delta_pending_release",
+      "handler": "HTML details",
+      "mobile_expectation": "Keyboard and touch usable at 390px; no overflow; actual Chrome inspection required.",
+      "test": {
+        "type": "HTTP, real SQL and isolated browser",
+        "expected_result": "Expand and collapse the exact approved answer with logistics omissions."
+      },
+      "evidence": [
+        "tests/bna-coop-form.test.js; tests/bna-interest-owner.test.js; tests/bna-interest-store.test.js; tasks-pending/2026-11-05-bna-interest-launch.md",
+        "ops/bna-interest-launch/2026-11-05/RESULT.md",
+        "ops/bna-interest-launch/2026-11-08/PUBLIC-VERIFICATION.md"
+      ],
+      "related_requirement_ids": [
+        "REQ-20261105-007"
+      ]
+    },
+    {
+      "action_id": "ACTION-BNA-INTEREST-POD",
+      "label": "Join a Learning Pod",
+      "surface": "bna_interest_launch",
+      "route": "/",
+      "selector_hint": "a[href$=\"/join?interest=pod\"]",
+      "expected_behavior": "Open the shared interest form with changeable pod selection.",
+      "permission": "anonymous public visitor",
+      "status": "verified_local_current_delta_pending_release",
+      "handler": "GET /join?interest=pod",
+      "mobile_expectation": "Keyboard and touch usable at 390px; no overflow; actual Chrome inspection required.",
+      "test": {
+        "type": "HTTP, real SQL and isolated browser",
+        "expected_result": "Open the shared interest form with changeable pod selection."
+      },
+      "evidence": [
+        "tests/bna-coop-form.test.js; tests/bna-interest-owner.test.js; tests/bna-interest-store.test.js; tasks-pending/2026-11-05-bna-interest-launch.md",
+        "ops/bna-interest-launch/2026-11-05/RESULT.md",
+        "ops/bna-interest-launch/2026-11-08/PUBLIC-VERIFICATION.md"
+      ],
+      "related_requirement_ids": [
+        "REQ-20261105-007"
+      ]
+    },
+    {
+      "action_id": "ACTION-BNA-INTEREST-ACADEMY",
+      "label": "Join the Academy",
+      "surface": "bna_interest_launch",
+      "route": "/",
+      "selector_hint": "a[href$=\"/join?interest=academy\"]",
+      "expected_behavior": "Open the same shared interest form with changeable Academy selection.",
+      "permission": "anonymous public visitor",
+      "status": "verified_local_current_delta_pending_release",
+      "handler": "GET /join?interest=academy",
+      "mobile_expectation": "Keyboard and touch usable at 390px; no overflow; actual Chrome inspection required.",
+      "test": {
+        "type": "HTTP, real SQL and isolated browser",
+        "expected_result": "Open the same shared interest form with changeable Academy selection."
+      },
+      "evidence": [
+        "tests/bna-coop-form.test.js; tests/bna-interest-owner.test.js; tests/bna-interest-store.test.js; tasks-pending/2026-11-05-bna-interest-launch.md",
+        "ops/bna-interest-launch/2026-11-05/RESULT.md",
+        "ops/bna-interest-launch/2026-11-08/PUBLIC-VERIFICATION.md"
+      ],
+      "related_requirement_ids": [
+        "REQ-20261105-007"
+      ]
+    },
+    {
+      "action_id": "ACTION-BNA-INTEREST-LANGUAGE",
+      "label": "Language selection",
+      "surface": "bna_interest_launch",
+      "route": "/join",
+      "selector_hint": "[data-language-link], [name=language]",
+      "expected_behavior": "Open the actual language route or select receipt language; preserve non-PII attribution and program query.",
+      "permission": "anonymous public visitor",
+      "status": "verified_local_current_delta_pending_release",
+      "handler": "SSR alternate route and field",
+      "mobile_expectation": "Keyboard and touch usable at 390px; no overflow; actual Chrome inspection required.",
+      "test": {
+        "type": "HTTP, real SQL and isolated browser",
+        "expected_result": "Open the actual language route or select receipt language; preserve non-PII attribution and program query."
+      },
+      "evidence": [
+        "tests/bna-coop-form.test.js; tests/bna-interest-owner.test.js; tests/bna-interest-store.test.js; tasks-pending/2026-11-05-bna-interest-launch.md",
+        "ops/bna-interest-launch/2026-11-05/RESULT.md",
+        "ops/bna-interest-launch/2026-11-08/PUBLIC-VERIFICATION.md"
+      ],
+      "related_requirement_ids": [
+        "REQ-20261105-007"
+      ]
+    },
+    {
+      "action_id": "ACTION-BNA-INTEREST-FORM-OPTIONS",
+      "label": "Interest and contact preferences",
+      "surface": "bna_interest_launch",
+      "route": "/join",
+      "selector_hint": "#coop-interest-form select, #coop-interest-form input[type=checkbox]",
+      "expected_behavior": "Select pod, Academy or Both; phone conditional on reply method; separate unchecked optional updates and required purpose permission.",
+      "permission": "anonymous public visitor",
+      "status": "live_verified",
+      "handler": "public/js/bna-coop-join.js sync",
+      "mobile_expectation": "Keyboard and touch usable at 390px; no overflow; actual Chrome inspection required.",
+      "test": {
+        "type": "HTTP, real SQL and isolated browser",
+        "expected_result": "Select pod, Academy or Both; phone conditional on reply method; separate unchecked optional updates and required purpose permission."
+      },
+      "evidence": [
+        "tests/bna-coop-form.test.js; tests/bna-interest-owner.test.js; tests/bna-interest-store.test.js; tasks-pending/2026-11-05-bna-interest-launch.md",
+        "ops/bna-interest-launch/2026-11-05/RESULT.md"
+      ],
+      "related_requirement_ids": [
+        "REQ-20261105-007"
+      ]
+    },
+    {
+      "action_id": "ACTION-BNA-INTEREST-SUBMIT",
+      "label": "Register interest",
+      "surface": "bna_interest_launch",
+      "route": "/join",
+      "selector_hint": "#coop-interest-form [type=submit]",
+      "expected_behavior": "Validate then persist one operation, lead, immutable inquiry and durable receipt draft before saved confirmation.",
+      "permission": "anonymous public visitor",
+      "status": "live_verified",
+      "handler": "POST /api/bna/coop-interest",
+      "mobile_expectation": "Keyboard and touch usable at 390px; no overflow; actual Chrome inspection required.",
+      "test": {
+        "type": "HTTP, real SQL and isolated browser",
+        "expected_result": "Validate then persist one operation, lead, immutable inquiry and durable receipt draft before saved confirmation."
+      },
+      "evidence": [
+        "tests/bna-coop-form.test.js; tests/bna-interest-owner.test.js; tests/bna-interest-store.test.js; tasks-pending/2026-11-05-bna-interest-launch.md",
+        "ops/bna-interest-launch/2026-11-05/RESULT.md"
+      ],
+      "related_requirement_ids": [
+        "REQ-20261105-007"
+      ]
+    },
+    {
+      "action_id": "ACTION-BNA-INTEREST-RETRY",
+      "label": "Retry same submission",
+      "surface": "bna_interest_launch",
+      "route": "/join",
+      "selector_hint": "#retry-interest",
+      "expected_behavior": "Replay identical operation or recover saved reference by independent capability; no blind duplicate or PII in storage.",
+      "permission": "anonymous public visitor",
+      "status": "verified_local_failure_live_recovery",
+      "handler": "POST /api/bna/coop-interest",
+      "mobile_expectation": "Keyboard and touch usable at 390px; no overflow; actual Chrome inspection required.",
+      "test": {
+        "type": "HTTP, real SQL and isolated browser",
+        "expected_result": "Replay identical operation or recover saved reference by independent capability; no blind duplicate or PII in storage."
+      },
+      "evidence": [
+        "tests/bna-coop-form.test.js; tests/bna-interest-owner.test.js; tests/bna-interest-store.test.js; tasks-pending/2026-11-05-bna-interest-launch.md",
+        "ops/bna-interest-launch/2026-11-05/RESULT.md"
+      ],
+      "related_requirement_ids": [
+        "REQ-20261105-007"
+      ],
+      "verification_scope": "Real local SQL/lost-response browser retry prevents duplicate; live public reload capability recovery reads the one saved inquiry."
+    },
+    {
+      "action_id": "ACTION-BNA-INTEREST-OWNER-FILTER",
+      "label": "Filter inquiries",
+      "surface": "bna_interest_owner",
+      "route": "/operations",
+      "selector_hint": "[data-bna-interest-filter]",
+      "expected_behavior": "Filter program including Both membership, any area or preferred area, and follow-up without discarding records.",
+      "permission": "existing authenticated BNA owner",
+      "status": "live_verified",
+      "handler": "BNAInterestOwner.setFilter",
+      "mobile_expectation": "Keyboard and touch usable at 390px; no overflow; actual Chrome inspection required.",
+      "test": {
+        "type": "HTTP, real SQL and isolated browser",
+        "expected_result": "Filter program including Both membership, any area or preferred area, and follow-up without discarding records."
+      },
+      "evidence": [
+        "tests/bna-coop-form.test.js; tests/bna-interest-owner.test.js; tests/bna-interest-store.test.js; tasks-pending/2026-11-05-bna-interest-launch.md",
+        "ops/bna-interest-launch/2026-11-05/RESULT.md"
+      ],
+      "related_requirement_ids": [
+        "REQ-20261105-007"
+      ]
+    },
+    {
+      "action_id": "ACTION-BNA-INTEREST-OWNER-CLEAR",
+      "label": "Clear filters",
+      "surface": "bna_interest_owner",
+      "route": "/operations",
+      "selector_hint": "button[onclick=\"clearBnaInterestFilters()\"]",
+      "expected_behavior": "Reset BNA filters and persist UI state for owner session.",
+      "permission": "existing authenticated BNA owner",
+      "status": "live_verified",
+      "handler": "clearBnaInterestFilters",
+      "mobile_expectation": "Keyboard and touch usable at 390px; no overflow; actual Chrome inspection required.",
+      "test": {
+        "type": "HTTP, real SQL and isolated browser",
+        "expected_result": "Reset BNA filters and persist UI state for owner session."
+      },
+      "evidence": [
+        "tests/bna-coop-form.test.js; tests/bna-interest-owner.test.js; tests/bna-interest-store.test.js; tasks-pending/2026-11-05-bna-interest-launch.md",
+        "ops/bna-interest-launch/2026-11-05/RESULT.md"
+      ],
+      "related_requirement_ids": [
+        "REQ-20261105-007"
+      ]
+    },
+    {
+      "action_id": "ACTION-BNA-INTEREST-OWNER-HISTORY",
+      "label": "Inquiry details and history",
+      "surface": "bna_interest_owner",
+      "route": "/operations",
+      "selector_hint": "button[onclick^=\"BNAInterestOwner.openHistory\"]",
+      "expected_behavior": "Read durable reference, contact details, consent and email state from existing BNA lead.",
+      "permission": "existing authenticated BNA owner",
+      "status": "live_verified",
+      "handler": "GET /api/bna/interest-inquiries/:leadId",
+      "mobile_expectation": "Keyboard and touch usable at 390px; no overflow; actual Chrome inspection required.",
+      "test": {
+        "type": "HTTP, real SQL and isolated browser",
+        "expected_result": "Read durable reference, contact details, consent and email state from existing BNA lead."
+      },
+      "evidence": [
+        "tests/bna-coop-form.test.js; tests/bna-interest-owner.test.js; tests/bna-interest-store.test.js; tasks-pending/2026-11-05-bna-interest-launch.md",
+        "ops/bna-interest-launch/2026-11-05/RESULT.md"
+      ],
+      "related_requirement_ids": [
+        "REQ-20261105-007"
+      ]
+    },
+    {
+      "action_id": "ACTION-BNA-INTEREST-OWNER-PREVIEW",
+      "label": "Receipt email",
+      "surface": "bna_interest_owner",
+      "route": "/operations",
+      "selector_hint": "button[onclick=\"BNAInterestOwner.previewEmail()\"]",
+      "expected_behavior": "Preview exact saved bilingual drafts, office sender and current activation state.",
+      "permission": "existing authenticated BNA owner",
+      "status": "live_verified",
+      "handler": "GET /api/bna/interest-email/preview",
+      "mobile_expectation": "Keyboard and touch usable at 390px; no overflow; actual Chrome inspection required.",
+      "test": {
+        "type": "HTTP, real SQL and isolated browser",
+        "expected_result": "Preview exact saved bilingual drafts, office sender and current activation state."
+      },
+      "evidence": [
+        "tests/bna-coop-form.test.js; tests/bna-interest-owner.test.js; tests/bna-interest-store.test.js; tasks-pending/2026-11-05-bna-interest-launch.md",
+        "ops/bna-interest-launch/2026-11-05/RESULT.md"
+      ],
+      "related_requirement_ids": [
+        "REQ-20261105-007"
+      ]
+    },
+    {
+      "action_id": "ACTION-BNA-INTEREST-OWNER-ARCHIVE",
+      "label": "Legacy archive",
+      "surface": "bna_interest_owner",
+      "route": "/operations",
+      "selector_hint": "button[onclick=\"BNAInterestOwner.openArchive()\"], [data-archive-table], [data-next]",
+      "expected_behavior": "Open separate paged readback of fixed inventoried legacy BNA history by record type.",
+      "permission": "existing authenticated BNA owner",
+      "status": "live_verified",
+      "handler": "GET /api/bna/interest-archive",
+      "mobile_expectation": "Keyboard and touch usable at 390px; no overflow; actual Chrome inspection required.",
+      "test": {
+        "type": "HTTP, real SQL and isolated browser",
+        "expected_result": "Open separate paged readback of fixed inventoried legacy BNA history by record type."
+      },
+      "evidence": [
+        "tests/bna-coop-form.test.js; tests/bna-interest-owner.test.js; tests/bna-interest-store.test.js; tasks-pending/2026-11-05-bna-interest-launch.md",
+        "ops/bna-interest-launch/2026-11-05/RESULT.md"
+      ],
+      "related_requirement_ids": [
+        "REQ-20261105-007"
+      ]
+    },
+    {
+      "action_id": "ACTION-BNA-INTEREST-OWNER-RESTORE",
+      "label": "Restore record",
+      "surface": "bna_interest_owner",
+      "route": "/operations",
+      "selector_hint": "[data-restore-id]",
+      "expected_behavior": "Restore only original migration-written visibility fields for this BNA record; preserve concurrent changes and linked history.",
+      "permission": "existing authenticated BNA owner",
+      "status": "verified_local_sql_live_access_denial",
+      "handler": "POST /api/bna/interest-archive/restore",
+      "mobile_expectation": "Keyboard and touch usable at 390px; no overflow; actual Chrome inspection required.",
+      "test": {
+        "type": "HTTP, real SQL and isolated browser",
+        "expected_result": "Restore only original migration-written visibility fields for this BNA record; preserve concurrent changes and linked history."
+      },
+      "evidence": [
+        "tests/bna-coop-form.test.js; tests/bna-interest-owner.test.js; tests/bna-interest-store.test.js; tasks-pending/2026-11-05-bna-interest-launch.md",
+        "ops/bna-interest-launch/2026-11-05/RESULT.md"
+      ],
+      "related_requirement_ids": [
+        "REQ-20261105-007"
+      ],
+      "verification_scope": "Positive original-ID/history/concurrent-note restore and rollback in real disposable SQL. Production wrong-workspace/cross-site restore denied403; no former family restored as a test."
+    },
+    {
+      "action_id": "ACTION-BNA-INTEREST-OWNER-CLOSE",
+      "label": "Close",
+      "surface": "bna_interest_owner",
+      "route": "/operations",
+      "selector_hint": "#bna-interest-dialog [data-close]",
+      "expected_behavior": "Close native modal and return focus to triggering action.",
+      "permission": "existing authenticated BNA owner",
+      "status": "live_verified",
+      "handler": "HTMLDialogElement.close",
+      "mobile_expectation": "Keyboard and touch usable at 390px; no overflow; actual Chrome inspection required.",
+      "test": {
+        "type": "HTTP, real SQL and isolated browser",
+        "expected_result": "Close native modal and return focus to triggering action."
+      },
+      "evidence": [
+        "tests/bna-coop-form.test.js; tests/bna-interest-owner.test.js; tests/bna-interest-store.test.js; tasks-pending/2026-11-05-bna-interest-launch.md",
+        "ops/bna-interest-launch/2026-11-05/RESULT.md"
+      ],
+      "related_requirement_ids": [
+        "REQ-20261105-007"
+      ]
+    },
+    {
+      "action_id": "ACTION-BNA-INTEREST-OWNER-RETRY",
+      "label": "Retry",
+      "surface": "bna_interest_owner",
+      "route": "/operations",
+      "selector_hint": "[data-action-id=\"ACTION-BNA-INTEREST-OWNER-RETRY\"]",
+      "expected_behavior": "Reload BNA inquiries after an actual API failure, preserving saved records and never presenting failed loading as an empty inbox.",
+      "handler": "loadData().then(() => render())",
+      "permission": "existing authenticated BNA owner",
+      "status": "verified_local_synthetic_browser",
+      "mobile_expectation": "Accessible 44px target, role=alert and keyboard action",
+      "test": {
+        "type": "ordinary owner live browser with one simulated read failure",
+        "expected_result": "Error message appears then Retry restores saved reference without mutation"
+      },
+      "related_requirement_ids": [
+        "REQ-20261105-005",
+        "REQ-20261105-007"
+      ],
+      "verification_scope": "Actual local Operations API503 error and Retry recovery to200 with explicit synthetic auth/read fixtures; no production outage induced."
+    },
+    {
+      "action_id": "ACTION-BNA-SCHOOL-SEARCH",
+      "label": "Search articles",
+      "surface": "bna_school_public",
+      "route": "/blog, /he/blog",
+      "selector_hint": "[data-library-filters]",
+      "expected_behavior": "Submit or type a title/excerpt query; filter genuine locale articles, persist URL/back/forward and show accurate count/empty state.",
+      "permission": "anonymous public visitor",
+      "status": "verified_live",
+      "handler": "public/js/bna-articles.js + src/lib/bna/school-pages.js; server.js current public mount",
+      "scope": "bna-school-coop",
+      "mobile_expectation": "320/390 CSS px, keyboard/RTL,48px controls, no overflow; actual inspected Chrome proof.",
+      "test": {
+        "type": "source fidelity + actual mounted local Chrome",
+        "expected_result": "Submit or type a title/excerpt query; filter genuine locale articles, persist URL/back/forward and show accurate count/empty state."
+      },
+      "evidence": [
+        "ops/bna-interest-launch/2026-11-08/PUBLIC-VERIFICATION.md",
+        "tests/bna-school-pages.test.js",
+        "ops/bna-interest-launch/2026-11-08/LIVE-PUBLIC-VERIFICATION.json"
+      ],
+      "related_requirement_ids": [
+        "REQ-20261108-006",
+        "REQ-20261108-007",
+        "REQ-20261108-008",
+        "REQ-20261108-010"
+      ]
+    },
+    {
+      "action_id": "ACTION-BNA-SCHOOL-TOPIC",
+      "label": "Topic",
+      "surface": "bna_school_public",
+      "route": "/blog, /he/blog",
+      "selector_hint": "[name=topic]",
+      "expected_behavior": "Choose a source topic without reordering or dropping source bodies; combine with search and preserve URL state.",
+      "permission": "anonymous public visitor",
+      "status": "verified_live",
+      "handler": "public/js/bna-articles.js + src/lib/bna/school-pages.js; server.js current public mount",
+      "scope": "bna-school-coop",
+      "mobile_expectation": "320/390 CSS px, keyboard/RTL,48px controls, no overflow; actual inspected Chrome proof.",
+      "test": {
+        "type": "source fidelity + actual mounted local Chrome",
+        "expected_result": "Choose a source topic without reordering or dropping source bodies; combine with search and preserve URL state."
+      },
+      "evidence": [
+        "ops/bna-interest-launch/2026-11-08/PUBLIC-VERIFICATION.md",
+        "tests/bna-school-pages.test.js",
+        "ops/bna-interest-launch/2026-11-08/LIVE-PUBLIC-VERIFICATION.json"
+      ],
+      "related_requirement_ids": [
+        "REQ-20261108-006",
+        "REQ-20261108-007",
+        "REQ-20261108-008",
+        "REQ-20261108-010"
+      ]
+    },
+    {
+      "action_id": "ACTION-BNA-SCHOOL-RESET",
+      "label": "Clear filters",
+      "surface": "bna_school_public",
+      "route": "/blog, /he/blog",
+      "selector_hint": "[data-clear-filters]",
+      "expected_behavior": "Clear query/topic, restore all locale articles and focus search; browser Back restores prior state.",
+      "permission": "anonymous public visitor",
+      "status": "verified_live",
+      "handler": "public/js/bna-articles.js + src/lib/bna/school-pages.js; server.js current public mount",
+      "scope": "bna-school-coop",
+      "mobile_expectation": "320/390 CSS px, keyboard/RTL,48px controls, no overflow; actual inspected Chrome proof.",
+      "test": {
+        "type": "source fidelity + actual mounted local Chrome",
+        "expected_result": "Clear query/topic, restore all locale articles and focus search; browser Back restores prior state."
+      },
+      "evidence": [
+        "ops/bna-interest-launch/2026-11-08/PUBLIC-VERIFICATION.md",
+        "tests/bna-school-pages.test.js",
+        "ops/bna-interest-launch/2026-11-08/LIVE-PUBLIC-VERIFICATION.json"
+      ],
+      "related_requirement_ids": [
+        "REQ-20261108-006",
+        "REQ-20261108-007",
+        "REQ-20261108-008",
+        "REQ-20261108-010"
+      ]
+    },
+    {
+      "action_id": "ACTION-BNA-SCHOOL-READ",
+      "label": "Read article",
+      "surface": "bna_school_public",
+      "route": "/blog, /he/blog and homepage",
+      "selector_hint": "[data-article-card] a",
+      "expected_behavior": "Open the actual selected original-language canonical full article.",
+      "permission": "anonymous public visitor",
+      "status": "verified_live",
+      "handler": "public/js/bna-articles.js + src/lib/bna/school-pages.js; server.js current public mount",
+      "scope": "bna-school-coop",
+      "mobile_expectation": "320/390 CSS px, keyboard/RTL,48px controls, no overflow; actual inspected Chrome proof.",
+      "test": {
+        "type": "source fidelity + actual mounted local Chrome",
+        "expected_result": "Open the actual selected original-language canonical full article."
+      },
+      "evidence": [
+        "ops/bna-interest-launch/2026-11-08/PUBLIC-VERIFICATION.md",
+        "tests/bna-school-pages.test.js",
+        "ops/bna-interest-launch/2026-11-08/LIVE-PUBLIC-VERIFICATION.json"
+      ],
+      "related_requirement_ids": [
+        "REQ-20261108-006",
+        "REQ-20261108-007",
+        "REQ-20261108-008",
+        "REQ-20261108-010"
+      ]
+    },
+    {
+      "action_id": "ACTION-BNA-SCHOOL-WHATSAPP",
+      "label": "Share on WhatsApp",
+      "surface": "bna_school_public",
+      "route": "/blog/:slug, /he/blog/:slug",
+      "selector_hint": "[data-article-share] a[href^=\"https://wa.me/\"]",
+      "expected_behavior": "Open user-initiated composer URL containing only exact article title and canonical public URL; never auto-send.",
+      "permission": "anonymous public visitor",
+      "status": "verified_live",
+      "handler": "public/js/bna-articles.js + src/lib/bna/school-pages.js; server.js current public mount",
+      "scope": "bna-school-coop",
+      "mobile_expectation": "320/390 CSS px, keyboard/RTL,48px controls, no overflow; actual inspected Chrome proof.",
+      "test": {
+        "type": "source fidelity + actual mounted local Chrome",
+        "expected_result": "Open user-initiated composer URL containing only exact article title and canonical public URL; never auto-send."
+      },
+      "evidence": [
+        "ops/bna-interest-launch/2026-11-08/PUBLIC-VERIFICATION.md",
+        "tests/bna-school-pages.test.js",
+        "ops/bna-interest-launch/2026-11-08/LIVE-PUBLIC-VERIFICATION.json"
+      ],
+      "related_requirement_ids": [
+        "REQ-20261108-006",
+        "REQ-20261108-007",
+        "REQ-20261108-008",
+        "REQ-20261108-010"
+      ]
+    },
+    {
+      "action_id": "ACTION-BNA-SCHOOL-SHARE",
+      "label": "Share",
+      "surface": "bna_school_public",
+      "route": "/blog/:slug, /he/blog/:slug",
+      "selector_hint": "[data-native-share]",
+      "expected_behavior": "On user gesture invoke native share when available; cancellation is normal, unsupported/failure uses copy fallback.",
+      "permission": "anonymous public visitor",
+      "status": "verified_live",
+      "handler": "public/js/bna-articles.js + src/lib/bna/school-pages.js; server.js current public mount",
+      "scope": "bna-school-coop",
+      "mobile_expectation": "320/390 CSS px, keyboard/RTL,48px controls, no overflow; actual inspected Chrome proof.",
+      "test": {
+        "type": "source fidelity + actual mounted local Chrome",
+        "expected_result": "On user gesture invoke native share when available; cancellation is normal, unsupported/failure uses copy fallback."
+      },
+      "evidence": [
+        "ops/bna-interest-launch/2026-11-08/PUBLIC-VERIFICATION.md",
+        "tests/bna-school-pages.test.js",
+        "ops/bna-interest-launch/2026-11-08/LIVE-PUBLIC-VERIFICATION.json"
+      ],
+      "related_requirement_ids": [
+        "REQ-20261108-006",
+        "REQ-20261108-007",
+        "REQ-20261108-008",
+        "REQ-20261108-010"
+      ]
+    },
+    {
+      "action_id": "ACTION-BNA-SCHOOL-COPY",
+      "label": "Copy link",
+      "surface": "bna_school_public",
+      "route": "/blog/:slug, /he/blog/:slug",
+      "selector_hint": "[data-copy-link]",
+      "expected_behavior": "Report copied only after clipboard promise resolves; denial/unavailable exposes selectable canonical URL.",
+      "permission": "anonymous public visitor",
+      "status": "verified_live",
+      "handler": "public/js/bna-articles.js + src/lib/bna/school-pages.js; server.js current public mount",
+      "scope": "bna-school-coop",
+      "mobile_expectation": "320/390 CSS px, keyboard/RTL,48px controls, no overflow; actual inspected Chrome proof.",
+      "test": {
+        "type": "source fidelity + actual mounted local Chrome",
+        "expected_result": "Report copied only after clipboard promise resolves; denial/unavailable exposes selectable canonical URL."
+      },
+      "evidence": [
+        "ops/bna-interest-launch/2026-11-08/PUBLIC-VERIFICATION.md",
+        "tests/bna-school-pages.test.js",
+        "ops/bna-interest-launch/2026-11-08/LIVE-PUBLIC-VERIFICATION.json"
+      ],
+      "related_requirement_ids": [
+        "REQ-20261108-006",
+        "REQ-20261108-007",
+        "REQ-20261108-008",
+        "REQ-20261108-010"
+      ]
+    },
+    {
+      "action_id": "ACTION-BNA-SCHOOL-COPY-FALLBACK",
+      "label": "Article link",
+      "surface": "bna_school_public",
+      "route": "/blog/:slug, /he/blog/:slug",
+      "selector_hint": ".copy-fallback input",
+      "expected_behavior": "Read/select own canonical public URL when clipboard is unavailable, with no visitor input/private token.",
+      "permission": "anonymous public visitor",
+      "status": "verified_live",
+      "handler": "public/js/bna-articles.js + src/lib/bna/school-pages.js; server.js current public mount",
+      "scope": "bna-school-coop",
+      "mobile_expectation": "320/390 CSS px, keyboard/RTL,48px controls, no overflow; actual inspected Chrome proof.",
+      "test": {
+        "type": "source fidelity + actual mounted local Chrome",
+        "expected_result": "Read/select own canonical public URL when clipboard is unavailable, with no visitor input/private token."
+      },
+      "evidence": [
+        "ops/bna-interest-launch/2026-11-08/PUBLIC-VERIFICATION.md",
+        "tests/bna-school-pages.test.js",
+        "ops/bna-interest-launch/2026-11-08/LIVE-PUBLIC-VERIFICATION.json"
+      ],
+      "related_requirement_ids": [
+        "REQ-20261108-006",
+        "REQ-20261108-007",
+        "REQ-20261108-008",
+        "REQ-20261108-010"
+      ]
+    },
+    {
+      "action_id": "ACTION-BNA-SCHOOL-FAQ-CATEGORY",
+      "label": "FAQ categories",
+      "surface": "bna_school_public",
+      "route": "/faq, /he/faq",
+      "selector_hint": ".faq-categories a",
+      "expected_behavior": "Navigate to the source category anchor; private-directory conditional entries remain withheld.",
+      "permission": "anonymous public visitor",
+      "status": "verified_live",
+      "handler": "public/js/bna-articles.js + src/lib/bna/school-pages.js; server.js current public mount",
+      "scope": "bna-school-coop",
+      "mobile_expectation": "320/390 CSS px, keyboard/RTL,48px controls, no overflow; actual inspected Chrome proof.",
+      "test": {
+        "type": "source fidelity + actual mounted local Chrome",
+        "expected_result": "Navigate to the source category anchor; private-directory conditional entries remain withheld."
+      },
+      "evidence": [
+        "ops/bna-interest-launch/2026-11-08/PUBLIC-VERIFICATION.md",
+        "tests/bna-school-pages.test.js",
+        "ops/bna-interest-launch/2026-11-08/LIVE-PUBLIC-VERIFICATION.json"
+      ],
+      "related_requirement_ids": [
+        "REQ-20261108-006",
+        "REQ-20261108-007",
+        "REQ-20261108-008",
+        "REQ-20261108-010"
+      ]
+    },
+    {
+      "action_id": "ACTION-BNA-SCHOOL-FAQ-QUESTION",
+      "label": "FAQ question",
+      "surface": "bna_school_public",
+      "route": "/faq, /he/faq",
+      "selector_hint": ".faq-item summary",
+      "expected_behavior": "Native keyboard/touch disclosure; deep-linked stable question opens and scrolls into view; multiple may stay open.",
+      "permission": "anonymous public visitor",
+      "status": "verified_live",
+      "handler": "public/js/bna-articles.js + src/lib/bna/school-pages.js; server.js current public mount",
+      "scope": "bna-school-coop",
+      "mobile_expectation": "320/390 CSS px, keyboard/RTL,48px controls, no overflow; actual inspected Chrome proof.",
+      "test": {
+        "type": "source fidelity + actual mounted local Chrome",
+        "expected_result": "Native keyboard/touch disclosure; deep-linked stable question opens and scrolls into view; multiple may stay open."
+      },
+      "evidence": [
+        "ops/bna-interest-launch/2026-11-08/PUBLIC-VERIFICATION.md",
+        "tests/bna-school-pages.test.js",
+        "ops/bna-interest-launch/2026-11-08/LIVE-PUBLIC-VERIFICATION.json"
+      ],
+      "related_requirement_ids": [
+        "REQ-20261108-006",
+        "REQ-20261108-007",
+        "REQ-20261108-008",
+        "REQ-20261108-010"
+      ]
+    },
+    {
+      "action_id": "ACTION-BNA-INTEREST-OWNER-ALERT",
+      "label": "New inquiry owner email alert",
+      "surface": "bna_interest_launch",
+      "route": "/api/bna/coop-interest; saved-inquiry outbox",
+      "selector_hint": "outbox:email:bna_interest_owner_alert",
+      "expected_behavior": "After a new BNA inquiry is saved, create one independent owner notification intent; deliver only the approved recipient-bound draft. Mail failure/unknown retains the inquiry; no retry duplicates, historical alerts, marketing or full backend activation.",
+      "permission": "BNA system after consented inquiry save; internal owner recipient only",
+      "status": "verified_live",
+      "disabled_reason": "",
+      "handler": "src/lib/bna/interest-owner-alert.js; existing interest-store transaction and BNA timer",
+      "scope": "bna-school-coop",
+      "mobile_expectation": "No form interaction change; existing saved reference and parent receipt state remain truthful in EN/HE.",
+      "test": {
+        "type": "real disposable PostgreSQL + concurrency/uncertainty/retention tests",
+        "expected_result": "One owner intent per inquiry; inactive/tampered/wrong-recipient/foreign/archived sends prevented; failure/unknown retains inquiry and never auto-resends."
+      },
+      "evidence": [
+        "tests/bna-interest-owner-alert.test.js",
+        "ops/bna-interest-launch/2026-11-08/OWNER-ALERT-PREPARED.json",
+        "ops/bna-interest-launch/2026-11-08/OWNER-ALERT-LIVE-VERIFICATION.json",
+        "ops/bna-interest-launch/2026-11-08/OWNER-ALERT-RECIPIENT-PROOF.json"
+      ],
+      "related_requirement_ids": [
+        "REQ-20261108-025"
       ]
     }
   ]

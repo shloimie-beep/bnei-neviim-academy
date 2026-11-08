@@ -1,0 +1,87 @@
+{
+  "scope_contract": "BNA-SCHOOL-SCOPE-LOCK-20261107-03",
+  "updated_at": "2026-11-08T13:26:23.982Z",
+  "frontend": {
+    "thread_id": "01a1aab6-671c-7881-8aa3-f6d77a04af88",
+    "worktree": "D:\\bna-gateway-leads-20261028",
+    "role": "frontend and sole integrator",
+    "files": [
+      "src/lib/bna/interest-pages.js",
+      "config/bna-interest-copy.json",
+      "config/bna-school-content.json",
+      "public/css/bna-interest-launch.css",
+      "public/js/bna-coop-join.js",
+      "public/js/bna-articles.js",
+      "public/js/bna-school-owner.js",
+      "public/css/bna-school-owner.css",
+      "public/js/bna-school-parent.js",
+      "public/css/bna-school-parent.css",
+      "src/lib/bna/school-pages.js",
+      "public/operations.html",
+      "tests/bna-school-pages.test.js",
+      "tests/bna-school-browser.test.js",
+      "public/bna-school-sitemap.xml"
+    ],
+    "shared_integration_files": [
+      "server.js",
+      "ops/action-registry.json",
+      "ops/route-registry.json",
+      "package.json",
+      "package-lock.json",
+      "migrations/",
+      "ops/execution-runs/2026-11-05-bna-interest-launch/",
+      "tasks-pending/2026-11-05-bna-interest-launch.md",
+      "ops/agent-task-ledger.jsonl",
+      "ops/agent-changelog.md"
+    ],
+    "minimal_inquiry_maintenance_files": [
+      "src/lib/bna/interest-store.js",
+      "src/lib/bna/interest-owner-alert.js",
+      "tests/bna-interest-owner-alert.test.js"
+    ],
+    "minimal_inquiry_limit": "Only existing-outbox new owner alert wiring; no full CRM/placement/billing/parent backend takeover."
+  },
+  "backend": {
+    "thread_id": "01a1bb1a-79d2-7c01-ae0c-be2c3b99263e",
+    "worktree": "C:/Users/User/.codex/worktrees/1832/bna-gateway-leads-20261028",
+    "role": "one backend peer; admission pending",
+    "files": [
+      "src/lib/bna/school-contract.js",
+      "src/lib/bna/school-store.js",
+      "src/lib/bna/school-http.js",
+      "src/lib/bna/school-schema.js",
+      "src/lib/bna/school-billing.js",
+      "src/lib/bna/school-provider.js",
+      "src/lib/bna/school-mail.js",
+      "src/lib/bna/school-security.js",
+      "src/lib/bna/interest-http.js",
+      "src/lib/bna/interest-email.js",
+      "src/lib/bna/interest-mail-runtime.js",
+      "src/lib/bna/interest-owner.js",
+      "src/lib/bna/interest-archive.js",
+      "tests/bna-school-store.test.js",
+      "tests/bna-school-http.test.js",
+      "tests/bna-school-billing.test.js",
+      "tests/bna-school-provider.test.js",
+      "tests/bna-school-mail.test.js",
+      "tests/bna-school-security.test.js",
+      "tests/bna-school-contract.test.js",
+      "tests/bna-interest-store.test.js",
+      "tests/bna-interest-owner.test.js",
+      "tests/bna-interest-archive.test.js",
+      "tests/bna-coop-form.test.js",
+      "ops/bna-interest-launch/2026-11-08/backend/"
+    ],
+    "admission": "Host project/cwd/original task and exact Git origin/push inspected; peer SOURCE_READ received. Initial detached HEAD7eacc292; backend creates its own codex branch.",
+    "status": "deferred_operator",
+    "checkpoint": "deleted_by_operator_request"
+  },
+  "rules": [
+    "Backend edits only listed exact files or handback folder; missing paths require integrator allocation.",
+    "No shared server/auth/migration/dependency/combined-register edits by backend.",
+    "Backend proposes SQL and wiring through schema exports and handback; integrator numbers/applies additive local changes.",
+    "No application edits until current audit/DoR, PQC and contract acknowledged.",
+    "No production migrations, charges/refunds, real sends, provider/credential changes or deployment without current applicable gates."
+  ],
+  "current_scope": "RAW-20261108-004: public website/form, durable inquiry, existing parent receipt and minimal owner Gmail alert only"
+}

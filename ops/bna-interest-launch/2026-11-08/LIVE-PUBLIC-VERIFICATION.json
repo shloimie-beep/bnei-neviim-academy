@@ -1,0 +1,417 @@
+{
+  "checked_at": "2026-11-08T13:34:10.529Z",
+  "application_commit": "80575900cbd0376a1db24a3267ef68be49029f29",
+  "deployment_id": "d4e8810a-5422-48e9-b516-b25c3cd48cb3",
+  "provider_status": "SUCCESS",
+  "serving_identity": {
+    "status": "ok",
+    "commit_sha": "80575900cbd0376a1db24a3267ef68be49029f29",
+    "source_branch": "codex/bna-interest-launch-20261105",
+    "generated_at": "",
+    "deployment_source": "runtime",
+    "target_app": "",
+    "target_project": "",
+    "target_service": ""
+  },
+  "actual_live_browser_states": [
+    {
+      "name": "home-desktop",
+      "route": "/",
+      "width": 1440,
+      "height": 1000,
+      "status": 200,
+      "errors": [],
+      "overflow": false,
+      "missing": [],
+      "violations": []
+    },
+    {
+      "name": "home-mobile",
+      "route": "/",
+      "width": 390,
+      "height": 844,
+      "status": 200,
+      "errors": [],
+      "overflow": false,
+      "missing": [],
+      "violations": []
+    },
+    {
+      "name": "home-he-mobile",
+      "route": "/he",
+      "width": 390,
+      "height": 844,
+      "status": 200,
+      "errors": [],
+      "overflow": false,
+      "missing": [],
+      "violations": []
+    },
+    {
+      "name": "home-small",
+      "route": "/",
+      "width": 320,
+      "height": 844,
+      "status": 200,
+      "errors": [],
+      "overflow": false,
+      "missing": [],
+      "violations": []
+    },
+    {
+      "name": "home-he-tablet",
+      "route": "/he",
+      "width": 768,
+      "height": 1024,
+      "status": 200,
+      "errors": [],
+      "overflow": false,
+      "missing": [],
+      "violations": []
+    },
+    {
+      "name": "library-desktop",
+      "route": "/blog",
+      "width": 1440,
+      "height": 1000,
+      "status": 200,
+      "errors": [],
+      "overflow": false,
+      "missing": [],
+      "violations": []
+    },
+    {
+      "name": "library-mobile",
+      "route": "/blog",
+      "width": 390,
+      "height": 844,
+      "status": 200,
+      "errors": [],
+      "overflow": false,
+      "missing": [],
+      "violations": []
+    },
+    {
+      "name": "library-he-small",
+      "route": "/he/blog",
+      "width": 320,
+      "height": 844,
+      "status": 200,
+      "errors": [],
+      "overflow": false,
+      "missing": [],
+      "violations": []
+    },
+    {
+      "name": "article-desktop",
+      "route": "/blog/healthy-technology-use-jewish-children",
+      "width": 1440,
+      "height": 1000,
+      "status": 200,
+      "errors": [],
+      "overflow": false,
+      "missing": [],
+      "violations": []
+    },
+    {
+      "name": "article-small",
+      "route": "/blog/real-life-secular-learning-future-vision",
+      "width": 320,
+      "height": 844,
+      "status": 200,
+      "errors": [],
+      "overflow": false,
+      "missing": [],
+      "violations": []
+    },
+    {
+      "name": "article-he-mobile",
+      "route": "/he/blog/jewish-unschooling-torah",
+      "width": 390,
+      "height": 844,
+      "status": 200,
+      "errors": [],
+      "overflow": false,
+      "missing": [],
+      "violations": []
+    },
+    {
+      "name": "faq-mobile",
+      "route": "/faq",
+      "width": 390,
+      "height": 844,
+      "status": 200,
+      "errors": [],
+      "overflow": false,
+      "missing": [],
+      "violations": []
+    },
+    {
+      "name": "faq-he-desktop",
+      "route": "/he/faq",
+      "width": 1440,
+      "height": 1000,
+      "status": 200,
+      "errors": [],
+      "overflow": false,
+      "missing": [],
+      "violations": []
+    },
+    {
+      "name": "guide-mobile",
+      "route": "/parents/guide",
+      "width": 390,
+      "height": 844,
+      "status": 200,
+      "errors": [],
+      "overflow": false,
+      "missing": [],
+      "violations": []
+    },
+    {
+      "name": "form-small",
+      "route": "/join?interest=academy",
+      "width": 320,
+      "height": 844,
+      "status": 200,
+      "errors": [],
+      "overflow": false,
+      "missing": [],
+      "violations": []
+    },
+    {
+      "name": "form-he-mobile",
+      "route": "/he/join?interest=both",
+      "width": 390,
+      "height": 844,
+      "status": 200,
+      "errors": [],
+      "overflow": false,
+      "missing": [],
+      "violations": []
+    },
+    {
+      "name": "home",
+      "route": "/",
+      "width": 1024,
+      "height": 1000,
+      "status": 200,
+      "errors": [],
+      "overflow": false,
+      "missing": [],
+      "violations": []
+    },
+    {
+      "name": "home",
+      "route": "/he",
+      "width": 430,
+      "height": 900,
+      "status": 200,
+      "errors": [],
+      "overflow": false,
+      "missing": [],
+      "violations": []
+    },
+    {
+      "name": "library",
+      "route": "/blog",
+      "width": 1024,
+      "height": 1000,
+      "status": 200,
+      "errors": [],
+      "overflow": false,
+      "missing": [],
+      "violations": []
+    },
+    {
+      "name": "library",
+      "route": "/he/blog",
+      "width": 430,
+      "height": 900,
+      "status": 200,
+      "errors": [],
+      "overflow": false,
+      "missing": [],
+      "violations": []
+    },
+    {
+      "name": "article",
+      "route": "/blog/healthy-technology-use-jewish-children",
+      "width": 1024,
+      "height": 1000,
+      "status": 200,
+      "errors": [],
+      "overflow": false,
+      "missing": [],
+      "violations": []
+    },
+    {
+      "name": "article",
+      "route": "/he/blog/jewish-unschooling-torah",
+      "width": 430,
+      "height": 900,
+      "status": 200,
+      "errors": [],
+      "overflow": false,
+      "missing": [],
+      "violations": []
+    },
+    {
+      "name": "faq",
+      "route": "/faq",
+      "width": 1024,
+      "height": 1000,
+      "status": 200,
+      "errors": [],
+      "overflow": false,
+      "missing": [],
+      "violations": []
+    },
+    {
+      "name": "faq",
+      "route": "/he/faq",
+      "width": 430,
+      "height": 900,
+      "status": 200,
+      "errors": [],
+      "overflow": false,
+      "missing": [],
+      "violations": []
+    },
+    {
+      "name": "guide",
+      "route": "/parents/guide",
+      "width": 1024,
+      "height": 1000,
+      "status": 200,
+      "errors": [],
+      "overflow": false,
+      "missing": [],
+      "violations": []
+    },
+    {
+      "name": "guide",
+      "route": "/he/parents/guide",
+      "width": 430,
+      "height": 900,
+      "status": 200,
+      "errors": [],
+      "overflow": false,
+      "missing": [],
+      "violations": []
+    },
+    {
+      "name": "form",
+      "route": "/join",
+      "width": 1024,
+      "height": 1000,
+      "status": 200,
+      "errors": [],
+      "overflow": false,
+      "missing": [],
+      "violations": []
+    },
+    {
+      "name": "form",
+      "route": "/he/join",
+      "width": 430,
+      "height": 900,
+      "status": 200,
+      "errors": [],
+      "overflow": false,
+      "missing": [],
+      "violations": []
+    }
+  ],
+  "functional_actions": [
+    "URL-backed search/topic/empty/clear/back/forward",
+    "FAQ deep link/disclosure and mobile Escape/focus",
+    "Canonical alias, WhatsApp URL, clipboard success/denial and native-share cancellation",
+    "Equivalent source redirects"
+  ],
+  "internal_links": 60,
+  "sitemap": {
+    "checkedAt": "2026-11-08T13:26:46.376Z",
+    "actualLiveServer": true,
+    "applicationCommit": "80575900cbd0376a1db24a3267ef68be49029f29",
+    "sitemapCanonicalRoutes": 47,
+    "knownLegacyArticleRedirects": 4,
+    "formChoiceAndPhoneStates": true,
+    "rtlYearBdiVerified": true,
+    "reflow": "720 CSS-pixel viewport equivalent to1440px at200percent; not a physical-device claim",
+    "newSubmissions": 0,
+    "externalShareMessages": 0,
+    "allPassed": true
+  },
+  "assets": [
+    {
+      "file": "public/images/bna-launch/bna-logo.png",
+      "sha256": "32dbdcbe557c79b6d6cf717764209f8632264644e6745e14160185de8f50daa5",
+      "source_bytes_match": true
+    },
+    {
+      "file": "public/images/bna-launch/founder.jpg",
+      "sha256": "bd8e9c63f15ea8b389bfe3506f23afe4762dd7cb4ca53ebd839598ba5fc59601",
+      "source_bytes_match": true
+    },
+    {
+      "file": "public/images/bna-launch/bunny.png",
+      "sha256": "0db4d49e26187b96a13e1755bdf3a5831d50827edf8e390228785d391d807214",
+      "source_bytes_match": true
+    },
+    {
+      "file": "public/images/bna-launch/huddle.png",
+      "sha256": "7b285131396cdfecc6558312a66ab90c227379a85c95c2ad606a54af696cb4cc",
+      "source_bytes_match": true
+    },
+    {
+      "file": "public/images/bna-launch/boys-with-sticks.jpg",
+      "sha256": "e9d736cd4fb653a7f291b27b185a5a557ce5860637bf74abf9e25f1cc1b00008",
+      "source_bytes_match": true
+    },
+    {
+      "file": "public/images/bna-launch/forest-learning-01.jpg",
+      "sha256": "8ce99b0c6e0c9b18151557d38b8386494db71510c9869baadb0aba0155198f81",
+      "source_bytes_match": true
+    },
+    {
+      "file": "public/images/bna-launch/forest-learning-02.jpg",
+      "sha256": "40c794f885b60c98d4f2148dee852cd7c111eb8850e3d553da673d43bf40f287",
+      "source_bytes_match": true
+    },
+    {
+      "file": "public/images/bna-launch/article-mentor.jpg",
+      "sha256": "f88c3c179d2cc67f87b3bf65bcd087811b08db238b1bc965d8c330c6d7618c34",
+      "source_bytes_match": true
+    },
+    {
+      "file": "public/images/bna-launch/article-planting.jpg",
+      "sha256": "5b9f4b854297c255878db41d69b032406cee5913790d202a39f70ab987078096",
+      "source_bytes_match": true
+    },
+    {
+      "file": "public/images/bna-launch/article-leadership.jpg",
+      "sha256": "d7ac968459b2eb39eb3c9430c672657a77f4f214f383fd2c41e0e02be10e510e",
+      "source_bytes_match": true
+    },
+    {
+      "file": "public/images/bna-launch/BNA_Hero_Desktop_APPROVED_SouthFlorida_Gray.png",
+      "sha256": "cec2fe9408a5dd86a2714eae811abc50906dfb596e6aaae7085faeb09589df0d",
+      "source_bytes_match": true
+    },
+    {
+      "file": "public/images/bna-launch/BNA_Hero_Mobile_APPROVED_SouthFlorida_Gray.png",
+      "sha256": "420fcf315b7ab5844e3722a5c57913e8b661bf3a063eb6ccb893397b31768eb7",
+      "source_bytes_match": true
+    }
+  ],
+  "visual_review": [
+    "home mobile opening",
+    "home desktop opening",
+    "Hebrew article mobile opening"
+  ],
+  "new_inquiries": 0,
+  "emails_sent": 0,
+  "archive_applications": 0,
+  "physical_device": false
+}

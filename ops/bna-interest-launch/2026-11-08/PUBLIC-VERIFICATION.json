@@ -1,0 +1,365 @@
+{
+  "scope": "bna-school-coop",
+  "claim": "Public80575900 is deployed and live verified; minimal owner-alert feature is separately prepared/inactive.",
+  "initial_browser_matrix": {
+    "checkedAt": "2026-11-08T12:40:30.022Z",
+    "environment": "actual local server.js with compatibility/database boot disabled; synthetic loopback DB URL and no provider credentials",
+    "results": [
+      {
+        "name": "home-desktop",
+        "route": "/",
+        "width": 1440,
+        "height": 1000,
+        "status": 200,
+        "errors": [],
+        "overflow": false,
+        "missing": [],
+        "violations": []
+      },
+      {
+        "name": "home-mobile",
+        "route": "/",
+        "width": 390,
+        "height": 844,
+        "status": 200,
+        "errors": [],
+        "overflow": false,
+        "missing": [],
+        "violations": []
+      },
+      {
+        "name": "home-he-mobile",
+        "route": "/he",
+        "width": 390,
+        "height": 844,
+        "status": 200,
+        "errors": [],
+        "overflow": false,
+        "missing": [],
+        "violations": []
+      },
+      {
+        "name": "home-small",
+        "route": "/",
+        "width": 320,
+        "height": 844,
+        "status": 200,
+        "errors": [],
+        "overflow": false,
+        "missing": [],
+        "violations": []
+      },
+      {
+        "name": "home-he-tablet",
+        "route": "/he",
+        "width": 768,
+        "height": 1024,
+        "status": 200,
+        "errors": [],
+        "overflow": false,
+        "missing": [],
+        "violations": []
+      },
+      {
+        "name": "library-desktop",
+        "route": "/blog",
+        "width": 1440,
+        "height": 1000,
+        "status": 200,
+        "errors": [],
+        "overflow": false,
+        "missing": [],
+        "violations": []
+      },
+      {
+        "name": "library-mobile",
+        "route": "/blog",
+        "width": 390,
+        "height": 844,
+        "status": 200,
+        "errors": [],
+        "overflow": false,
+        "missing": [],
+        "violations": []
+      },
+      {
+        "name": "library-he-small",
+        "route": "/he/blog",
+        "width": 320,
+        "height": 844,
+        "status": 200,
+        "errors": [],
+        "overflow": false,
+        "missing": [],
+        "violations": []
+      },
+      {
+        "name": "article-desktop",
+        "route": "/blog/healthy-technology-use-jewish-children",
+        "width": 1440,
+        "height": 1000,
+        "status": 200,
+        "errors": [],
+        "overflow": false,
+        "missing": [],
+        "violations": []
+      },
+      {
+        "name": "article-small",
+        "route": "/blog/real-life-secular-learning-future-vision",
+        "width": 320,
+        "height": 844,
+        "status": 200,
+        "errors": [],
+        "overflow": false,
+        "missing": [],
+        "violations": []
+      },
+      {
+        "name": "article-he-mobile",
+        "route": "/he/blog/jewish-unschooling-torah",
+        "width": 390,
+        "height": 844,
+        "status": 200,
+        "errors": [],
+        "overflow": false,
+        "missing": [],
+        "violations": []
+      },
+      {
+        "name": "faq-mobile",
+        "route": "/faq",
+        "width": 390,
+        "height": 844,
+        "status": 200,
+        "errors": [],
+        "overflow": false,
+        "missing": [],
+        "violations": []
+      },
+      {
+        "name": "faq-he-desktop",
+        "route": "/he/faq",
+        "width": 1440,
+        "height": 1000,
+        "status": 200,
+        "errors": [],
+        "overflow": false,
+        "missing": [],
+        "violations": []
+      },
+      {
+        "name": "guide-mobile",
+        "route": "/parents/guide",
+        "width": 390,
+        "height": 844,
+        "status": 200,
+        "errors": [],
+        "overflow": false,
+        "missing": [],
+        "violations": []
+      },
+      {
+        "name": "form-small",
+        "route": "/join?interest=academy",
+        "width": 320,
+        "height": 844,
+        "status": 200,
+        "errors": [],
+        "overflow": false,
+        "missing": [],
+        "violations": []
+      },
+      {
+        "name": "form-he-mobile",
+        "route": "/he/join?interest=both",
+        "width": 390,
+        "height": 844,
+        "status": 200,
+        "errors": [],
+        "overflow": false,
+        "missing": [],
+        "violations": []
+      }
+    ],
+    "actions": [
+      "URL-backed search/topic/empty/clear/back/forward",
+      "FAQ deep link/disclosure and mobile Escape/focus",
+      "Canonical alias, WhatsApp URL, clipboard success/denial and native-share cancellation",
+      "Equivalent source redirects"
+    ],
+    "linksChecked": 60,
+    "badLinks": [],
+    "formPosts": 0,
+    "physicalDeviceTest": false
+  },
+  "latest_affected_checks": {
+    "checkedAt": "2026-11-08T12:51:32.144Z",
+    "actualLocalServer": true,
+    "sitemapCanonicalRoutes": 47,
+    "knownLegacyArticleRedirects": 4,
+    "formChoiceAndPhoneStates": true,
+    "rtlYearBdiVerified": true,
+    "reflow": "720 CSS-pixel viewport equivalent to1440px at200percent; not a physical-device claim",
+    "newSubmissions": 0,
+    "externalShareMessages": 0,
+    "allPassed": true
+  },
+  "source_tests_passed": 9,
+  "privacy_tests_passed": 14,
+  "protected_assets_matched": 12,
+  "current_copybook_articles_matched": 29,
+  "source_originals_unchanged": true,
+  "production_effects": [],
+  "runtime_limits": "Native heartbeats installed; backend paused before first trigger, frontend active-turn deferment observed, no false idle-resume/restart/stop claim.",
+  "additional_required_widths": {
+    "checkedAt": "2026-11-08T13:02:02.929Z",
+    "results": [
+      {
+        "name": "home",
+        "route": "/",
+        "width": 1024,
+        "height": 1000,
+        "status": 200,
+        "errors": [],
+        "overflow": false,
+        "missing": [],
+        "violations": []
+      },
+      {
+        "name": "home",
+        "route": "/he",
+        "width": 430,
+        "height": 900,
+        "status": 200,
+        "errors": [],
+        "overflow": false,
+        "missing": [],
+        "violations": []
+      },
+      {
+        "name": "library",
+        "route": "/blog",
+        "width": 1024,
+        "height": 1000,
+        "status": 200,
+        "errors": [],
+        "overflow": false,
+        "missing": [],
+        "violations": []
+      },
+      {
+        "name": "library",
+        "route": "/he/blog",
+        "width": 430,
+        "height": 900,
+        "status": 200,
+        "errors": [],
+        "overflow": false,
+        "missing": [],
+        "violations": []
+      },
+      {
+        "name": "article",
+        "route": "/blog/healthy-technology-use-jewish-children",
+        "width": 1024,
+        "height": 1000,
+        "status": 200,
+        "errors": [],
+        "overflow": false,
+        "missing": [],
+        "violations": []
+      },
+      {
+        "name": "article",
+        "route": "/he/blog/jewish-unschooling-torah",
+        "width": 430,
+        "height": 900,
+        "status": 200,
+        "errors": [],
+        "overflow": false,
+        "missing": [],
+        "violations": []
+      },
+      {
+        "name": "faq",
+        "route": "/faq",
+        "width": 1024,
+        "height": 1000,
+        "status": 200,
+        "errors": [],
+        "overflow": false,
+        "missing": [],
+        "violations": []
+      },
+      {
+        "name": "faq",
+        "route": "/he/faq",
+        "width": 430,
+        "height": 900,
+        "status": 200,
+        "errors": [],
+        "overflow": false,
+        "missing": [],
+        "violations": []
+      },
+      {
+        "name": "guide",
+        "route": "/parents/guide",
+        "width": 1024,
+        "height": 1000,
+        "status": 200,
+        "errors": [],
+        "overflow": false,
+        "missing": [],
+        "violations": []
+      },
+      {
+        "name": "guide",
+        "route": "/he/parents/guide",
+        "width": 430,
+        "height": 900,
+        "status": 200,
+        "errors": [],
+        "overflow": false,
+        "missing": [],
+        "violations": []
+      },
+      {
+        "name": "form",
+        "route": "/join",
+        "width": 1024,
+        "height": 1000,
+        "status": 200,
+        "errors": [],
+        "overflow": false,
+        "missing": [],
+        "violations": []
+      },
+      {
+        "name": "form",
+        "route": "/he/join",
+        "width": 430,
+        "height": 900,
+        "status": 200,
+        "errors": [],
+        "overflow": false,
+        "missing": [],
+        "violations": []
+      }
+    ],
+    "reason": "Repository PQC requires430 and1024 viewport coverage in addition to package320/390/768/1440."
+  },
+  "total_browser_states": 28,
+  "application_commit": "80575900cbd0376a1db24a3267ef68be49029f29",
+  "pushed_commit": "80575900cbd0376a1db24a3267ef68be49029f29",
+  "pull_request": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/196",
+  "source_status_readback": "ops/bna-interest-launch/2026-11-08/SOURCE-STATUS-READBACK.json",
+  "production": {
+    "application_commit": "80575900cbd0376a1db24a3267ef68be49029f29",
+    "deployment_id": "d4e8810a-5422-48e9-b516-b25c3cd48cb3",
+    "status": "SUCCESS",
+    "live_verification": "ops/bna-interest-launch/2026-11-08/LIVE-PUBLIC-VERIFICATION.json"
+  },
+  "current_scope": "RAW-20261108-004 public inquiry flow only; full backend deferred"
+}

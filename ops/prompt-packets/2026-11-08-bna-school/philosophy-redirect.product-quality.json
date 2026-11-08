@@ -1,0 +1,594 @@
+{
+  "schema_version": "pqc.v2",
+  "packet_id": "PKT-20261108-006",
+  "parent_raw_id": "RAW-20261108-001",
+  "source_statement_ids": [
+    "SRC-20261108-009"
+  ],
+  "packet_dag": {
+    "parent_packet_id": "BNA-FULLSTACK-TWO-LANE-20261107-02",
+    "child_packet_ids": [],
+    "depends_on_packet_ids": [],
+    "blocks_packet_ids": [],
+    "consumes": [
+      "ops/bna-interest-launch/2026-11-08/SURFACE-MAP.json",
+      "ops/bna-interest-launch/2026-11-08/CURRENT-STATE.json"
+    ],
+    "produces": [
+      "ops/prompt-packets/2026-11-08-bna-school/philosophy-redirect.product-quality.json"
+    ],
+    "validation_command": "npm run pqc:validate -- ops/prompt-packets/2026-11-08-bna-school/philosophy-redirect.product-quality.json",
+    "terminal_condition": "Evidence-backed scope status and next packet recorded.",
+    "handoff_target": "tasks-pending/2026-11-05-bna-interest-launch.md"
+  },
+  "stage": "STAGE_3_CODEX_IMPLEMENTATION",
+  "packet_role": "IMPLEMENTATION_PACKET",
+  "status": "done",
+  "title": "BNA school philosophy-redirect",
+  "created_at": "2026-11-08T12:26:13.466Z",
+  "workspace_key": "bna",
+  "project_key": "bnei_neviim_academy",
+  "view_classes": [
+    "PUBLIC_MARKETING"
+  ],
+  "ramble_router": {
+    "raw_id": "RAW-20261108-001",
+    "classification": [
+      "PRODUCT_QUALITY",
+      "UI_IMPLEMENTATION",
+      "SECURITY_PRIVACY"
+    ],
+    "confidence": 1,
+    "reasons": [
+      "Current school-only .03/.02 task, exact .04 public requirements and concrete actual before/after audit."
+    ],
+    "affected_workspace_project": "bna / bnei_neviim_academy",
+    "affected_view_classes": [
+      "PUBLIC_MARKETING"
+    ],
+    "affected_product_surfaces": [
+      "philosophy-redirect"
+    ],
+    "likely_external_provider_blockers": [
+      "New public production source pin requires existing release confirmation. Backend-only pause does not authorize backend implementation or live provider effects."
+    ],
+    "product_quality_compiler_required": true,
+    "super_ramble_packet_splitter_required": false,
+    "visual_audit_before_implementation": true,
+    "implementation_forbidden_until_dor": true,
+    "recommended_packet_sequence": [
+      "00-control-tower",
+      "01-current-state-visual-audit",
+      "philosophy-redirect"
+    ],
+    "next_exact_packet": "philosophy-redirect"
+  },
+  "operator_intent_summary": "One article/philosophy hub; existing philosophy routes have equivalent locale redirects to blog#foundations, without dropping protected educational prose.",
+  "raw_source": "raw-input/RAW-20261108-001-bna-school-fullstack.md",
+  "raw_quotes": [
+    "BNA SCHOOL ONLY—not Fishing.",
+    "Preserve working code and report genuine blockers."
+  ],
+  "operator_quotes": [
+    "BNA SCHOOL ONLY—not Fishing.",
+    "Preserve working code and report genuine blockers."
+  ],
+  "decisions_captured": [
+    {
+      "id": "DEC-20261105-001",
+      "decision": "New exact transactional email draft/sender requires final activation review after preview.",
+      "status": "pending"
+    }
+  ],
+  "out_of_scope": [
+    "Fishing, other providers, Buffer PR195, donation checkout, parent accounts, deletion, legacy sends and marketing activation.",
+    "Do not solve the whole parent ramble. Complete only this packet scope and record the next packet or blocker."
+  ],
+  "affected_surfaces": [
+    "BNA school philosophy-redirect"
+  ],
+  "affected_routes": [
+    "/philosophy",
+    "/he/philosophy"
+  ],
+  "affected_files": [
+    "server.js",
+    "src/lib/bna/interest-pages.js"
+  ],
+  "current_state": {
+    "inspection_targets": [
+      "server.js",
+      "src/lib/bna/interest-pages.js",
+      "ops/bna-interest-launch/2026-11-08/CURRENT-STATE.json"
+    ],
+    "known_blockers": [],
+    "summary": "Actual current live7d0a02a4 inspected before edits; ops/bna-interest-launch/2026-11-08/CURRENT-STATE.json",
+    "surface_map": "ops/bna-interest-launch/2026-11-08/SURFACE-MAP.json"
+  },
+  "product_quality_expansion": {
+    "trigger_phrases": [
+      "get it working"
+    ],
+    "expanded_phrases": {
+      "working": "A saved inquiry survives refresh and retries, appears through the ordinary BNA owner view, and has truthful independent email state.",
+      "CRM": "Reuse first-party scoped bna_parent_leads, history and ordinary owner contacts; do not create another CRM.",
+      "clean": "Readable aligned BNA typography and spacing, complete hero framing and measured responsive layouts.",
+      "configured": "Actual provider/readback evidence, not an enabled UI label."
+    },
+    "first_party_pattern_interpretation": "Existing first-party BNA data and owner controls only."
+  },
+  "design_pattern_references": [
+    "docs/PRODUCT-QUALITY-COMPILER.md",
+    "docs/DESIGN-REFERENCE-CAPTURE.md",
+    "docs/VISUAL-QUALITY-HARNESS.md",
+    "ops/prompt-packets/2026-11-05-bna-interest-launch/01-current-state-visual-audit.md"
+  ],
+  "requirements": [
+    {
+      "id": "REQ-20261108-009",
+      "statement": "One article/philosophy hub; existing philosophy routes have equivalent locale redirects to blog#foundations, without dropping protected educational prose.",
+      "expected_result": "One article/philosophy hub; existing philosophy routes have equivalent locale redirects to blog#foundations, without dropping protected educational prose.",
+      "acceptance_criteria": [
+        "One article/philosophy hub; existing philosophy routes have equivalent locale redirects to blog#foundations, without dropping protected educational prose.",
+        "Source fidelity, relevant actual browser states, action/route coverage and truthful local/deployed/live evidence in the existing run."
+      ]
+    }
+  ],
+  "definition_of_ready": {
+    "required": true,
+    "criteria": [
+      "Current Nov7 school .03/.02 and .04 exact copy plus preserved .01 sources consumed8Nov.",
+      "Actual host school identity/file claims, raw intake and24requirement register are recorded in existing run.",
+      "Five actual live baseline views captured; home/blog/FAQ screenshots opened;12 original asset hashes match.",
+      "This exact bounded public packet passes validator before application changes."
+    ]
+  },
+  "state_matrix": {
+    "loading": {
+      "route": "/philosophy",
+      "viewport": "390",
+      "auth_role": "anonymous",
+      "workspace_project": "bna / bnei_neviim_academy",
+      "how_to_enter_state": "Navigate actual SSR route; browser owns document loading, no fabricated app spinner.",
+      "expected_visible_title": "Equivalent philosophy library",
+      "expected_visible_message": "No partial success/private record or false saved indicator before HTTP document response.",
+      "expected_primary_action": "Follow canonical library anchor",
+      "expected_secondary_actions": [
+        "Return to current BNA home/library"
+      ],
+      "forbidden_content": [
+        "raw credentials",
+        "Fishing records",
+        "old public schedule or venue"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Labeled controls, status/error announcements and meaningful headings.",
+      "accessibility_expectation": "320/390/768/1440 responsive keyboard/RTL, AA contrast,48px controls and no overflow.",
+      "test_smoke_assertion": "Source/route/rendered state matches this public scope; private/backend acceptance remains separate.",
+      "requirement_id": "REQ-20261108-009"
+    },
+    "empty": {
+      "route": "/philosophy",
+      "viewport": "390",
+      "auth_role": "anonymous",
+      "workspace_project": "bna / bnei_neviim_academy",
+      "how_to_enter_state": "No empty catalogue state is introduced on this immutable-source document; missing required source is a readiness/configuration failure.",
+      "expected_visible_title": "Equivalent philosophy library",
+      "expected_visible_message": "Never present missing source as a valid empty published page.",
+      "expected_primary_action": "Follow canonical library anchor",
+      "expected_secondary_actions": [
+        "Return to current BNA home/library"
+      ],
+      "forbidden_content": [
+        "raw credentials",
+        "Fishing records",
+        "old public schedule or venue"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Labeled controls, status/error announcements and meaningful headings.",
+      "accessibility_expectation": "320/390/768/1440 responsive keyboard/RTL, AA contrast,48px controls and no overflow.",
+      "test_smoke_assertion": "Source/route/rendered state matches this public scope; private/backend acceptance remains separate.",
+      "requirement_id": "REQ-20261108-009"
+    },
+    "populated": {
+      "route": "/philosophy",
+      "viewport": "390",
+      "auth_role": "anonymous",
+      "workspace_project": "bna / bnei_neviim_academy",
+      "how_to_enter_state": "Actual anonymous public document and scoped controls; no fabricated private rows.",
+      "expected_visible_title": "Equivalent philosophy library",
+      "expected_visible_message": "Exact approved public document; no invented progress, enrollment or payment state.",
+      "expected_primary_action": "Follow canonical library anchor",
+      "expected_secondary_actions": [
+        "Return to current BNA home/library"
+      ],
+      "forbidden_content": [
+        "raw credentials",
+        "Fishing records",
+        "old public schedule or venue"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Labeled controls, status/error announcements and meaningful headings.",
+      "accessibility_expectation": "320/390/768/1440 responsive keyboard/RTL, AA contrast,48px controls and no overflow.",
+      "test_smoke_assertion": "Source/route/rendered state matches this public scope; private/backend acceptance remains separate.",
+      "requirement_id": "REQ-20261108-009"
+    },
+    "filtered_empty": {
+      "route": "/philosophy",
+      "viewport": "390",
+      "auth_role": "anonymous",
+      "workspace_project": "bna / bnei_neviim_academy",
+      "how_to_enter_state": "No empty catalogue state is introduced on this immutable-source document; missing required source is a readiness/configuration failure.",
+      "expected_visible_title": "Equivalent philosophy library",
+      "expected_visible_message": "Never present missing source as a valid empty published page.",
+      "expected_primary_action": "Follow canonical library anchor",
+      "expected_secondary_actions": [
+        "Return to current BNA home/library"
+      ],
+      "forbidden_content": [
+        "raw credentials",
+        "Fishing records",
+        "old public schedule or venue"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Labeled controls, status/error announcements and meaningful headings.",
+      "accessibility_expectation": "320/390/768/1440 responsive keyboard/RTL, AA contrast,48px controls and no overflow.",
+      "test_smoke_assertion": "Source/route/rendered state matches this public scope; private/backend acceptance remains separate.",
+      "requirement_id": "REQ-20261108-009"
+    },
+    "error": {
+      "route": "/philosophy",
+      "viewport": "390",
+      "auth_role": "anonymous",
+      "workspace_project": "bna / bnei_neviim_academy",
+      "how_to_enter_state": "HTTP/source/readiness failure remains failure; no synthetic inquiry/payment success.",
+      "expected_visible_title": "Equivalent philosophy library",
+      "expected_visible_message": "No fabricated success or private implementation detail.",
+      "expected_primary_action": "Follow canonical library anchor",
+      "expected_secondary_actions": [
+        "Return to current BNA home/library"
+      ],
+      "forbidden_content": [
+        "raw credentials",
+        "Fishing records",
+        "old public schedule or venue"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Labeled controls, status/error announcements and meaningful headings.",
+      "accessibility_expectation": "320/390/768/1440 responsive keyboard/RTL, AA contrast,48px controls and no overflow.",
+      "test_smoke_assertion": "Source/route/rendered state matches this public scope; private/backend acceptance remains separate.",
+      "requirement_id": "REQ-20261108-009"
+    },
+    "blocked_setup": {
+      "route": "/philosophy",
+      "viewport": "390",
+      "auth_role": "anonymous",
+      "workspace_project": "bna / bnei_neviim_academy",
+      "how_to_enter_state": "Actual anonymous public document and scoped controls; no fabricated private rows.",
+      "expected_visible_title": "Equivalent philosophy library",
+      "expected_visible_message": "Exact approved public document; no invented progress, enrollment or payment state.",
+      "expected_primary_action": "Follow canonical library anchor",
+      "expected_secondary_actions": [
+        "Return to current BNA home/library"
+      ],
+      "forbidden_content": [
+        "raw credentials",
+        "Fishing records",
+        "old public schedule or venue"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Labeled controls, status/error announcements and meaningful headings.",
+      "accessibility_expectation": "320/390/768/1440 responsive keyboard/RTL, AA contrast,48px controls and no overflow.",
+      "test_smoke_assertion": "Source/route/rendered state matches this public scope; private/backend acceptance remains separate.",
+      "requirement_id": "REQ-20261108-009"
+    },
+    "preview_only": {
+      "route": "/philosophy",
+      "viewport": "390",
+      "auth_role": "anonymous",
+      "workspace_project": "bna / bnei_neviim_academy",
+      "how_to_enter_state": "Actual anonymous public document and scoped controls; no fabricated private rows.",
+      "expected_visible_title": "Equivalent philosophy library",
+      "expected_visible_message": "Exact approved public document; no invented progress, enrollment or payment state.",
+      "expected_primary_action": "Follow canonical library anchor",
+      "expected_secondary_actions": [
+        "Return to current BNA home/library"
+      ],
+      "forbidden_content": [
+        "raw credentials",
+        "Fishing records",
+        "old public schedule or venue"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Labeled controls, status/error announcements and meaningful headings.",
+      "accessibility_expectation": "320/390/768/1440 responsive keyboard/RTL, AA contrast,48px controls and no overflow.",
+      "test_smoke_assertion": "Source/route/rendered state matches this public scope; private/backend acceptance remains separate.",
+      "requirement_id": "REQ-20261108-009"
+    },
+    "success_readback": {
+      "route": "/philosophy",
+      "viewport": "390",
+      "auth_role": "anonymous",
+      "workspace_project": "bna / bnei_neviim_academy",
+      "how_to_enter_state": "Actual anonymous public document and scoped controls; no fabricated private rows.",
+      "expected_visible_title": "Equivalent philosophy library",
+      "expected_visible_message": "Exact approved public document; no invented progress, enrollment or payment state.",
+      "expected_primary_action": "Follow canonical library anchor",
+      "expected_secondary_actions": [
+        "Return to current BNA home/library"
+      ],
+      "forbidden_content": [
+        "raw credentials",
+        "Fishing records",
+        "old public schedule or venue"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Labeled controls, status/error announcements and meaningful headings.",
+      "accessibility_expectation": "320/390/768/1440 responsive keyboard/RTL, AA contrast,48px controls and no overflow.",
+      "test_smoke_assertion": "Source/route/rendered state matches this public scope; private/backend acceptance remains separate.",
+      "requirement_id": "REQ-20261108-009"
+    },
+    "permission_denied": {
+      "route": "/philosophy",
+      "viewport": "390",
+      "auth_role": "anonymous",
+      "workspace_project": "bna / bnei_neviim_academy",
+      "how_to_enter_state": "Anonymous public reading is permitted; existing private route denial remains unchanged, no private state is injected.",
+      "expected_visible_title": "Equivalent philosophy library",
+      "expected_visible_message": "Public document discloses no family/provider/owner data.",
+      "expected_primary_action": "Follow canonical library anchor",
+      "expected_secondary_actions": [
+        "Return to current BNA home/library"
+      ],
+      "forbidden_content": [
+        "raw credentials",
+        "Fishing records",
+        "old public schedule or venue"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Labeled controls, status/error announcements and meaningful headings.",
+      "accessibility_expectation": "320/390/768/1440 responsive keyboard/RTL, AA contrast,48px controls and no overflow.",
+      "test_smoke_assertion": "Source/route/rendered state matches this public scope; private/backend acceptance remains separate.",
+      "requirement_id": "REQ-20261108-009"
+    },
+    "mobile_drawer_or_detail_state": {
+      "route": "/philosophy",
+      "viewport": "390",
+      "auth_role": "anonymous",
+      "workspace_project": "bna / bnei_neviim_academy",
+      "how_to_enter_state": "Open actual mobile menu and press Escape; FAQ scoped native disclosure/deep link if applicable.",
+      "expected_visible_title": "Equivalent philosophy library",
+      "expected_visible_message": "Menu closes and returns focus; FAQ source answer opens without clipping or hidden logistics.",
+      "expected_primary_action": "Follow canonical library anchor",
+      "expected_secondary_actions": [
+        "Return to current BNA home/library"
+      ],
+      "forbidden_content": [
+        "raw credentials",
+        "Fishing records",
+        "old public schedule or venue"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Labeled controls, status/error announcements and meaningful headings.",
+      "accessibility_expectation": "320/390/768/1440 responsive keyboard/RTL, AA contrast,48px controls and no overflow.",
+      "test_smoke_assertion": "Source/route/rendered state matches this public scope; private/backend acceptance remains separate.",
+      "requirement_id": "REQ-20261108-009"
+    }
+  },
+  "visual_quality": {
+    "screenshot_requirements": [
+      {
+        "route": "/philosophy",
+        "viewport": 320,
+        "auth_role": "anonymous",
+        "workspace_project": "bna / bnei_neviim_academy",
+        "required": true,
+        "requirement_id": "REQ-20261108-009"
+      },
+      {
+        "route": "/philosophy",
+        "viewport": 390,
+        "auth_role": "anonymous",
+        "workspace_project": "bna / bnei_neviim_academy",
+        "required": true,
+        "requirement_id": "REQ-20261108-009"
+      },
+      {
+        "route": "/philosophy",
+        "viewport": 430,
+        "auth_role": "anonymous",
+        "workspace_project": "bna / bnei_neviim_academy",
+        "required": true,
+        "requirement_id": "REQ-20261108-009"
+      },
+      {
+        "route": "/philosophy",
+        "viewport": 768,
+        "auth_role": "anonymous",
+        "workspace_project": "bna / bnei_neviim_academy",
+        "required": true,
+        "requirement_id": "REQ-20261108-009"
+      },
+      {
+        "route": "/philosophy",
+        "viewport": 1024,
+        "auth_role": "anonymous",
+        "workspace_project": "bna / bnei_neviim_academy",
+        "required": true,
+        "requirement_id": "REQ-20261108-009"
+      },
+      {
+        "route": "/philosophy",
+        "viewport": 1440,
+        "auth_role": "anonymous",
+        "workspace_project": "bna / bnei_neviim_academy",
+        "required": true,
+        "requirement_id": "REQ-20261108-009"
+      }
+    ],
+    "findings": [
+      {
+        "finding_id": "VQF-20261108-002",
+        "route": "/philosophy",
+        "viewport": "390",
+        "screenshot_before": ".runtime/bna-school-fullstack-20261108/before/baseline.json",
+        "screenshot_after_or_blocker": ".runtime/bna-school-fullstack-20261108/after/verification.json; actual scope-specific screenshots and correction checks in PUBLIC-VERIFICATION.md",
+        "defect_codes": [
+          "VQ-RESP-001",
+          "VQ-CRED-001"
+        ],
+        "severity": "P1",
+        "user_impact": "One article/philosophy hub; existing philosophy routes have equivalent locale redirects to blog#foundations, without dropping protected educational prose.",
+        "expected_fix": "One article/philosophy hub; existing philosophy routes have equivalent locale redirects to blog#foundations, without dropping protected educational prose.",
+        "requirement_id": "REQ-20261108-009"
+      }
+    ]
+  },
+  "accessibility": {
+    "baseline": "WCAG 2.2 AA and responsive keyboard/touch review",
+    "required_checks": [
+      "labels",
+      "contrast",
+      "focus",
+      "keyboard",
+      "mobile reflow",
+      "RTL",
+      "live error/status"
+    ]
+  },
+  "action_states": [
+    {
+      "label": "Follow canonical library anchor",
+      "selector_or_action_key": "HTTP301",
+      "action_state": "WORKS_NOW",
+      "owner": "Existing BNA frontend/integrator01a1aab6",
+      "external_write": false,
+      "handler_or_blocker": "server.js guarded BNA public handlers",
+      "registry_required": true
+    }
+  ],
+  "data_requirements": [
+    "Exact current .04 selected content and immutable source hashes; .01 logistics-only display omissions.",
+    "Protected current original image hashes and actual canonical routes.",
+    "Anonymous-safe source-only public data; no private family/provider records."
+  ],
+  "security_privacy": {
+    "browser_content_untrusted": true,
+    "no_ghl_runtime": true,
+    "no_external_crm_writes": true,
+    "no_leadconnector_references": true,
+    "scope_rules": [
+      "Server-side BNA project enforcement; anonymous public routes disclose no saved PII.",
+      "No parent account is created; archive preserves history and administrator access."
+    ],
+    "forbidden_content": [
+      "secrets",
+      "private foreign-workspace records",
+      "medical details in form prompts"
+    ]
+  },
+  "browser_agent_security": {
+    "policy": "BROWSER_UNTRUSTED_EVIDENCE",
+    "browser_content_untrusted": true,
+    "page_content_cannot_approve_external_actions": true
+  },
+  "external_provider_policy": "REAL_WRITE_REQUIRES_APPROVAL",
+  "implementation_batches": [
+    {
+      "batch_id": "BNA-SCHOOL-philosophy-redirect",
+      "scope": "One article/philosophy hub; existing philosophy routes have equivalent locale redirects to blog#foundations, without dropping protected educational prose.",
+      "instructions": [
+        "Complete only this packet scope; preserve exact source/artwork and existing durable .01 behavior.",
+        "Run affected source/HTTP/browser checks; inspect screenshots and repair/retest actual defects.",
+        "Return source-to-code/test/visual/release proof and next existing requirement; no false live claim."
+      ]
+    }
+  ],
+  "context_budget": {
+    "estimated_prompt_size": "bounded",
+    "source_files_to_read": [
+      "server.js",
+      "src/lib/bna/interest-pages.js"
+    ],
+    "files_allowed_to_edit": [
+      "server.js",
+      "src/lib/bna/interest-pages.js"
+    ],
+    "max_files_to_edit": 16,
+    "max_routes_to_touch": 2,
+    "max_major_surfaces": 1,
+    "split_threshold_reason": "Split any unrelated CRM/provider scope.",
+    "split_if_exceeds": true,
+    "context_risk_level": "MEDIUM"
+  },
+  "tests": [
+    {
+      "command_or_check": "npm run pqc:validate -- ops/prompt-packets/2026-11-08-bna-school/philosophy-redirect.product-quality.json",
+      "expected_result": "Valid bounded packet."
+    },
+    {
+      "command_or_check": "node --test tests/bna-interest-pages.test.js tests/bna-school-pages.test.js",
+      "expected_result": "Exact content, omission, article/FAQ cardinality and route/canonical/share invariants."
+    },
+    {
+      "command_or_check": "Actual Chrome320/390/768/1440 EN/HE and keyboard/search/share/FAQ browser checks",
+      "expected_result": "Opened/inspected screenshots, no overflow/errors/contrast failure; successful and denied/cancelled actions truthful."
+    }
+  ],
+  "evidence": {
+    "expected_paths": [
+      "ops/bna-interest-launch/2026-11-08/CURRENT-STATE.json",
+      "ops/bna-interest-launch/2026-11-08/ASSET-CHECK.json",
+      "tasks-pending/2026-11-05-bna-interest-launch.md",
+      "ops/bna-interest-launch/2026-11-08/LIVE-PUBLIC-VERIFICATION.json"
+    ]
+  },
+  "app_visible": true,
+  "deployment_gate": "LIVE_SMOKE_REQUIRED_BEFORE_DONE",
+  "definition_of_done": {
+    "required": true,
+    "criteria": [
+      "Relevant focused tests and exact copy/asset comparison pass.",
+      "Screenshots opened, material defects repaired and relevant controls exercised.",
+      "Ordinary owner reload/readback and reversible archive proof recorded.",
+      "Scoped push, deployment and live journey evidence recorded or precise blocker retained."
+    ]
+  },
+  "trace": {
+    "raw_input_path": "raw-input/RAW-20261108-001-bna-school-fullstack.md",
+    "compiled_packet_path": "ops/prompt-packets/2026-11-08-bna-school/philosophy-redirect.product-quality.json",
+    "validator_result_path": "ops/product-quality-compiler/validation/latest-product-quality-validation.json",
+    "tool_actions_expected": [
+      "source reads",
+      "SQL verification",
+      "isolated browser review",
+      "scoped release"
+    ],
+    "skipped_actions_policy": "No sends before exact draft/sender activation review; no donation checkout or foreign-workspace mutation.",
+    "blocker_decisions": [
+      "DEC-20261108-001"
+    ],
+    "evidence_paths": [
+      "ops/bna-interest-launch/2026-11-08/CURRENT-STATE.json",
+      "ops/bna-interest-launch/2026-11-08/ASSET-CHECK.json",
+      "tasks-pending/2026-11-05-bna-interest-launch.md"
+    ],
+    "final_status_path": "tasks-pending/2026-11-05-bna-interest-launch.md",
+    "next_packet_path": "ops/execution-runs/2026-11-05-bna-interest-launch/NEXT-SESSION.md"
+  },
+  "drift_watchdog": {
+    "required": true,
+    "command": "npm run watchdog:protocol-drift",
+    "expected_result": "No unsupported implementation or UI done claim."
+  },
+  "next_packet": {
+    "type": "NONE",
+    "description": "Public80575900 slice deployed/live verified. Current owner-alert feature is separately025; fullstack deferred by RAW-20261108-004.",
+    "path": "tasks-pending/2026-11-05-bna-interest-launch.md"
+  },
+  "source_files": [
+    "server.js",
+    "src/lib/bna/interest-pages.js",
+    "ops/bna-interest-launch/2026-11-08/SURFACE-MAP.json"
+  ]
+}

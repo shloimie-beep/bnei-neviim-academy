@@ -1,0 +1,27 @@
+{
+  "checked_at": "2026-11-08T15:39:21.195Z",
+  "environment": "actual live BNA public6c1e4261; browser non-read methods blocked; no new inquiry or email",
+  "results": [
+    {
+      "width": 390,
+      "language": "he",
+      "status": 200,
+      "yearLabelLTR": true,
+      "nativeOptionIsolated": true,
+      "overflow": false,
+      "violations": [],
+      "newSubmissions": 0
+    },
+    {
+      "width": 1440,
+      "language": "he",
+      "status": 200,
+      "yearLabelLTR": true,
+      "nativeOptionIsolated": true,
+      "overflow": false,
+      "violations": [],
+      "newSubmissions": 0
+    }
+  ],
+  "sourceWordChanges": 0
+}

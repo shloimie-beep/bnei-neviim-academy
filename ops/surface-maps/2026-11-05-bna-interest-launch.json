@@ -1,0 +1,82 @@
+{
+  "workspace": "bna",
+  "project": "bnei_neviim_academy",
+  "routes": [
+    "/",
+    "/he",
+    "/join",
+    "/he/join",
+    "/privacy",
+    "/he/privacy",
+    "/operations?view=contacts",
+    "/api/bna/coop-interest",
+    "/api/bna/parent-leads",
+    "/learning-pods",
+    "/he/learning-pods",
+    "/academy-2027-28",
+    "/he/academy-2027-28",
+    "/philosophy",
+    "/he/philosophy",
+    "/vision",
+    "/he/vision",
+    "/faq",
+    "/he/faq",
+    "/blog",
+    "/he/blog",
+    "/blog/:slug",
+    "/he/blog/:slug",
+    "/support/vision",
+    "/he/support/vision",
+    "/api/bna/interest-email/preview",
+    "/api/bna/interest-inquiries/:leadId",
+    "/api/bna/interest-archive",
+    "/api/bna/interest-archive/restore"
+  ],
+  "query_params": [
+    "interest=pod|academy|both",
+    "program",
+    "area",
+    "follow_up",
+    "archive"
+  ],
+  "view_classes": [
+    "PUBLIC_MARKETING",
+    "SHLOIMIE_PLATFORM_SUPPORT"
+  ],
+  "navigation": [
+    "Home",
+    "Learning Pods",
+    "Academy 2027–28",
+    "Articles",
+    "Support",
+    "Owner login",
+    "Language"
+  ],
+  "renderers": [
+    "src/lib/bna/interest-pages.js",
+    "src/lib/bna/coop-join-page.js",
+    "public/js/bna-coop-join.js",
+    "public/operations.html:renderContacts/renderInterestedParentLeads",
+    "public/js/bna-interest-owner.js"
+  ],
+  "data": [
+    "existing bna_parent_leads with immutable inquiry and acknowledgement receipt projection",
+    "existing BNA project scope; no foreign-workspace records"
+  ],
+  "registries": [
+    "ops/action-registry.json",
+    "ops/route-registry.json"
+  ],
+  "verification": [
+    "tests/bna-coop-form.test.js",
+    "tests/bna-interest-pages.test.js",
+    "tests/bna-interest-store.test.js",
+    "tests/bna-interest-owner.test.js",
+    "tests/bna-interest-archive.test.js",
+    "isolated Chrome + actual HTTP and disposable PostgreSQL-compatible SQL",
+    "ordinary live owner reload and recipient proof required"
+  ],
+  "diagnostics": "Private .runtime only",
+  "providers": "Approved exact EN/HE receipt and BNA office sender; one owner recipient test before activation. Existing Railway BNA-only release guard.",
+  "finding": "Current co-op API relays into life-skills app. Native integration must target existing BNA parent-lead CRM, preserve historical upstream records, and never create a second CRM or alter Fishing."
+}
