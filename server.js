@@ -11551,6 +11551,21 @@ function sendOneTimeSingleTenantIcon(req, res, next) {
 
 app.get(Array.from(ONE_TIME_SINGLE_TENANT_ICON_ALIASES.keys()), sendOneTimeSingleTenantIcon);
 
+// Older installs may still request the retired checkmark SVGs. Keep the
+// redirect on the same origin so the existing runtime-specific PNG handler
+// continues to choose the correct brand.
+const LEGACY_PUBLIC_ICON_REDIRECTS = new Map([
+  ['/icons/icon.svg', '/icons/icon-512.png'],
+  ['/icons/icon-192.svg', '/icons/icon-192.png'],
+  ['/icons/icon-512.svg', '/icons/icon-512.png'],
+]);
+app.get(Array.from(LEGACY_PUBLIC_ICON_REDIRECTS.keys()), (req, res, next) => {
+  const target = LEGACY_PUBLIC_ICON_REDIRECTS.get(req.path);
+  if (!target) return next();
+  res.setHeader('Cache-Control', 'no-store');
+  return res.redirect(302, target);
+});
+
 app.use(express.static('public', {
   setHeaders(res, filePath) {
     const normalizedPath = String(filePath || '').replace(/\\/g, '/');
