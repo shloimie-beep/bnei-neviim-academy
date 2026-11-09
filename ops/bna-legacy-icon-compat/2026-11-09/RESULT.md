@@ -33,3 +33,5 @@ Before release, production stage readback reports no staged changes. Earlier own
 After an accepted release, verify provider candidate identity and live deploy-info, then all three anonymous redirects, final PNG MIME and bytes, cache headers, HEAD and stale validators. Do not submit another inquiry or send another email for this asset change.
 
 HTTP compatibility proof does not establish a physical handset or installed OS icon update. Previously stored browser/OS icons may require refresh. Origin chat retains the separate scrolling/loading fix.
+
+Pushed implementation: `9019f0c15a8ab71da4a1911c62e682cdc16b38ad`, [PR #197](https://github.com/shloimie-beep/bnei-neviim-academy/pull/197). GitHub confirms a clean, mergeable nine-file diff against the existing launch branch; no configured CI status checks. This evidence follow-up is documentation only. Fresh source-config readback confirms current branch/pin above and no staged changes. The proposed release uses the separate icon branch and its immutable reviewed head; the exact pin is to be presented through the protected gate before effects.
