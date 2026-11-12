@@ -35,3 +35,22 @@ After an accepted release, verify provider candidate identity and live deploy-in
 HTTP compatibility proof does not establish a physical handset or installed OS icon update. Previously stored browser/OS icons may require refresh. Origin chat retains the separate scrolling/loading fix.
 
 Pushed implementation: `9019f0c15a8ab71da4a1911c62e682cdc16b38ad`, [PR #197](https://github.com/shloimie-beep/bnei-neviim-academy/pull/197). GitHub confirms a clean, mergeable nine-file diff against the existing launch branch; no configured CI status checks. This evidence follow-up is documentation only. Fresh source-config readback confirms current branch/pin above and no staged changes. The proposed release uses the separate icon branch and its immutable reviewed head; the exact pin is to be presented through the protected gate before effects.
+
+## 12 November 2026 — Fishing launch and shared-origin cache audit
+
+**JLFA-MOBILE-LAUNCH-MARK-20261109-01**. The family reported a recurring mobile checkmark before the Fishing page opened. The acceptance target is the English and Hebrew Fishing entry, including families returning with an old school service worker. The appearance on the reporting handset has not been captured.
+
+| Entry or artifact | Production observation before release |
+| --- | --- |
+| Main domain, /fishing-academy and /he/fishing-academy | HTTP 200, correct language and locked Fishing favicon and Apple touch icon in the initial head. Both image requests returned the approved PNG, SHA-256 prefix e78ff6d3ef. No manifest or old icon request on clean mobile Chrome and WebKit loads. |
+| Main domain, /en/florida and /he/florida | Each returned an HTTP 308 to the matching localized Fishing page. No intervening admin HTML. |
+| life-skills subdomain, /en/florida and /he/florida | HTTP 200, same Fishing icon bytes and localized page. The Florida loading component has accessible status text and no painted icon. Its private service worker has no fetch handler. The old /pwa/icon-192.png is the Life Skills leaf. It was never requested in these cold runs. |
+| Main-domain retired public icons | /icons/icon.svg, /icons/icon-192.svg and /icons/icon-512.svg still returned the actual old cream, burgundy and gold checkmark SVGs, with cacheable responses. The public school manifest names current PNGs. The scoped Operations manifest has a distinct private icon. |
+| Main-domain public service worker | v11 controlled the whole origin, exempted /life-skills but intercepted both Fishing gateway paths, their aliases and assets. It stored network responses even when the gateway sent no-store. On a fetch failure it searched across caches and fell back to the cached school homepage. Reproduced for both languages in Chromium with the production worker and an intentionally unavailable Fishing origin in a local fixture. |
+| Release identity | Fishing d6f54cc0. The separate main-domain gateway was still serving 6c1e4261. The November 9 icon compatibility code in PR #197 had not reached that service. Updating the Fishing application alone leaves the root worker and legacy SVGs in service. |
+
+**Correction.** This branch includes the three exact no-store redirects from PR #197. The updated school worker bypasses Fishing pages, legacy locale routes and gateway assets, revalidates obsolete icon URLs, retires old school caches, preserves unrelated app caches and confines remaining school cache lookups to its own cache.
+
+**Verification.** The regression test rejected the previous worker. In a real Chromium worker upgrade, a retained profile with previously cacheable SVGs obtained PNGs from all three old URLs. Forced network failures on English, Hebrew, a localized alias and the locked logo no longer produced school HTML. The old school cache disappeared and unrelated cache storage survived. Ten existing redirect/server tests passed across BNA and One Time. The combined PWA unit suites had 20 passes and one unrelated Operations dashboard assertion failure, reproduced separately on the unchanged base. The eight public mobile cold launches used Chrome and WebKit at 390×844 on both origins in English and Hebrew. No physical phone, installed-OS launch screen or in-app social browser was observed. A stored native launcher icon can outlive a web release.
+
+**Release.** Verify the exact Git pin on the existing main-domain service, the new worker bytes and the three redirects, then repeat both live language checks. Do not mark this deployed from Git evidence alone.
