@@ -25,7 +25,9 @@
       "canonical_target": "/icons/icon-512.png",
       "security_expectation": "Fixed relative target; no records or external calls. Existing One Time runtime PNG handler chooses its own brand.",
       "smoke_expectation": "tests/public-legacy-icon-compat.test.cjs: actual BNA and One Time servers, GET/HEAD, stale validators, PNG MIME and exact bytes, unchanged adjacent routes.",
-      "requirement_ids": ["REQ-20261109-001"]
+      "requirement_ids": [
+        "REQ-20261109-001"
+      ]
     },
     {
       "route": "/icons/icon-192.svg",
@@ -40,7 +42,9 @@
       "canonical_target": "/icons/icon-192.png",
       "security_expectation": "Fixed relative target; no records or external calls. Existing One Time runtime PNG handler chooses its own brand.",
       "smoke_expectation": "tests/public-legacy-icon-compat.test.cjs: actual BNA and One Time servers, GET/HEAD, stale validators, PNG MIME and exact bytes, unchanged adjacent routes.",
-      "requirement_ids": ["REQ-20261109-001"]
+      "requirement_ids": [
+        "REQ-20261109-001"
+      ]
     },
     {
       "route": "/icons/icon-512.svg",
@@ -55,7 +59,9 @@
       "canonical_target": "/icons/icon-512.png",
       "security_expectation": "Fixed relative target; no records or external calls. Existing One Time runtime PNG handler chooses its own brand.",
       "smoke_expectation": "tests/public-legacy-icon-compat.test.cjs: actual BNA and One Time servers, GET/HEAD, stale validators, PNG MIME and exact bytes, unchanged adjacent routes.",
-      "requirement_ids": ["REQ-20261109-001"]
+      "requirement_ids": [
+        "REQ-20261109-001"
+      ]
     },
     {
       "route": "/api/bna/life-skills-app/native-prospects/send",
@@ -4049,6 +4055,159 @@
       "security_expectation": "Only public canonical school paths; no private tokens or family records",
       "smoke_expectation": "PUBLIC-VERIFICATION.md47destination check",
       "live_status": "verified_local_pending_release"
+    },
+    {
+      "route": "/fish",
+      "surface": "fishing_seminar_public_gateway",
+      "access": "public",
+      "required_role": null,
+      "workspace_scope_required": false,
+      "public_allowed": true,
+      "expected_logged_out_behavior": "Exact anonymous seminar page/download; GET/HEAD only; EN legacy alias redirects to /fish",
+      "expected_logged_in_behavior": "Same anonymous representation; no BNA identity or customer data forwarded",
+      "canonical_target": "/en/florida/seminar",
+      "privacy_risk": "public_event_only",
+      "security_expectation": "Fixed upstream, exact allowlist, no auth/session cookies, no private APIs, network-only service-worker bypass; unknown children denied",
+      "smoke_expectation": "tests/fishing-academy-gateway.test.js; real public hostname and asset checks before completion",
+      "related_requirement_ids": [
+        "JLFA-SEMINAR-MOBILE-DESTINATION-20261122-01"
+      ]
+    },
+    {
+      "route": "/fish/",
+      "surface": "fishing_seminar_public_gateway",
+      "access": "public",
+      "required_role": null,
+      "workspace_scope_required": false,
+      "public_allowed": true,
+      "expected_logged_out_behavior": "Exact anonymous seminar page/download; GET/HEAD only; EN legacy alias redirects to /fish",
+      "expected_logged_in_behavior": "Same anonymous representation; no BNA identity or customer data forwarded",
+      "canonical_target": "/en/florida/seminar",
+      "privacy_risk": "public_event_only",
+      "security_expectation": "Fixed upstream, exact allowlist, no auth/session cookies, no private APIs, network-only service-worker bypass; unknown children denied",
+      "smoke_expectation": "tests/fishing-academy-gateway.test.js; real public hostname and asset checks before completion",
+      "related_requirement_ids": [
+        "JLFA-SEMINAR-MOBILE-DESTINATION-20261122-01"
+      ]
+    },
+    {
+      "route": "/fishing-academy/seminar",
+      "surface": "fishing_seminar_public_gateway",
+      "access": "public",
+      "required_role": null,
+      "workspace_scope_required": false,
+      "public_allowed": true,
+      "expected_logged_out_behavior": "Exact anonymous seminar page/download; GET/HEAD only; EN legacy alias redirects to /fish",
+      "expected_logged_in_behavior": "Same anonymous representation; no BNA identity or customer data forwarded",
+      "canonical_target": "/en/florida/seminar",
+      "privacy_risk": "public_event_only",
+      "security_expectation": "Fixed upstream, exact allowlist, no auth/session cookies, no private APIs, network-only service-worker bypass; unknown children denied",
+      "smoke_expectation": "tests/fishing-academy-gateway.test.js; real public hostname and asset checks before completion",
+      "related_requirement_ids": [
+        "JLFA-SEMINAR-MOBILE-DESTINATION-20261122-01"
+      ]
+    },
+    {
+      "route": "/fishing-academy/seminar/",
+      "surface": "fishing_seminar_public_gateway",
+      "access": "public",
+      "required_role": null,
+      "workspace_scope_required": false,
+      "public_allowed": true,
+      "expected_logged_out_behavior": "Exact anonymous seminar page/download; GET/HEAD only; EN legacy alias redirects to /fish",
+      "expected_logged_in_behavior": "Same anonymous representation; no BNA identity or customer data forwarded",
+      "canonical_target": "/en/florida/seminar",
+      "privacy_risk": "public_event_only",
+      "security_expectation": "Fixed upstream, exact allowlist, no auth/session cookies, no private APIs, network-only service-worker bypass; unknown children denied",
+      "smoke_expectation": "tests/fishing-academy-gateway.test.js; real public hostname and asset checks before completion",
+      "related_requirement_ids": [
+        "JLFA-SEMINAR-MOBILE-DESTINATION-20261122-01"
+      ]
+    },
+    {
+      "route": "/en/florida/seminar",
+      "surface": "fishing_seminar_public_gateway",
+      "access": "public",
+      "required_role": null,
+      "workspace_scope_required": false,
+      "public_allowed": true,
+      "expected_logged_out_behavior": "Exact anonymous seminar page/download; GET/HEAD only; EN legacy alias redirects to /fish",
+      "expected_logged_in_behavior": "Same anonymous representation; no BNA identity or customer data forwarded",
+      "canonical_target": "/en/florida/seminar",
+      "privacy_risk": "public_event_only",
+      "security_expectation": "Fixed upstream, exact allowlist, no auth/session cookies, no private APIs, network-only service-worker bypass; unknown children denied",
+      "smoke_expectation": "tests/fishing-academy-gateway.test.js; real public hostname and asset checks before completion",
+      "related_requirement_ids": [
+        "JLFA-SEMINAR-MOBILE-DESTINATION-20261122-01"
+      ]
+    },
+    {
+      "route": "/en/florida/seminar/",
+      "surface": "fishing_seminar_public_gateway",
+      "access": "public",
+      "required_role": null,
+      "workspace_scope_required": false,
+      "public_allowed": true,
+      "expected_logged_out_behavior": "Exact anonymous seminar page/download; GET/HEAD only; EN legacy alias redirects to /fish",
+      "expected_logged_in_behavior": "Same anonymous representation; no BNA identity or customer data forwarded",
+      "canonical_target": "/en/florida/seminar",
+      "privacy_risk": "public_event_only",
+      "security_expectation": "Fixed upstream, exact allowlist, no auth/session cookies, no private APIs, network-only service-worker bypass; unknown children denied",
+      "smoke_expectation": "tests/fishing-academy-gateway.test.js; real public hostname and asset checks before completion",
+      "related_requirement_ids": [
+        "JLFA-SEMINAR-MOBILE-DESTINATION-20261122-01"
+      ]
+    },
+    {
+      "route": "/seminar/bass-fishing-seminar-20261122.jpg",
+      "surface": "fishing_seminar_public_gateway",
+      "access": "public",
+      "required_role": null,
+      "workspace_scope_required": false,
+      "public_allowed": true,
+      "expected_logged_out_behavior": "Exact anonymous seminar page/download; GET/HEAD only; EN legacy alias redirects to /fish",
+      "expected_logged_in_behavior": "Same anonymous representation; no BNA identity or customer data forwarded",
+      "canonical_target": "/seminar/bass-fishing-seminar-20261122.jpg",
+      "privacy_risk": "public_event_only",
+      "security_expectation": "Fixed upstream, exact allowlist, no auth/session cookies, no private APIs, network-only service-worker bypass; unknown children denied",
+      "smoke_expectation": "tests/fishing-academy-gateway.test.js; real public hostname and asset checks before completion",
+      "related_requirement_ids": [
+        "JLFA-SEMINAR-MOBILE-DESTINATION-20261122-01"
+      ]
+    },
+    {
+      "route": "/seminar/seminar-page-qr.png",
+      "surface": "fishing_seminar_public_gateway",
+      "access": "public",
+      "required_role": null,
+      "workspace_scope_required": false,
+      "public_allowed": true,
+      "expected_logged_out_behavior": "Exact anonymous seminar page/download; GET/HEAD only; EN legacy alias redirects to /fish",
+      "expected_logged_in_behavior": "Same anonymous representation; no BNA identity or customer data forwarded",
+      "canonical_target": "/seminar/seminar-page-qr.png",
+      "privacy_risk": "public_event_only",
+      "security_expectation": "Fixed upstream, exact allowlist, no auth/session cookies, no private APIs, network-only service-worker bypass; unknown children denied",
+      "smoke_expectation": "tests/fishing-academy-gateway.test.js; real public hostname and asset checks before completion",
+      "related_requirement_ids": [
+        "JLFA-SEMINAR-MOBILE-DESTINATION-20261122-01"
+      ]
+    },
+    {
+      "route": "/seminar/seminar-page-qr.svg",
+      "surface": "fishing_seminar_public_gateway",
+      "access": "public",
+      "required_role": null,
+      "workspace_scope_required": false,
+      "public_allowed": true,
+      "expected_logged_out_behavior": "Exact anonymous seminar page/download; GET/HEAD only; EN legacy alias redirects to /fish",
+      "expected_logged_in_behavior": "Same anonymous representation; no BNA identity or customer data forwarded",
+      "canonical_target": "/seminar/seminar-page-qr.svg",
+      "privacy_risk": "public_event_only",
+      "security_expectation": "Fixed upstream, exact allowlist, no auth/session cookies, no private APIs, network-only service-worker bypass; unknown children denied",
+      "smoke_expectation": "tests/fishing-academy-gateway.test.js; real public hostname and asset checks before completion",
+      "related_requirement_ids": [
+        "JLFA-SEMINAR-MOBILE-DESTINATION-20261122-01"
+      ]
     }
   ]
 }

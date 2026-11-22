@@ -7,6 +7,8 @@ const STAGES = '(?:foundation|independent|advanced|leadership)';
 const page = new RegExp('^(/he)?/fishing-academy(/(?:apply|pricing|confirm-interest|stages/' + STAGES + '))?/?$');
 const legacy = new RegExp('^/(en|he)/florida(/(?:apply|pricing|confirm-interest|stages/' + STAGES + '))?/?$');
 const assets = new Set([
+  '/seminar/bass-fishing-seminar-20261122.jpg',
+  '/seminar/seminar-page-qr.png', '/seminar/seminar-page-qr.svg',
   '/groups/brand/jlfa-logo-locked-v1.png',
   '/groups/people/founder-grass-group.webp', '/groups/people/founder-head.jpg',
   '/groups/testimonials/l-bars-2024.png',
@@ -39,6 +41,9 @@ function registrationResponseCookie(raw) {
 function publicPath(locale, suffix = '') { return (locale === 'he' ? '/he/fishing-academy' : '/fishing-academy') + suffix; }
 function classify(url) {
   if (unsafePath.test(url.pathname)) return null;
+  // One event page and its exact aliases, never a wildcard public app proxy.
+  if (/^\/(?:fish|fishing-academy\/seminar)\/?$/.test(url.pathname)) return { kind: 'page', path: '/en/florida/seminar' };
+  if (/^\/en\/florida\/seminar\/?$/.test(url.pathname)) return { kind: 'redirect', path: '/fish' };
   const match = page.exec(url.pathname);
   if (match) return { kind: 'page', path: '/' + (match[1] ? 'he' : 'en') + '/florida' + (match[2] || '') };
   const old = legacy.exec(url.pathname);
@@ -70,7 +75,7 @@ function createFishingAcademyGateway({ enabled = () => false, origin = PUBLIC_OR
     try { url = new URL(req.originalUrl || req.url, origin); } catch { return next(); }
     const route = classify(url);
     if (url.origin !== external.origin || !route) {
-      if (/^\/(?:he\/)?fishing-academy(?:\/|$)/.test(url.pathname) || url.pathname === API || url.pathname === FOUNDER_API) return deny(res);
+      if (/^\/(?:he\/)?fishing-academy(?:\/|$)/.test(url.pathname) || /^\/(?:fish|seminar)(?:\/|$)/.test(url.pathname) || url.pathname === API || url.pathname === FOUNDER_API) return deny(res);
       return next();
     }
     const protocol = req.headers['x-forwarded-proto'] || (req.socket.encrypted ? 'https' : 'http');
@@ -119,8 +124,9 @@ function createFishingAcademyGateway({ enabled = () => false, origin = PUBLIC_OR
           let destination;
           try { destination = new URL(response.headers.location, target); } catch { response.destroy(); return deny(res, 502); }
           const old = legacy.exec(destination.pathname);
-          if (destination.origin !== target.origin || !old) { response.destroy(); return deny(res, 502); }
-          outgoing.Location = publicPath(old[1], old[2] || '') + destination.search;
+          const seminarDestination = /^\/en\/florida\/seminar\/?$/.test(destination.pathname);
+          if (destination.origin !== target.origin || (!old && !seminarDestination)) { response.destroy(); return deny(res, 502); }
+          outgoing.Location = (seminarDestination ? '/fish' : publicPath(old[1], old[2] || '')) + destination.search;
         }
         res.writeHead(response.statusCode || 502, outgoing); response.pipe(res);
         response.on('error', () => res.destroy());

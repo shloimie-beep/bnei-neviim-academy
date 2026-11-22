@@ -4,6 +4,7 @@ const assert = require('node:assert/strict');
 const http = require('node:http');
 const { once } = require('node:events');
 const fs = require('node:fs');
+const vm = require('node:vm');
 const { createFishingAcademyGateway, classify } = require('../src/lib/bna/fishing-academy-gateway');
 let backend, front, upstream, origin, observed = [], enabled = true, replyCookies = null;
 before(async () => {
@@ -11,6 +12,7 @@ before(async () => {
     const chunks = []; req.on('data', chunk => chunks.push(chunk)); req.on('end', () => {
       observed.push({ path: req.url, method: req.method, headers: req.headers, body: Buffer.concat(chunks).toString() });
       if (req.url.includes('redirect-test')) { res.writeHead(302, { Location: 'https://not-the-academy.invalid/private' }); return res.end(); }
+      if (req.url.includes('seminar-redirect')) { res.writeHead(308, { Location: '/en/florida/seminar' }); return res.end(); }
       const cookies=replyCookies??(req.url==='/api/public/group-applications?program=sunday_fishing_academy'&&req.method==='GET'&&!req.headers.cookie?safeCookie:'private=never-forward');
       res.writeHead(200, { 'Content-Type': 'application/json', 'Set-Cookie': cookies, 'Content-Security-Policy': "default-src 'none'; script-src 'self' 'nonce-fixture'" });
       res.end(JSON.stringify({ received: true }));
@@ -165,4 +167,79 @@ test('missing, malformed or rotated challenge cookie fails closed without usable
 test('Packet05 square admits only exact approved path',async()=>{
   const response=await request('/groups/academy/prereg-approved-square-20261023.png');await response.text();assert.equal(response.status,200);
   for(const path of ['/groups/academy/prereg-approved-square-20261023.png.bak','/groups/academy/prereg-approved-square-20261023.jpg'])assert.equal(classify(new URL(path,origin)),null);
+});
+
+test('seminar pages map only the exact English public destination without credentials', async () => {
+  for (const path of ['/fish', '/fish/', '/fishing-academy/seminar', '/fishing-academy/seminar/']) {
+    for (const method of ['GET', 'HEAD']) {
+      const response = await request(path, { method, headers: { Cookie: continuation + '; bna_session=private', Authorization: 'Bearer private' } });
+      await response.text(); assert.equal(response.status, 200);
+      const entry = observed.at(-1);
+      assert.equal(entry.path, '/en/florida/seminar'); assert.equal(entry.method, method);
+      assert.equal(entry.headers.cookie, undefined); assert.equal(entry.headers.authorization, undefined);
+      assert.equal(response.headers.get('set-cookie'), null); assert.equal(response.headers.get('cache-control'), 'no-store');
+      assert.equal(response.headers.get('content-security-policy'), "default-src 'none'; script-src 'self' 'nonce-fixture'");
+    }
+  }
+  const count = observed.length;
+  for (const path of ['/en/florida/seminar', '/en/florida/seminar/']) {
+    const response = await request(path); await response.text();
+    assert.equal(response.status, 308); assert.equal(response.headers.get('location'), '/fish');
+  }
+  assert.equal(observed.length, count);
+});
+
+test('only the named seminar downloads are public and mutation attempts never dispatch', async () => {
+  const paths = ['/seminar/bass-fishing-seminar-20261122.jpg', '/seminar/seminar-page-qr.png', '/seminar/seminar-page-qr.svg'];
+  for (const path of paths) {
+    assert.deepEqual(classify(new URL(path, origin)), { kind: 'asset', path });
+    for (const method of ['GET', 'HEAD']) {
+      const response = await request(path, { method, headers: { Cookie: 'bna_session=private', Authorization: 'Bearer private' } });
+      await response.text(); assert.equal(response.status, 200);
+      assert.equal(observed.at(-1).path, path); assert.equal(observed.at(-1).method, method);
+      assert.equal(observed.at(-1).headers.cookie, undefined); assert.equal(observed.at(-1).headers.authorization, undefined);
+      assert.equal(response.headers.get('set-cookie'), null);
+    }
+  }
+  const count = observed.length;
+  for (const path of ['/fish', '/fishing-academy/seminar', ...paths]) {
+    for (const method of ['POST', 'PUT', 'DELETE']) {
+      const response = await request(path, { method, body: '{}' }); await response.text(); assert.equal(response.status, 405);
+    }
+  }
+  for (const path of ['/fish/private', '/fishing-academy/seminar/private', '/seminar/private.json', '/seminar/bass-fishing-seminar-20261122.png', '/seminar/seminar-page-qr.svg.bak']) {
+    assert.equal(classify(new URL(path, origin)), null);
+    const response = await request(path); await response.text(); assert.equal(response.status, 404);
+  }
+  for (const path of ['/he/fishing-academy/seminar', '/he/florida/seminar', '/api/private/seminar', '/_next/image?url=/seminar/private.png']) assert.equal(classify(new URL(path, origin)), null);
+  assert.equal(observed.length, count);
+});
+
+test('upstream seminar redirect remains confined to the permanent public entry', async () => {
+  const response = await request('/fish?seminar-redirect=1'); await response.text();
+  assert.equal(response.status, 308); assert.equal(response.headers.get('location'), '/fish');
+  assert.equal(response.headers.get('cache-control'), 'no-store'); assert.equal(response.headers.get('set-cookie'), null);
+});
+
+test('disabled gateway and foreign host do not take over the existing school router', async () => {
+  const count = observed.length;
+  enabled = false;
+  try { const response = await request('/fish'); assert.equal(response.status, 418); await response.text(); }
+  finally { enabled = true; }
+  // Native fetch may normalize Host; exercise the middleware's host fence
+  // directly so this assertion does not depend on the HTTP client's policy.
+  let nextCalls = 0;
+  handler({ headers: { host: 'foreign.invalid' }, url: '/fish' }, {}, () => { nextCalls++; });
+  assert.equal(nextCalls, 1); assert.equal(observed.length, count);
+});
+
+test('public service worker leaves every seminar representation network-only', () => {
+  const handlers = {};
+  let intercepted = 0;
+  const context = vm.createContext({ URL, self: { location: { origin: 'https://bneineviimacademy.org' }, addEventListener(type, handler) { handlers[type] = handler; } } });
+  vm.runInContext(fs.readFileSync(require.resolve('../public/sw.js'), 'utf8'), context);
+  const paths = ['/fish', '/fish/', '/fishing-academy/seminar', '/fishing-academy/seminar/', '/en/florida/seminar', '/en/florida/seminar/', '/seminar/bass-fishing-seminar-20261122.jpg', '/seminar/seminar-page-qr.png', '/seminar/seminar-page-qr.svg'];
+  for (const path of paths) handlers.fetch({ request: { method: 'GET', url: 'https://bneineviimacademy.org' + path }, respondWith() { intercepted++; } });
+  assert.equal(intercepted, 0);
+  assert.match(fs.readFileSync(require.resolve('../public/sw.js'), 'utf8'), /const CACHE_NAME = 'bna-public-v12'/);
 });

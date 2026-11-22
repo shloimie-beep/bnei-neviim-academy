@@ -43,6 +43,13 @@ function isLifeSkillsPath(pathname) {
   return pathname === LIFE_SKILLS_PREFIX || pathname.startsWith(`${LIFE_SKILLS_PREFIX}/`);
 }
 
+function isFishingSeminarPath(pathname) {
+  // These gateway destinations must stay network-only: an offline school
+  // homepage is not a seminar page or a downloadable flyer/QR.
+  return /^\/(?:fish|fishing-academy\/seminar|en\/florida\/seminar)\/?$/.test(pathname) ||
+    ['/seminar/bass-fishing-seminar-20261122.jpg', '/seminar/seminar-page-qr.png', '/seminar/seminar-page-qr.svg'].includes(pathname);
+}
+
 self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME)
@@ -72,6 +79,7 @@ self.addEventListener('fetch', (event) => {
   if (url.pathname.startsWith('/api/')) return;
   if (isPrivateAppPath(url.pathname)) return;
   if (isLifeSkillsPath(url.pathname)) return;
+  if (isFishingSeminarPath(url.pathname)) return;
 
   event.respondWith(
     fetch(request)
