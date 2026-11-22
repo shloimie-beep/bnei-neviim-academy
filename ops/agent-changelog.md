@@ -40640,3 +40640,5 @@ Same24-requirement run extended under .03/.02, preserving .01. Exact Vision/Miss
 ## 2026-11-22 — Fishing seminar public gateway (local reviewed)
 
 Exact /fish and seminar alias plus three named assets; credentials/session boundaries preserved. Network-only public service-worker bypass prevents school-homepage fallback. 67 focused tests and independent code review passed. One unrelated pre-existing Operations-navigation test remains outside this scope. Deployment/live verification pending under JLFA-SEMINAR-MOBILE-DESTINATION-20261122-01. No school content, data, provider settings or customer sends changed.
+
+Final deployed-baseline reconciliation: cccf9e7649569b8e81e293cca3415266da97386d retained, including existing v12/retired-icon fixes. 61 final-baseline checks and 45 independently rerun gateway tests passed; 234 prior registry rows unchanged, nine added; protocol drift zero. The earlier 67-test result was the initial default-branch checkpoint. Current release has no observed code blocker; live deployment remains pending.
