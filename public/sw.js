@@ -1,4 +1,4 @@
-const CACHE_NAME = 'bna-public-v11';
+const CACHE_NAME = 'bna-public-v12';
 const LIFE_SKILLS_PREFIX = '/life-skills';
 const APP_SHELL = [
   '/',
@@ -30,8 +30,24 @@ function isPrivateAppPath(pathname) {
   return PRIVATE_APP_PREFIXES.some((prefix) => pathname === prefix || pathname.startsWith(prefix + '/'));
 }
 
+function isFishingGatewayPath(pathname) {
+  // The gateway serves these URLs from a separate application. Its HTML,
+  // RSC responses and images must never use a school shell or cached HTML.
+  return /^\/(?:he\/)?fishing-academy(?:\/|$)/.test(pathname) ||
+    /^\/(?:en|he)\/florida(?:\/|$)/.test(pathname) ||
+    pathname.startsWith('/groups/') || pathname.startsWith('/_next/static/') ||
+    pathname === '/fonts/Heebo-wght.ttf' || pathname === '/fonts/FrankRuhlLibre-wght.ttf';
+}
+
 function isLifeSkillsPath(pathname) {
   return pathname === LIFE_SKILLS_PREFIX || pathname.startsWith(`${LIFE_SKILLS_PREFIX}/`);
+}
+
+function isFishingSeminarPath(pathname) {
+  // These gateway destinations must stay network-only: an offline school
+  // homepage is not a seminar page or a downloadable flyer/QR.
+  return /^\/(?:fish|fishing-academy\/seminar|en\/florida\/seminar)\/?$/.test(pathname) ||
+    ['/seminar/bass-fishing-seminar-20261122.jpg', '/seminar/seminar-page-qr.png', '/seminar/seminar-page-qr.svg'].includes(pathname);
 }
 
 self.addEventListener('install', (event) => {
@@ -45,7 +61,7 @@ self.addEventListener('install', (event) => {
 self.addEventListener('activate', (event) => {
   event.waitUntil(
     caches.keys()
-      .then((keys) => Promise.all(keys.filter((key) => key !== CACHE_NAME).map((key) => caches.delete(key))))
+      .then((keys) => Promise.all(keys.filter((key) => /^bna-public-v\d+$/.test(key) && key !== CACHE_NAME).map((key) => caches.delete(key))))
       .then(() => self.clients.claim())
   );
 });
@@ -54,9 +70,16 @@ self.addEventListener('fetch', (event) => {
   const request = event.request;
   if (request.method !== 'GET') return;
   const url = new URL(request.url);
+  if (url.origin !== self.location.origin || isFishingGatewayPath(url.pathname)) return;
+  // Old installs may still request these retired public launch icons.
+  if (/^\/icons\/icon(?:-192|-512)?\.svg$/.test(url.pathname)) {
+    event.respondWith(fetch(request, { cache: 'reload' }));
+    return;
+  }
   if (url.pathname.startsWith('/api/')) return;
   if (isPrivateAppPath(url.pathname)) return;
   if (isLifeSkillsPath(url.pathname)) return;
+  if (isFishingSeminarPath(url.pathname)) return;
 
   event.respondWith(
     fetch(request)
@@ -65,6 +88,6 @@ self.addEventListener('fetch', (event) => {
         caches.open(CACHE_NAME).then((cache) => cache.put(request, copy));
         return response;
       })
-      .catch(() => caches.match(request).then((cached) => cached || caches.match('/')))
+      .catch(() => caches.open(CACHE_NAME).then(async (cache) => (await cache.match(request)) || cache.match('/')))
   );
 });

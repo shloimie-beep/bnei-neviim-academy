@@ -32,7 +32,7 @@ test('public, parent, and Operations PWAs keep separate launch identities', () =
 });
 
 test('public service worker caches only the anonymous public shell', () => {
-  assert.match(serviceWorker, /const CACHE_NAME = 'bna-public-v11'/);
+  assert.match(serviceWorker, /const CACHE_NAME = 'bna-public-v12'/);
   assert.match(serviceWorker, /const PRIVATE_APP_PREFIXES = \[/);
   for (const privatePrefix of [
     "'/operations'",
